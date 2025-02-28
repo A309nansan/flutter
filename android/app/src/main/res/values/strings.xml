@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="default_web_client_id">566335619985-2tbod8b1kpbf4d4u8h1b0hm2afo18m2j.apps.googleusercontent.com</string>
+    <string name="client_id">aBiX3XUM1OAnxsxFznrz</string>
+    <string name="client_secret">JhJ9eCZYBb</string>
+    <string name="client_name">ssafy_nansan</string>
 </resources>

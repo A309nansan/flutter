@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:nansan_flutter/modules/auth/src/services/naver_sign_in_service.dart';
 import '../services/kakao_sign_in_service.dart';
 import '../services/google_sign_in_service.dart';
 
@@ -8,11 +10,18 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Modular.get<KakaoSignInService>();
-    Modular.get<GoogleSignInService>();
+    final kakaoSignInService = Modular.get<KakaoSignInService>();
+    final googleSignInService = Modular.get<GoogleSignInService>();
+    final naverSignInService = Modular.get<NaverSignInService>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text("소셜 로그인")),
+      appBar: AppBar(
+        title: const Text(
+          "Nansan",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.blue,
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -21,14 +30,24 @@ class LoginScreen extends StatelessWidget {
               "카카오 로그인",
               const Color(0xFFFEE500),
               Colors.black87,
-              () => KakaoSignInService.signInWithKakao(),
+              "lib/assets/kakao_logo.svg",
+              () => kakaoSignInService.signInWithKakao(),
             ),
             const SizedBox(height: 20),
             _buildLoginButton(
               "구글 로그인",
               Colors.white,
               Colors.black87,
-              () => GoogleSignInService.signInWithGoogle(),
+              "lib/assets/google_logo.svg",
+              () => googleSignInService.signInWithGoogle(),
+            ),
+            const SizedBox(height: 20),
+            _buildLoginButton(
+              "네이버 로그인",
+              const Color(0xFF03C75B),
+              Colors.white,
+              "lib/assets/naver_logo.svg",
+              () => naverSignInService.signInWithNaver(),
             ),
           ],
         ),
@@ -40,6 +59,7 @@ class LoginScreen extends StatelessWidget {
     String text,
     Color bgColor,
     Color fgColor,
+    String logo,
     VoidCallback onPressed,
   ) {
     return SizedBox(
@@ -52,9 +72,18 @@ class LoginScreen extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           padding: const EdgeInsets.symmetric(vertical: 14),
         ),
-        child: Text(
-          text,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: SvgPicture.asset(logo, height: 30.0, width: 30.0),
+            ),
+            Text(
+              text,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ],
         ),
       ),
     );
