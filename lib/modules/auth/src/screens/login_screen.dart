@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:nansan_flutter/modules/auth/src/services/naver_sign_in_service.dart';
 import '../services/kakao_sign_in_service.dart';
 import '../services/google_sign_in_service.dart';
 
@@ -12,7 +11,7 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final kakaoSignInService = Modular.get<KakaoSignInService>();
     final googleSignInService = Modular.get<GoogleSignInService>();
-    final naverSignInService = Modular.get<NaverSignInService>();
+    // final naverSignInService = Modular.get<NaverSignInService>();
 
     return Scaffold(
       appBar: AppBar(
@@ -20,7 +19,7 @@ class LoginScreen extends StatelessWidget {
           "Nansan",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: const Color.fromARGB(255, 153, 209, 255),
       ),
       body: Center(
         child: Column(
@@ -40,14 +39,6 @@ class LoginScreen extends StatelessWidget {
               Colors.black87,
               "lib/assets/google_logo.svg",
               () => googleSignInService.signInWithGoogle(),
-            ),
-            const SizedBox(height: 20),
-            _buildLoginButton(
-              "네이버 로그인",
-              const Color(0xFF03C75B),
-              Colors.white,
-              "lib/assets/naver_logo.svg",
-              () => naverSignInService.signInWithNaver(),
             ),
           ],
         ),

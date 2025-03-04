@@ -35,7 +35,7 @@ class SplashScreenState extends State<SplashScreen> {
 
   Future<void> _checkLoginStatus() async {
     // bool isLoggedIn = await _authService.isUserLoggedIn();
-    bool isLoggedIn = true;
+    bool isLoggedIn = false;
     if (isLoggedIn) {
       Modular.to.navigate('/main'); // ✅ 로그인 되어 있으면 MainScreen으로 이동
     } else {
