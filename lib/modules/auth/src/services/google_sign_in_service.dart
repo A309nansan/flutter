@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:nansan_flutter/modules/auth/src/models/user_model.dart';
 import 'package:nansan_flutter/modules/auth/src/services/auth_service.dart';
 
 class GoogleSignInService {
@@ -17,6 +18,12 @@ class GoogleSignInService {
 
       debugPrint(account.toString());
 
+      UserModel userModel = UserModel(
+        socialPlatform: "socialPlatform",
+        email: "email",
+        platformId: "platformId",
+        username: "username",
+      );
       // await AuthService.sendTokenToBackend("google", googleIdToken!);
 
       return account;

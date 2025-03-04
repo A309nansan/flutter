@@ -11,7 +11,7 @@ class MainScreen extends StatelessWidget {
           "Nansan",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: Color(0xFFF3E5AB),
       ),
       body: Center(
         child: Column(

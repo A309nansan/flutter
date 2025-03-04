@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:nansan_flutter/modules/auth/src/models/user_model.dart';
 import 'package:nansan_flutter/modules/auth/src/services/auth_service.dart';
 
 class KakaoSignInService {
@@ -13,6 +14,13 @@ class KakaoSignInService {
 
       User user = await UserApi.instance.me();
       debugPrint(user.toString());
+
+      UserModel userModel = UserModel(
+        socialPlatform: "socialPlatform",
+        email: "email",
+        platformId: "platformId",
+        username: "username",
+      );
       // await AuthService.sendTokenToBackend("kakao", token.accessToken);
 
       return user;
