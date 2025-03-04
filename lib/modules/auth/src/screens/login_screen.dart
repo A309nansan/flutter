@@ -19,26 +19,43 @@ class LoginScreen extends StatelessWidget {
           "Nansan",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: const Color.fromARGB(255, 153, 209, 255),
+
+        backgroundColor: const Color.fromARGB(186, 243, 229, 171),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildLoginButton(
-              "카카오 로그인",
-              const Color(0xFFFEE500),
-              Colors.black87,
-              "lib/assets/kakao_logo.svg",
-              () => kakaoSignInService.signInWithKakao(),
+            Image.asset(
+              'lib/assets/airplane.png',
+              width: 300,
+              height: 300,
+              fit: BoxFit.contain,
             ),
-            const SizedBox(height: 20),
-            _buildLoginButton(
-              "구글 로그인",
-              Colors.white,
-              Colors.black87,
-              "lib/assets/google_logo.svg",
-              () => googleSignInService.signInWithGoogle(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildLoginButton(
+                  const Color(0xFFFEE500),
+                  Colors.black87,
+                  "lib/assets/kakao_logo.svg",
+                  () => kakaoSignInService.signInWithKakao(),
+                ),
+                const SizedBox(width: 20),
+                _buildLoginButton(
+                  Colors.white,
+                  Colors.black87,
+                  "lib/assets/google_logo.svg",
+                  () => googleSignInService.signInWithGoogle(),
+                ),
+                const SizedBox(width: 20),
+                _buildLoginButton(
+                  Colors.white,
+                  Colors.black87,
+                  "lib/assets/google_logo.svg",
+                  () => googleSignInService.signInWithGoogle(),
+                ),
+              ],
             ),
           ],
         ),
@@ -47,36 +64,58 @@ class LoginScreen extends StatelessWidget {
   }
 
   Widget _buildLoginButton(
-    String text,
     Color bgColor,
     Color fgColor,
     String logo,
     VoidCallback onPressed,
   ) {
     return SizedBox(
-      width: 280,
+      width: 65,
+      height: 65,
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: bgColor,
           foregroundColor: fgColor,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: CircleBorder(),
+          padding: EdgeInsets.zero,
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: SvgPicture.asset(logo, height: 30.0, width: 30.0),
-            ),
-            Text(
-              text,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
+        child: SvgPicture.asset(logo, height: 35.0, width: 35.0),
       ),
     );
   }
+
+  // Widget _buildLoginButton(
+  //   String text,
+  //   Color bgColor,
+  //   Color fgColor,
+  //   String logo,
+  //   VoidCallback onPressed,
+  // ) {
+  //   return SizedBox(
+  //     width: 280,
+  //     child: ElevatedButton(
+  //       onPressed: onPressed,
+  //       style: ElevatedButton.styleFrom(
+  //         backgroundColor: bgColor,
+  //         foregroundColor: fgColor,
+  //         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+  //         padding: const EdgeInsets.symmetric(vertical: 14),
+  //       ),
+  //       child: Row(
+  //         mainAxisAlignment: MainAxisAlignment.center,
+  //         children: [
+  //           Padding(
+  //             padding: const EdgeInsets.only(right: 10),
+  //             child: SvgPicture.asset(logo, height: 30.0, width: 30.0),
+  //           ),
+  //           Text(
+  //             text,
+  //             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 }

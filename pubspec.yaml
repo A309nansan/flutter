@@ -73,7 +73,6 @@ flutter:
   assets:
     - lib/assets/kakao_logo.svg
     - lib/assets/google_logo.svg
-    - lib/assets/naver_logo.svg
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

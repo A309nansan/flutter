@@ -32,6 +32,7 @@
 				<string>kakao3f171bc473c9301feebbfd430606c006</string>
                 <string>com.googleusercontent.apps.566335619985-nalm4krqkoks5kgjuv13dpibg55t460b</string>
                 <string>nansan</string>
+				<string>fbAPP-ID</string>
 			</array>
 		</dict>
 	</array>
@@ -61,6 +62,17 @@
     <key>LSApplicationQueriesSchemes</key>
     <array>
         <string>kakaokompassauth</string> <!-- 카카오톡으로 로그인 -->
+    </array>
+	<key>FacebookAppID</key>
+    <string>1712136049687430</string>
+    <key>FacebookClientToken</key>
+    <string>e29e3b5027c36c3476e3c0d8f1400a71</string>
+    <key>FacebookDisplayName</key>
+    <string>ssafy</string>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+      <string>fbapi</string>
+      <string>fb-messenger-share-api</string>
     </array>
 </dict>
 </plist>
