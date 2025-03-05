@@ -9,21 +9,25 @@ class GoogleSignInService {
   Future<GoogleSignInAccount?> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? account = await _googleSignIn.signIn();
+
       if (account == null) {
         return null;
       }
 
-      final GoogleSignInAuthentication auth = await account.authentication;
-      String? googleIdToken = auth.idToken;
+      // final GoogleSignInAuthentication auth = await account.authentication;
+      // String? googleIdToken = auth.idToken;
 
-      debugPrint(account.toString());
+      String email = account.email;
+      String platformId = account.id;
+      String userName = account.displayName!;
 
       UserModel userModel = UserModel(
-        socialPlatform: "socialPlatform",
-        email: "email",
-        platformId: "platformId",
-        username: "username",
+        socialPlatform: "google",
+        email: email,
+        platformId: platformId,
+        username: userName,
       );
+
       // await AuthService.sendTokenToBackend("google", googleIdToken!);
 
       return account;

@@ -29,8 +29,8 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>kakao3f171bc473c9301feebbfd430606c006</string>
-                <string>com.googleusercontent.apps.566335619985-nalm4krqkoks5kgjuv13dpibg55t460b</string>
+				<string>kakao${KAKAO_NATIVE_APP_KEY}</string>
+                <string>${DEFAULT_WEB_CLIENT_ID}</string>
                 <string>nansan</string>
 				<string>fbAPP-ID</string>
 			</array>
@@ -64,11 +64,11 @@
         <string>kakaokompassauth</string> <!-- 카카오톡으로 로그인 -->
     </array>
 	<key>FacebookAppID</key>
-    <string>1712136049687430</string>
+    <string>${FACEBOOK_APP_ID}</string>
     <key>FacebookClientToken</key>
-    <string>e29e3b5027c36c3476e3c0d8f1400a71</string>
+    <string>${FACEBOOK_CLIENT_TOKEN}</string>
     <key>FacebookDisplayName</key>
-    <string>ssafy</string>
+    <string>${APP_NAME}</string>
     <key>LSApplicationQueriesSchemes</key>
     <array>
       <string>fbapi</string>

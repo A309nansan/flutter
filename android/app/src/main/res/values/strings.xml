@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="default_web_client_id">566335619985-2tbod8b1kpbf4d4u8h1b0hm2afo18m2j.apps.googleusercontent.com</string>
-    <string name="app_name">ssafy</string>
-    <string name="facebook_app_id">1712136049687430</string>
-    <string name="fb_login_protocol_scheme">fb1712136049687430</string>
-    <string name="facebook_client_token">e29e3b5027c36c3476e3c0d8f1400a71</string>
+    <string name="default_web_client_id">@string/default_web_client_id</string>
+    <string name="app_name">@string/app_name</string>
+    <string name="facebook_app_id">@string/facebook_app_id</string>
+    <string name="fb_login_protocol_scheme">@string/fb_login_protocol_scheme</string>
+    <string name="facebook_client_token">@string/facebook_client_token</string>
 </resources>

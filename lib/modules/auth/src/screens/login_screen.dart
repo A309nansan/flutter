@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../services/facebook_sign_in_service.dart';
 import '../services/kakao_sign_in_service.dart';
 import '../services/google_sign_in_service.dart';
 
@@ -11,7 +12,7 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final kakaoSignInService = Modular.get<KakaoSignInService>();
     final googleSignInService = Modular.get<GoogleSignInService>();
-    // final naverSignInService = Modular.get<NaverSignInService>();
+    final facebookSignInService = Modular.get<FacebookSignInService>();
 
     return Scaffold(
       appBar: AppBar(
@@ -19,41 +20,41 @@ class LoginScreen extends StatelessWidget {
           "Nansan",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-
-        backgroundColor: const Color.fromARGB(186, 243, 229, 171),
+        toolbarHeight: MediaQuery.of(context).size.width * 0.06,
+        centerTitle: true,
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(
-              'lib/assets/airplane.png',
-              width: 300,
-              height: 300,
-              fit: BoxFit.contain,
-            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildLoginButton(
                   const Color(0xFFFEE500),
                   Colors.black87,
-                  "lib/assets/kakao_logo.svg",
+                  "assets/images/kakao_logo.svg",
+                  0.040,
+                  context,
                   () => kakaoSignInService.signInWithKakao(),
                 ),
-                const SizedBox(width: 20),
+                const SizedBox(width: 25),
                 _buildLoginButton(
                   Colors.white,
                   Colors.black87,
-                  "lib/assets/google_logo.svg",
+                  "assets/images/google_logo.svg",
+                  0.040,
+                  context,
                   () => googleSignInService.signInWithGoogle(),
                 ),
-                const SizedBox(width: 20),
+                const SizedBox(width: 25),
                 _buildLoginButton(
                   Colors.white,
                   Colors.black87,
-                  "lib/assets/google_logo.svg",
-                  () => googleSignInService.signInWithGoogle(),
+                  "assets/images/facebook_logo.svg",
+                  1,
+                  context,
+                  () => facebookSignInService.signInWithFacebook(),
                 ),
               ],
             ),
@@ -67,11 +68,16 @@ class LoginScreen extends StatelessWidget {
     Color bgColor,
     Color fgColor,
     String logo,
+    double logoSize,
+    BuildContext context,
     VoidCallback onPressed,
   ) {
+    double buttonSize = MediaQuery.of(context).size.width * 0.085;
+    double iconSize = MediaQuery.of(context).size.width * logoSize;
+
     return SizedBox(
-      width: 65,
-      height: 65,
+      width: buttonSize,
+      height: buttonSize,
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
@@ -80,42 +86,14 @@ class LoginScreen extends StatelessWidget {
           shape: CircleBorder(),
           padding: EdgeInsets.zero,
         ),
-        child: SvgPicture.asset(logo, height: 35.0, width: 35.0),
+        child: SvgPicture.asset(
+          logo,
+          height: iconSize,
+          width: iconSize,
+          fit: BoxFit.cover,
+          allowDrawingOutsideViewBox: true,
+        ),
       ),
     );
   }
-
-  // Widget _buildLoginButton(
-  //   String text,
-  //   Color bgColor,
-  //   Color fgColor,
-  //   String logo,
-  //   VoidCallback onPressed,
-  // ) {
-  //   return SizedBox(
-  //     width: 280,
-  //     child: ElevatedButton(
-  //       onPressed: onPressed,
-  //       style: ElevatedButton.styleFrom(
-  //         backgroundColor: bgColor,
-  //         foregroundColor: fgColor,
-  //         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-  //         padding: const EdgeInsets.symmetric(vertical: 14),
-  //       ),
-  //       child: Row(
-  //         mainAxisAlignment: MainAxisAlignment.center,
-  //         children: [
-  //           Padding(
-  //             padding: const EdgeInsets.only(right: 10),
-  //             child: SvgPicture.asset(logo, height: 30.0, width: 30.0),
-  //           ),
-  //           Text(
-  //             text,
-  //             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
 }

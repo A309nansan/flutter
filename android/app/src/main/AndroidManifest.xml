@@ -38,7 +38,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <!-- 카카오 로그인 Redirect URI -->
-                <data android:scheme="kakao3f171bc473c9301feebbfd430606c006" android:host="oauth"/>
+                <data android:scheme="kakao${KAKAO_NATIVE_APP_KEY}" android:host="oauth"/>
+                <!-- <data android:scheme="kakao3f171bc473c9301feebbfd430606c006" android:host="oauth"/> -->
             </intent-filter>
         </activity>
 

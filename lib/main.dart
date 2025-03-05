@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:nansan_flutter/app_module.dart';
 
-void main() {
+void main() async {
+  await dotenv.load();
+  String? kakaoNativeAppKey = dotenv.env['KAKAO_NATIVE_APP_KEY'];
+  String? kakaoJavaScriptAppKey = dotenv.env['KAKAO_JAVASCRIPT_APP_KEY'];
   KakaoSdk.init(
-    nativeAppKey: "3f171bc473c9301feebbfd430606c006",
-    javaScriptAppKey: "b43e64bdc6842654a7203c6cdf6c77c2",
+    nativeAppKey: kakaoNativeAppKey,
+    javaScriptAppKey: kakaoJavaScriptAppKey,
   );
 
   runApp(ModularApp(module: AppModule(), child: const MyApp()));
@@ -20,7 +24,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'OAuth2 Login',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: Colors.white,
+        appBarTheme: AppBarTheme(backgroundColor: Color(0xFFF3E5AB)),
+      ),
       routeInformationParser: Modular.routeInformationParser,
       routerDelegate: Modular.routerDelegate,
     );

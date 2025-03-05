@@ -13,14 +13,18 @@ class KakaoSignInService {
               : await UserApi.instance.loginWithKakaoAccount();
 
       User user = await UserApi.instance.me();
-      debugPrint(user.toString());
+
+      String email = user.kakaoAccount!.email!;
+      String platformId = user.id.toString();
+      String userName = user.kakaoAccount!.profile!.nickname!;
 
       UserModel userModel = UserModel(
-        socialPlatform: "socialPlatform",
-        email: "email",
-        platformId: "platformId",
-        username: "username",
+        socialPlatform: "kakao",
+        email: email,
+        platformId: platformId,
+        username: userName,
       );
+
       // await AuthService.sendTokenToBackend("kakao", token.accessToken);
 
       return user;

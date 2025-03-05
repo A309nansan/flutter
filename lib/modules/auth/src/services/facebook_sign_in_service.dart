@@ -1,0 +1,41 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:nansan_flutter/modules/auth/src/models/user_model.dart';
+
+class FacebookSignInService {
+  static final Dio _dio = Dio();
+
+  Future<void> signInWithFacebook() async {
+    try {
+      final LoginResult loginResult = await FacebookAuth.instance.login();
+
+      if (loginResult.status == LoginStatus.success) {
+        final response = await _dio.get(
+          'https://graph.facebook.com/v2.12/me',
+          queryParameters: {
+            'fields': 'email,name',
+            'access_token': loginResult.accessToken!.tokenString,
+          },
+        );
+
+        final profileInfo = json.decode(response.data);
+
+        String email = profileInfo['email'];
+        String platformId = profileInfo['id'];
+        String userName = profileInfo['name'];
+
+        UserModel userModel = UserModel(
+          socialPlatform: "facebook",
+          email: email,
+          platformId: platformId,
+          username: userName,
+        );
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+}
