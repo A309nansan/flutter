@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserModel {
 
- String get socialPlatform; String get email; String get platformId; String get username;
+ String get socialPlatform; String get email; String get platformId; String get nickName;
 /// Create a copy of UserModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +29,16 @@ $UserModelCopyWith<UserModel> get copyWith => _$UserModelCopyWithImpl<UserModel>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserModel&&(identical(other.socialPlatform, socialPlatform) || other.socialPlatform == socialPlatform)&&(identical(other.email, email) || other.email == email)&&(identical(other.platformId, platformId) || other.platformId == platformId)&&(identical(other.username, username) || other.username == username));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserModel&&(identical(other.socialPlatform, socialPlatform) || other.socialPlatform == socialPlatform)&&(identical(other.email, email) || other.email == email)&&(identical(other.platformId, platformId) || other.platformId == platformId)&&(identical(other.nickName, nickName) || other.nickName == nickName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,socialPlatform,email,platformId,username);
+int get hashCode => Object.hash(runtimeType,socialPlatform,email,platformId,nickName);
 
 @override
 String toString() {
-  return 'UserModel(socialPlatform: $socialPlatform, email: $email, platformId: $platformId, username: $username)';
+  return 'UserModel(socialPlatform: $socialPlatform, email: $email, platformId: $platformId, nickName: $nickName)';
 }
 
 
@@ -49,8 +49,9 @@ abstract mixin class $UserModelCopyWith<$Res>  {
   factory $UserModelCopyWith(UserModel value, $Res Function(UserModel) _then) = _$UserModelCopyWithImpl;
 @useResult
 $Res call({
- String socialPlatform, String email, String platformId, String username
+ String socialPlatform, String email, String platformId, String nickName
 });
+
 
 
 
@@ -65,12 +66,12 @@ class _$UserModelCopyWithImpl<$Res>
 
 /// Create a copy of UserModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? socialPlatform = null,Object? email = null,Object? platformId = null,Object? username = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? socialPlatform = null,Object? email = null,Object? platformId = null,Object? nickName = null,}) {
   return _then(_self.copyWith(
 socialPlatform: null == socialPlatform ? _self.socialPlatform : socialPlatform // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,platformId: null == platformId ? _self.platformId : platformId // ignore: cast_nullable_to_non_nullable
-as String,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
+as String,nickName: null == nickName ? _self.nickName : nickName // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -82,13 +83,13 @@ as String,
 @JsonSerializable()
 
 class _UserModel implements UserModel {
-  const _UserModel({required this.socialPlatform, required this.email, required this.platformId, required this.username});
+  const _UserModel({required this.socialPlatform, required this.email, required this.platformId, required this.nickName});
   factory _UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
 
 @override final  String socialPlatform;
 @override final  String email;
 @override final  String platformId;
-@override final  String username;
+@override final  String nickName;
 
 /// Create a copy of UserModel
 /// with the given fields replaced by the non-null parameter values.
@@ -103,16 +104,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserModel&&(identical(other.socialPlatform, socialPlatform) || other.socialPlatform == socialPlatform)&&(identical(other.email, email) || other.email == email)&&(identical(other.platformId, platformId) || other.platformId == platformId)&&(identical(other.username, username) || other.username == username));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserModel&&(identical(other.socialPlatform, socialPlatform) || other.socialPlatform == socialPlatform)&&(identical(other.email, email) || other.email == email)&&(identical(other.platformId, platformId) || other.platformId == platformId)&&(identical(other.nickName, nickName) || other.nickName == nickName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,socialPlatform,email,platformId,username);
+int get hashCode => Object.hash(runtimeType,socialPlatform,email,platformId,nickName);
 
 @override
 String toString() {
-  return 'UserModel(socialPlatform: $socialPlatform, email: $email, platformId: $platformId, username: $username)';
+  return 'UserModel(socialPlatform: $socialPlatform, email: $email, platformId: $platformId, nickName: $nickName)';
 }
 
 
@@ -123,8 +124,9 @@ abstract mixin class _$UserModelCopyWith<$Res> implements $UserModelCopyWith<$Re
   factory _$UserModelCopyWith(_UserModel value, $Res Function(_UserModel) _then) = __$UserModelCopyWithImpl;
 @override @useResult
 $Res call({
- String socialPlatform, String email, String platformId, String username
+ String socialPlatform, String email, String platformId, String nickName
 });
+
 
 
 
@@ -139,12 +141,12 @@ class __$UserModelCopyWithImpl<$Res>
 
 /// Create a copy of UserModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? socialPlatform = null,Object? email = null,Object? platformId = null,Object? username = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? socialPlatform = null,Object? email = null,Object? platformId = null,Object? nickName = null,}) {
   return _then(_UserModel(
 socialPlatform: null == socialPlatform ? _self.socialPlatform : socialPlatform // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,platformId: null == platformId ? _self.platformId : platformId // ignore: cast_nullable_to_non_nullable
-as String,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
+as String,nickName: null == nickName ? _self.nickName : nickName // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

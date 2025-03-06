@@ -3,7 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class SecureStorageService {
   static const _storage = FlutterSecureStorage();
 
-  // JWT 저장
+  // Access Token 저장
   static Future<void> saveJwtToken(String token) async {
     await _storage.write(key: "access_token", value: token);
   }
@@ -13,7 +13,7 @@ class SecureStorageService {
     await _storage.write(key: "refresh_token", value: token);
   }
 
-  // JWT 가져오기
+  // Access Token 가져오기
   static Future<String?> getJwtToken() async {
     return await _storage.read(key: "access_token");
   }

@@ -21,11 +21,11 @@ class KakaoSignInService {
       UserModel userModel = UserModel(
         socialPlatform: "kakao",
         email: email,
-        platformId: platformId,
-        username: userName,
+        platformId: "kakao-$platformId",
+        nickName: userName,
       );
 
-      // await AuthService.sendTokenToBackend("kakao", token.accessToken);
+      await AuthService.createOrGetUser(userModel);
 
       return user;
     } catch (e) {

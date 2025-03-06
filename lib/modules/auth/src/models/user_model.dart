@@ -9,7 +9,7 @@ abstract class UserModel with _$UserModel {
     required String socialPlatform,
     required String email,
     required String platformId,
-    required String username,
+    required String nickName,
   }) = _UserModel;
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>

@@ -1,9 +1,9 @@
 import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:nansan_flutter/modules/auth/src/models/user_model.dart';
+import 'package:nansan_flutter/modules/auth/src/services/auth_service.dart';
 
 class FacebookSignInService {
   static final Dio _dio = Dio();
@@ -30,9 +30,11 @@ class FacebookSignInService {
         UserModel userModel = UserModel(
           socialPlatform: "facebook",
           email: email,
-          platformId: platformId,
-          username: userName,
+          platformId: "facebook-$platformId",
+          nickName: userName,
         );
+
+        await AuthService.createOrGetUser(userModel);
       }
     } catch (e) {
       debugPrint(e.toString());

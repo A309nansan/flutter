@@ -24,11 +24,11 @@ class GoogleSignInService {
       UserModel userModel = UserModel(
         socialPlatform: "google",
         email: email,
-        platformId: platformId,
-        username: userName,
+        platformId: "google-$platformId",
+        nickName: userName,
       );
 
-      // await AuthService.sendTokenToBackend("google", googleIdToken!);
+      await AuthService.createOrGetUser(userModel);
 
       return account;
     } catch (e) {
