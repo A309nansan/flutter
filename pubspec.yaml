@@ -46,6 +46,9 @@ dependencies:
   freezed_annotation: ^3.0.0
   flutter_dotenv: ^5.2.1
   flutter_facebook_auth: ^7.1.1
+  flutter_pdfview: ^1.4.0
+  path_provider: ^2.1.5
+  flutter_colorpicker: ^1.1.0
 
 dev_dependencies:
   flutter_test:
