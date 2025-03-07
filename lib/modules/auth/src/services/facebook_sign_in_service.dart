@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:nansan_flutter/modules/auth/src/models/user_model.dart';
 import 'package:nansan_flutter/modules/auth/src/services/auth_service.dart';
 
 class FacebookSignInService {
   static final Dio _dio = Dio();
+  final authService = Modular.get<AuthService>();
 
   Future<void> signInWithFacebook() async {
     try {
@@ -34,7 +36,7 @@ class FacebookSignInService {
           nickName: userName,
         );
 
-        await AuthService.createOrGetUser(userModel);
+        await authService.createOrGetUser(userModel);
       }
     } catch (e) {
       debugPrint(e.toString());

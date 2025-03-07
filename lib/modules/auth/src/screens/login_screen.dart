@@ -16,69 +16,19 @@ class LoginScreen extends StatelessWidget {
     final facebookSignInService = Modular.get<FacebookSignInService>();
 
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text(
-      //     "Nansan",
-      //     style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-      //   ),
-      //   toolbarHeight: MediaQuery.of(context).size.width * 0.06,
-      //   centerTitle: true,
-      // ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Column(),
             Container(
-              width: 550,
+              width: 525,
               height: 300,
               margin: EdgeInsets.only(top: 320, bottom: 20),
               child: Image.asset("assets/images/logo1.png"),
             ),
-            // const Text(
-            //   '수학의 즐거움을 키우는 \n작은 씨앗',
-            //   textAlign: TextAlign.center,
-            //   style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
-            // ),
             Spacer(),
-            Container(
-              margin: EdgeInsets.all(50),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withAlpha(
-                      (0.2 * 255).toInt(),
-                    ), // 그림자 색상
-                    blurRadius: 5,
-                    spreadRadius: 1,
-                    offset: Offset(4, 4),
-                  ),
-                ],
-              ),
-              child: SpeechBalloon(
-                nipLocation: NipLocation.bottom,
-                nipHeight: 25,
-                borderRadius: 50,
-                width: 370,
-                height: 78,
-                borderColor: const Color.fromARGB(111, 131, 131, 131),
-                color: Colors.white,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      '3초만에 시작하기 🚀',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            BouncingSpeechBalloon(),
             Container(
               margin: EdgeInsets.only(bottom: 300),
               child: Row(
@@ -92,7 +42,7 @@ class LoginScreen extends StatelessWidget {
                     context,
                     () => kakaoSignInService.signInWithKakao(),
                   ),
-                  const SizedBox(width: 35),
+                  const SizedBox(width: 40),
                   _buildLoginButton(
                     Colors.white,
                     Colors.black87,
@@ -101,7 +51,7 @@ class LoginScreen extends StatelessWidget {
                     context,
                     () => googleSignInService.signInWithGoogle(),
                   ),
-                  const SizedBox(width: 35),
+                  const SizedBox(width: 40),
                   _buildLoginButton(
                     Colors.white,
                     Colors.black87,
@@ -140,6 +90,8 @@ class LoginScreen extends StatelessWidget {
           foregroundColor: fgColor,
           shape: CircleBorder(),
           padding: EdgeInsets.zero,
+          minimumSize: Size.zero,
+          elevation: 3,
         ),
         child: SvgPicture.asset(
           logo,
@@ -147,6 +99,85 @@ class LoginScreen extends StatelessWidget {
           width: iconSize,
           fit: BoxFit.cover,
           allowDrawingOutsideViewBox: true,
+        ),
+      ),
+    );
+  }
+}
+
+class BouncingSpeechBalloon extends StatefulWidget {
+  const BouncingSpeechBalloon({super.key});
+
+  @override
+  BouncingSpeechBalloonState createState() => BouncingSpeechBalloonState();
+}
+
+class BouncingSpeechBalloonState extends State<BouncingSpeechBalloon>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: Duration(seconds: 2),
+      vsync: this,
+    )..repeat(reverse: true);
+
+    _animation = Tween<double>(
+      begin: 0,
+      end: 10,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, _animation.value),
+          child: child,
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.all(50),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(50),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha((0.2 * 255).toInt()),
+              blurRadius: 5,
+              spreadRadius: 1,
+              offset: Offset(4, 4),
+            ),
+          ],
+        ),
+        child: SpeechBalloon(
+          nipLocation: NipLocation.bottom,
+          nipHeight: 25,
+          borderRadius: 50,
+          width: 370,
+          height: 78,
+          borderColor: const Color.fromARGB(111, 131, 131, 131),
+          color: Colors.white,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                '3초만에 시작하기 🚀',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
         ),
       ),
     );

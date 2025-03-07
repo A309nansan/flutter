@@ -1,10 +1,11 @@
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter/material.dart';
 import 'package:nansan_flutter/modules/auth/src/auth_module.dart';
+import 'package:nansan_flutter/modules/auth/src/models/user_model.dart';
 import 'package:nansan_flutter/modules/auth/src/screens/login_screen.dart';
 import 'package:nansan_flutter/modules/main/src/screens/draw_screen.dart';
 import 'package:nansan_flutter/modules/main/src/screens/main_screen.dart';
-import 'package:nansan_flutter/modules/auth/src/services/auth_service.dart';
+import 'package:nansan_flutter/shared/services/secure_storage_service.dart';
 
 class AppModule extends Module {
   @override
@@ -27,8 +28,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class SplashScreenState extends State<SplashScreen> {
-  final AuthService _authService = AuthService();
-
   @override
   void initState() {
     super.initState();
@@ -36,12 +35,16 @@ class SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkLoginStatus() async {
-    // bool isLoggedIn = await _authService.isUserLoggedIn();
-    bool isLoggedIn = true;
-    if (isLoggedIn) {
-      Modular.to.navigate('/main'); // ✅ 로그인 되어 있으면 MainScreen으로 이동
+    // Access Token 가져오기
+    String? accessToken = await SecureStorageService.getAccessToken();
+
+    // User 정보 가져오기
+    UserModel? user = await SecureStorageService.getUserModel();
+
+    if (accessToken != null && accessToken.isNotEmpty && user != null) {
+      Modular.to.navigate('/main');
     } else {
-      Modular.to.navigate('/login'); // ❌ 로그인 안 되어 있으면 LoginScreen으로 이동
+      Modular.to.navigate('/login');
     }
   }
 

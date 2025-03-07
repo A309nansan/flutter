@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: Colors.white,
         appBarTheme: AppBarTheme(
-          backgroundColor: Color.fromARGB(255, 241, 171, 243),
+          backgroundColor: Color.fromARGB(255, 249, 241, 196),
         ),
       ),
       routeInformationParser: Modular.routeInformationParser,

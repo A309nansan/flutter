@@ -1,10 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:nansan_flutter/modules/auth/src/models/user_model.dart';
 
 class SecureStorageService {
   static const _storage = FlutterSecureStorage();
 
   // Access Token 저장
-  static Future<void> saveJwtToken(String token) async {
+  static Future<void> saveAccessToken(String token) async {
     await _storage.write(key: "access_token", value: token);
   }
 
@@ -14,7 +17,7 @@ class SecureStorageService {
   }
 
   // Access Token 가져오기
-  static Future<String?> getJwtToken() async {
+  static Future<String?> getAccessToken() async {
     return await _storage.read(key: "access_token");
   }
 
@@ -23,8 +26,21 @@ class SecureStorageService {
     return await _storage.read(key: "refresh_token");
   }
 
-  // 토큰 삭제
-  static Future<void> clearTokens() async {
+  // UserModel 저장
+  static Future<void> saveUserModel(UserModel userModel) async {
+    String userJson = jsonEncode(userModel.toJson());
+    await _storage.write(key: "user_info", value: userJson);
+  }
+
+  // UserModel 가져오기
+  static Future<UserModel?> getUserModel() async {
+    String? userJson = await _storage.read(key: "user_info");
+    if (userJson == null) return null;
+    return UserModel.fromJson(jsonDecode(userJson));
+  }
+
+  // 토큰 삭제(로그아웃)
+  static Future<void> clearStorage() async {
     await _storage.deleteAll();
   }
 }

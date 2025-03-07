@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
+import 'package:nansan_flutter/modules/auth/src/services/auth_service.dart';
+import 'package:nansan_flutter/shared/services/secure_storage_service.dart';
+import 'package:nansan_flutter/shared/widgets/toase_message.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final authService = Modular.get<AuthService>();
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
-        toolbarHeight: MediaQuery.of(context).size.width * 0.13,
+        // toolbarHeight: MediaQuery.of(context).size.width * 0.13,
         leading: IconButton(
           onPressed: () {
-            debugPrint("메뉴 클릭했습니다.");
+            ToastMessage.show("메뉴 클릭!");
           },
-          icon: Icon(Icons.menu, size: 28, color: Colors.white),
+          icon: Icon(Icons.menu, size: 28),
           // margin: EdgeInsets.only(left: 10),
         ),
         actions: [
@@ -21,7 +27,7 @@ class MainScreen extends StatelessWidget {
             padding: EdgeInsets.only(right: 15),
             child: InkWell(
               onTap: () {
-                debugPrint("프로필 클릭");
+                ToastMessage.show("프로필필 클릭!");
               },
               borderRadius: BorderRadius.circular(50),
               child: Container(
@@ -49,7 +55,15 @@ class MainScreen extends StatelessWidget {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [const Text("샘플")],
+          children: [
+            const Text("샘플"),
+            TextButton(
+              onPressed: () {
+                authService.logout();
+              },
+              child: Text("로그아웃"),
+            ),
+          ],
         ),
       ),
     );

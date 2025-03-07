@@ -1,10 +1,12 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:nansan_flutter/modules/auth/src/models/user_model.dart';
 import 'package:nansan_flutter/modules/auth/src/services/auth_service.dart';
 
 class GoogleSignInService {
   static final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final authService = Modular.get<AuthService>();
 
   Future<GoogleSignInAccount?> signInWithGoogle() async {
     try {
@@ -28,7 +30,7 @@ class GoogleSignInService {
         nickName: userName,
       );
 
-      await AuthService.createOrGetUser(userModel);
+      await authService.createOrGetUser(userModel);
 
       return account;
     } catch (e) {
