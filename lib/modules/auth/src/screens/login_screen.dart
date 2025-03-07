@@ -25,7 +25,7 @@ class LoginScreen extends StatelessWidget {
               width: 525,
               height: 300,
               margin: EdgeInsets.only(top: 320, bottom: 20),
-              child: Image.asset("assets/images/logo1.png"),
+              child: Image.asset("assets/images/logo2.png"),
             ),
             Spacer(),
             BouncingSpeechBalloon(),
