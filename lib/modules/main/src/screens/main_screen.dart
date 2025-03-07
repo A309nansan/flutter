@@ -14,14 +14,13 @@ class MainScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
-        // toolbarHeight: MediaQuery.of(context).size.width * 0.13,
-        leading: IconButton(
-          onPressed: () {
-            ToastMessage.show("메뉴 클릭!");
-          },
-          icon: Icon(Icons.menu, size: 28),
-          // margin: EdgeInsets.only(left: 10),
-        ),
+        // leading: IconButton(
+        //   onPressed: () {
+        //     ToastMessage.show("메뉴 클릭!");
+        //   },
+        //   icon: Icon(Icons.menu, size: 28),
+        //   // margin: EdgeInsets.only(left: 10),
+        // ),
         actions: [
           Padding(
             padding: EdgeInsets.only(right: 15),
