@@ -20,12 +20,22 @@ class LoginScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Column(),
             Container(
               width: 525,
               height: 300,
               margin: EdgeInsets.only(top: 320, bottom: 20),
               child: Image.asset("assets/images/logo2.png"),
+            ),
+            SizedBox(
+              child: const Text(
+                "수학을 키우는 작은 씨앗, \n한 걸음씩 수학의 숲으로!",
+                style: TextStyle(
+                  fontFamily: "SingleDay",
+                  fontSize: 38,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF9C6A17),
+                ),
+              ),
             ),
             Spacer(),
             BouncingSpeechBalloon(),
