@@ -1,0 +1,14 @@
+{
+  "problem": {
+    "first": 980,
+    "second": 580,
+    "operator": "MIN"
+  },
+  "answer": {
+    "result": {
+      "one": 0,
+      "two": 0,
+      "three": 4
+    }
+  }
+}

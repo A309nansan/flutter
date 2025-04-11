@@ -1,0 +1,30 @@
+{
+  "problem": {
+    "first": 15,
+    "second": 57,
+    "operator": "MULT"
+  },
+  "answer": {
+    "carry1": {
+      "two": 3,
+      "three": 1
+    },
+    "carry2": {
+      "two": 2
+    },
+    "calculate1": {
+      "one":5,
+      "two": 0,
+      "three": 1
+    },
+    "calculate2": {
+      "two": 5,
+      "three": 7
+    },
+    "result": {
+      "one": 5,
+      "two": 5,
+      "three": 8
+    }
+  }
+}

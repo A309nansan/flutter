@@ -1,0 +1,135 @@
+[
+  {
+    "index": 1,
+    "problemIndex": 1,
+    "num1": null,
+    "num2": null,
+    "operand": null,
+    "blankColumn": null,
+    "blankRow": null,
+    "ans": null,
+    "ans_detail": [],
+    "msg": "다음 수식들을 계산하세요."
+  },
+
+  {
+    "index": 2,
+    "problemIndex": 1,
+    "num1": "15",
+    "num2": "20",
+    "operand": "add",
+    "blankColumn": 1,
+    "blankRow": 3,
+    "ans": "35",
+    "ans_detail": [[0,0,0],[0,3,5]],
+    "msg": ""
+  },
+  {
+    "index": 3,
+    "problemIndex": 2,
+    "num1": "32",
+    "num2": "32",
+    "operand": "mult",
+    "blankColumn": 3,
+    "blankRow": 4,
+    "ans": "1024",
+    "ans_detail": [[0,1,0,0],[0,0,6,4],[0,9,6,0],[1,0,2,4]],
+    "msg": ""
+  },
+  {
+    "index": 4,
+    "problemIndex": 3,
+    "num1": "69",
+    "num2": "78",
+    "operand": "mult",
+    "blankColumn": 3,
+    "blankRow": 4,
+    "ans": "5382",
+    "ans_detail": [[1,0,0,0],[0,5,5,2],[4,8,3,0],[5,3,8,2]],
+    "msg": ""
+  },
+  {
+    "index": 5,
+    "problemIndex": 4,
+    "num1": "144",
+    "num2": "12",
+    "operand": "div",
+    "blankColumn": 3,
+    "blankRow": 4,
+    "ans": "12",
+    "ans_detail": [],
+    "msg": ""
+  },
+  {
+    "index": 6,
+    "problemIndex": 5,
+    "num1": "10",
+    "num2": "3",
+    "operand": "sub",
+    "blankColumn": 1,
+    "blankRow": 2,
+    "ans": "7",
+    "ans_detail": [[0,1,0],[0,0,7]],
+    "msg": ""
+  },
+  {
+    "index": 7,
+    "problemIndex": 6,
+    "num1": "9",
+    "num2": "2",
+    "operand": "mult",
+    "blankColumn": 1,
+    "blankRow": 2,
+    "ans": "18",
+    "ans_detail": [[1,8]],
+    "msg": ""
+  },
+  {
+    "index": 8,
+    "problemIndex": 7,
+    "num1": "25",
+    "num2": "5",
+    "operand": "mult",
+    "blankColumn": 1,
+    "blankRow": 3,
+    "ans": "5",
+    "ans_detail": [[0,2,0],[1,2,5]],
+    "msg": ""
+  },
+  {
+    "index": 9,
+    "problemIndex": 8,
+    "num1": "9",
+    "num2": "7",
+    "operand": "sub",
+    "blankColumn": 1,
+    "blankRow": 1,
+    "ans": "2",
+    "ans_detail": [[2]],
+    "msg": ""
+  },
+  {
+    "index": 10,
+    "problemIndex": 9,
+    "num1": "6",
+    "num2": "8",
+    "operand": "add",
+    "blankColumn": 1,
+    "blankRow": 2,
+    "ans": "14",
+    "ans_detail": [[1,4]],
+    "msg": ""
+  },
+  {
+    "index": 11,
+    "problemIndex": 10,
+    "num1": "81",
+    "num2": "9",
+    "operand": "mult",
+    "blankColumn": 1,
+    "blankRow": 3,
+    "ans": "9",
+    "ans_detail": [[7,0,0],[7,2,9]],
+    "msg": ""
+  }
+]

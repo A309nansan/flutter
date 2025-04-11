@@ -1,0 +1,34 @@
+[
+  {
+    "id": 501,
+    "parent_id": 5,
+    "level": 3,
+    "name": "구구단을 이용한 나눗셈의 몫 구하기",
+    "image_url": "assets/images/category_1.png",
+    "description": "구구단을 활용하여 나눗셈의 몫을 구하는 방법을 배웁니다.\n곱셈과 나눗셈의 관계를 이해하고 나눗셈 감각을 기릅니다."
+  },
+  {
+    "id": 502,
+    "parent_id": 5,
+    "level": 3,
+    "name": "두자리 수 한자리 수 곱셈",
+    "image_url": "assets/images/category_2.png",
+    "description": "두자리 수와 한자리 수의 곱셈을 단계별로 연습합니다.\n자릿수의 곱셈 원리를 이해하고 계산 정확도를 높입니다."
+  },
+  {
+    "id": 503,
+    "parent_id": 5,
+    "level": 3,
+    "name": "네자리 수 덧셈",
+    "image_url": "assets/images/category_3.png",
+    "description": "네자리 수를 더하는 복잡한 덧셈 문제를 연습합니다.\n큰 수의 자릿수 구조를 이해하고 장기적인 연산 실력을 기릅니다."
+  },
+  {
+    "id": 504,
+    "parent_id": 5,
+    "level": 3,
+    "name": "네자리수 뺄셈",
+    "image_url": "assets/images/category_4.png",
+    "description": "네자리 수를 빼는 문제를 풀며 자리 이동과 받아내림 개념을 복습합니다.\n정확한 계산 능력을 바탕으로 실생활 문제 해결력을 키웁니다."
+  }
+]

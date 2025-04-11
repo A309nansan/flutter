@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "parent_id": 2,
+    "level": 2,
+    "name": "덧셈과 뺄셈 시작하기",
+    "image_url": "assets/images/category_1.png",
+    "description": "먼저 1부터 9 사이 숫자의 덧셈과 뺄셈에 대해 배웁니다.\n기초 연산의 개념을 자연스럽게 익히고, 수의 구조에 대한 감각을 기르는 데 중점을 둡니다."
+  },
+  {
+    "id": 2,
+    "parent_id": 2,
+    "level": 2,
+    "name": "두자리 수의 덧셈과 뺄셈",
+    "image_url": "assets/images/category_2.png",
+    "description": "10보다 큰 두자리 수를 더하고 빼는 연습을 통해 수의 크기를 비교하고 계산하는 능력을 키웁니다.\n수 감각과 자릿수 개념을 강화하며, 복잡한 계산으로 나아가기 위한 기초를 다집니다."
+  },
+  {
+    "id": 3,
+    "parent_id": 2,
+    "level": 2,
+    "name": "받아올림 있는 덧셈과 뺄셈",
+    "image_url": "assets/images/category_3.png",
+    "description": "한 자리에서 계산이 넘어가는 '받아올림'과 '받아내림' 개념을 배우고, 이를 통해 더 정확하고 빠른 계산 능력을 기릅니다.\n연산 과정에 대한 이해를 바탕으로 문제 해결 능력과 수학적 사고력을 함께 키웁니다."
+  },
+  {
+    "id": 4,
+    "parent_id": 2,
+    "level": 2,
+    "name": "세자리 수의 덧셈과 뺄셈",
+    "image_url": "assets/images/category_4.png",
+    "description": "100보다 큰 수를 더하고 빼는 문제를 통해 자리별 계산 방법을 익히고, 세 자리 수에 대한 감각을 키웁니다.\n단계적인 계산 전략을 익혀 더 큰 수의 연산에도 자신감을 가질 수 있도록 도와줍니다."
+  },
+  {
+    "id": 5,
+    "parent_id": 2,
+    "level": 2,
+    "name": "곱셈과 나눗셈 시작하기, 네자리 수 덧셈 뺄셈",
+    "image_url": "assets/images/category_5.png",
+    "description": "간단한 곱셈과 나눗셈의 개념을 배우고, 1000이 넘는 네자리 수의 덧셈과 뺄셈 문제를 풀며 계산 실력을 다집니다.\n기본 사칙연산의 통합적 이해를 통해 다양한 상황에서의 수학적 적용 능력을 기릅니다."
+  },
+  {
+    "id": 6,
+    "parent_id": 2,
+    "level": 2,
+    "name": "곱셈과 나눗셈 익숙해지기",
+    "image_url": "assets/images/category_6.png",
+    "description": "곱셈구구표를 활용한 곱셈과 나눗셈 문제를 반복 학습하며 계산 능력을 강화하고, 실생활에 적용할 수 있는 수학 감각을 키웁니다."
+  }
+]

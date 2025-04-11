@@ -1,0 +1,34 @@
+[
+  {
+    "id": 201,
+    "parent_id": 2,
+    "level": 3,
+    "name": "받아올림 없는 두자리 + 한자리",
+    "image_url": "assets/images/category_1.png",
+    "description": "받아올림이 없는 두자리 수와 한자리 수의 덧셈을 연습합니다.\n자릿수를 구분하여 덧셈 구조를 정확히 이해하고 계산의 자신감을 키웁니다."
+  },
+  {
+    "id": 202,
+    "parent_id": 2,
+    "level": 3,
+    "name": "받아내림 없는 두자리 - 한자리",
+    "image_url": "assets/images/category_2.png",
+    "description": "받아내림이 없는 두자리 수에서 한자리 수를 빼는 뺄셈 문제를 다룹니다.\n뺄셈의 기본 원리를 이해하고 정확한 자리 계산을 학습합니다."
+  },
+  {
+    "id": 203,
+    "parent_id": 2,
+    "level": 3,
+    "name": "받아올림 없는 두자리 + 두자리",
+    "image_url": "assets/images/category_3.png",
+    "description": "두자리 수끼리의 받아올림 없는 덧셈을 연습합니다.\n자릿수의 규칙성과 연산 과정의 순서를 익히는 데 중점을 둡니다."
+  },
+  {
+    "id": 204,
+    "parent_id": 2,
+    "level": 3,
+    "name": "받아내림 없는 두자리 - 두자리",
+    "image_url": "assets/images/category_4.png",
+    "description": "받아내림 없이 두자리 수끼리의 뺄셈을 수행합니다.\n뺄셈의 기본 틀을 익히고 계산의 정확도를 향상시킵니다."
+  }
+  ]

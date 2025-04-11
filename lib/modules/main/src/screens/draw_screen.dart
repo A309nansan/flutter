@@ -37,7 +37,7 @@ class DrawScreenState extends State<DrawScreen> {
     _copyPdfAndLoad();
   }
 
-  /// assets 폴더의 PDF 파일을 내부 저장소로 복사 후 로드
+  // assets 폴더의 PDF 파일을 내부 저장소로 복사 후 로드
   Future<void> _copyPdfAndLoad() async {
     try {
       Directory dir = await getApplicationDocumentsDirectory();
@@ -54,7 +54,7 @@ class DrawScreenState extends State<DrawScreen> {
         localFilePath = path;
       });
     } catch (e) {
-      print("파일 복사 오류: $e");
+      debugPrint('error');
     }
   }
 

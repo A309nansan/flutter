@@ -1,26 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:nansan_flutter/app_module.dart';
-import 'package:nansan_flutter/shared/widgets/toase_message.dart';
+import 'app_initializer.dart';
 
 void main() async {
-  await dotenv.load();
-  String? kakaoNativeAppKey = dotenv.env['KAKAO_NATIVE_APP_KEY'];
-  String? kakaoJavaScriptAppKey = dotenv.env['KAKAO_JAVASCRIPT_APP_KEY'];
-  KakaoSdk.init(
-    nativeAppKey: kakaoNativeAppKey,
-    javaScriptAppKey: kakaoJavaScriptAppKey,
-  );
-
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
-
-  runApp(ModularApp(module: AppModule(), child: MyApp()));
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(ModularApp(module: AppModule(), child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -33,9 +18,12 @@ class MyApp extends StatelessWidget {
       title: 'Nansan',
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        scaffoldBackgroundColor: Colors.white,
+        scaffoldBackgroundColor: Color(0xFFFFFBF4),
         appBarTheme: AppBarTheme(
-          backgroundColor: Color.fromARGB(255, 249, 241, 196),
+          backgroundColor: Color(0xFFFFFBF4),
+          // backgroundColor: Color.fromARGB(255, 249, 241, 196),
+          shadowColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
         ),
       ),
       routeInformationParser: Modular.routeInformationParser,

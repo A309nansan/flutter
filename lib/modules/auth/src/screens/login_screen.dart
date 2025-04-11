@@ -2,12 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:speech_balloon/speech_balloon.dart';
+import '../../../../shared/services/secure_storage_service.dart';
 import '../services/facebook_sign_in_service.dart';
 import '../services/kakao_sign_in_service.dart';
 import '../services/google_sign_in_service.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen>
+    with SingleTickerProviderStateMixin {
+  double _opacity = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      setState(() {
+        _opacity = 1.0;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,74 +34,103 @@ class LoginScreen extends StatelessWidget {
     final googleSignInService = Modular.get<GoogleSignInService>();
     final facebookSignInService = Modular.get<FacebookSignInService>();
 
+    var screenWidth = MediaQuery.of(context).size.width;
+    var screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              margin: EdgeInsets.symmetric(vertical: 250),
-              child: Column(
+      body: AnimatedOpacity(
+        opacity: _opacity,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Column(
                 children: [
                   Container(
-                    width: 525,
-                    height: 300,
-                    // margin: EdgeInsets.only(top: 320, bottom: 20),
-                    child: Image.asset("assets/images/logo2.png"),
+                    margin: EdgeInsets.only(top: screenHeight * 0.1),
+                    width: screenWidth * 0.5,
+                    height: screenHeight * 0.2,
+                    child: Image.asset("assets/images/logo1.png"),
                   ),
-                  const Text(
+                  Text(
                     "수학을 키우는 작은 씨앗, \n한 걸음씩 수학의 숲으로!",
                     style: TextStyle(
                       fontFamily: "SingleDay",
-                      fontSize: 38,
+                      fontSize: screenWidth * 0.04,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF9C6A17),
                     ),
                   ),
                 ],
               ),
-            ),
-            Spacer(),
-            Container(
-              margin: EdgeInsets.symmetric(vertical: 250),
-              child: Column(
-                children: [
-                  BouncingSpeechBalloon(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _buildLoginButton(
-                        const Color(0xFFFEE500),
-                        Colors.black87,
-                        "assets/images/kakao_logo.svg",
-                        0.055,
-                        context,
-                        () => kakaoSignInService.signInWithKakao(),
-                      ),
-                      const SizedBox(width: 40),
-                      _buildLoginButton(
-                        Colors.white,
-                        Colors.black87,
-                        "assets/images/google_logo.svg",
-                        0.05,
-                        context,
-                        () => googleSignInService.signInWithGoogle(),
-                      ),
-                      const SizedBox(width: 40),
-                      _buildLoginButton(
-                        Colors.white,
-                        Colors.black87,
-                        "assets/images/facebook_logo.svg",
-                        1,
-                        context,
-                        () => facebookSignInService.signInWithFacebook(),
-                      ),
-                    ],
-                  ),
-                ],
+              Spacer(),
+              Container(
+                margin: EdgeInsets.only(bottom: screenHeight * 0.15),
+                child: Column(
+                  children: [
+                    BouncingSpeechBalloon(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildLoginButton(
+                          const Color(0xFFFEE500),
+                          Colors.black87,
+                          "assets/images/kakao_logo.svg",
+                          0.055,
+                          context,
+                          () async {
+                            final alreadyAgreed = await SecureStorageService.getPrivacyAgreementStatus();
+                            if (!alreadyAgreed) {
+                              final agreed = await Modular.to.pushNamed<bool>('/auth/privacy-agreement');
+
+                              if (agreed != true) return;
+                            }
+                            await kakaoSignInService.signInWithKakao();
+                          },
+                        ),
+                        const SizedBox(width: 40),
+                        _buildLoginButton(
+                          Colors.white,
+                          Colors.black87,
+                          "assets/images/google_logo.svg",
+                          0.05,
+                          context,
+                          () async {
+                            final alreadyAgreed = await SecureStorageService.getPrivacyAgreementStatus();
+                            if (!alreadyAgreed) {
+                              final agreed = await Modular.to.pushNamed<bool>('/auth/privacy-agreement');
+
+                              if (agreed != true) return;
+                            }
+                            await googleSignInService.signInWithGoogle();
+                          },
+                        ),
+                        const SizedBox(width: 40),
+                        _buildLoginButton(
+                          Colors.white,
+                          Colors.black87,
+                          "assets/images/facebook_logo.svg",
+                          1,
+                          context,
+                          () async {
+                            final alreadyAgreed = await SecureStorageService.getPrivacyAgreementStatus();
+                            if (!alreadyAgreed) {
+                              final agreed = await Modular.to.pushNamed<bool>('/auth/privacy-agreement');
+
+                              if (agreed != true) return;
+                            }
+                            await facebookSignInService.signInWithFacebook();
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -158,6 +206,9 @@ class BouncingSpeechBalloonState extends State<BouncingSpeechBalloon>
 
   @override
   Widget build(BuildContext context) {
+    var screenWidth = MediaQuery.of(context).size.width;
+    var screenHeight = MediaQuery.of(context).size.height;
+
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, child) {
@@ -181,19 +232,22 @@ class BouncingSpeechBalloonState extends State<BouncingSpeechBalloon>
         ),
         child: SpeechBalloon(
           nipLocation: NipLocation.bottom,
-          nipHeight: 25,
+          nipHeight: screenHeight * 0.015,
           borderRadius: 50,
-          width: 370,
-          height: 78,
+          width: screenWidth * 0.35,
+          height: screenHeight * 0.05,
           borderColor: const Color.fromARGB(111, 131, 131, 131),
           color: Colors.white,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
+              Text(
                 '3초만에 시작하기 🚀',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: screenWidth * 0.025,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),

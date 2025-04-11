@@ -1,0 +1,34 @@
+[
+  {
+    "id": 601,
+    "parent_id": 6,
+    "level": 3,
+    "name": "세자리 한자리 곱셈",
+    "image_url": "assets/images/category_1.png",
+    "description": "세자리 수와 한자리 수의 곱셈을 단계적으로 해결합니다.\n곱셈 알고리즘을 이해하고 계산의 확장성을 경험합니다."
+  },
+  {
+    "id": 602,
+    "parent_id": 6,
+    "level": 3,
+    "name": "두자리 곱셈",
+    "image_url": "assets/images/category_2.png",
+    "description": "두자리 수끼리의 곱셈 문제를 풀며 곱셈의 구조와 자릿수 계산을 연습합니다.\n복잡한 연산을 계획하고 수행하는 사고력을 기릅니다."
+  },
+  {
+    "id": 603,
+    "parent_id": 6,
+    "level": 3,
+    "name": "두자리수 나누기 한자리수",
+    "image_url": "assets/images/category_3.png",
+    "description": "두자리 수를 한자리 수로 나누는 문제를 해결하며 나눗셈의 원리를 학습합니다.\n몫과 나머지 개념을 통해 계산 능력을 넓힙니다."
+  },
+  {
+    "id": 604,
+    "parent_id": 6,
+    "level": 3,
+    "name": "나머지가 있는 나눗셈",
+    "image_url": "assets/images/category_4.png",
+    "description": "나머지가 남는 나눗셈을 연습하여 나눗셈의 전체 구조를 이해합니다.\n실생활 속 나눗셈 상황에 적용할 수 있는 능력을 키웁니다."
+  }
+]

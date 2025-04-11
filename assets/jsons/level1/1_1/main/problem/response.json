@@ -1,0 +1,21 @@
+{
+	"problem_code": "l1s1c1mjy1",
+	"problem": {
+	  "candidates": [
+		{"image_url": "url1", "number": 5},
+		{"image_url": "url2", "number": 3},
+		{"image_url": "url3", "number": 2},
+		{"image_url": "url4", "number": 5},
+		{"image_url": "url5", "number": 5},
+		{"image_url": "url6", "number": 5},
+		{"image_url": "url7", "number": 6},
+		{"image_url": "url8", "number": 7},
+		{"image_url": "url9", "number": 4}
+	  ]
+	},
+	"answer": {
+	  "number": 5,
+	  "count": 4
+	}
+  }
+  

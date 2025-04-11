@@ -1,0 +1,34 @@
+[
+  {
+    "id": 401,
+    "parent_id": 4,
+    "level": 3,
+    "name": "받아올림 없는 세자리 + 세자리",
+    "image_url": "assets/images/category_1.png",
+    "description": "세자리 수끼리의 받아올림 없는 덧셈을 통해 자릿수별 계산을 학습합니다.\n크고 복잡한 수의 구조를 파악하며 연산에 익숙해집니다."
+  },
+  {
+    "id": 402,
+    "parent_id": 4,
+    "level": 3,
+    "name": "받아내림 없는 세자리 - 세자리",
+    "image_url": "assets/images/category_2.png",
+    "description": "세자리 수에서 받아내림 없이 뺄셈을 수행하며 계산 능력을 향상시킵니다.\n자릿수 개념을 강화하고 정확한 연산 연습을 제공합니다."
+  },
+  {
+    "id": 403,
+    "parent_id": 4,
+    "level": 3,
+    "name": "받아올림 있는 세자리 + 세자리",
+    "image_url": "assets/images/category_3.png",
+    "description": "받아올림이 포함된 세자리 수 덧셈을 연습하며 수의 구조에 대한 이해를 높입니다.\n복잡한 계산에 대한 자신감을 기르는 데 도움을 줍니다."
+  },
+  {
+    "id": 404,
+    "parent_id": 4,
+    "level": 3,
+    "name": "받아내림 있는 세자리 - 세자리",
+    "image_url": "assets/images/category_4.png",
+    "description": "세자리 수 뺄셈에서 받아내림이 필요한 문제를 해결합니다.\n다단계 계산 과정을 통해 체계적인 연산 능력을 강화합니다."
+  }
+  ]

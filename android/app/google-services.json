@@ -1,1 +1,71 @@
-{"installed":{"client_id":"566335619985-7t81qbmuci0aggob9tv69ceo00172ugo.apps.googleusercontent.com","project_id":"bright-airport-431802-t9","auth_uri":"https://accounts.google.com/o/oauth2/auth","token_uri":"https://oauth2.googleapis.com/token","auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs"}}
+{
+  "project_info": {
+    "project_number": "820351599163",
+    "project_id": "ssafy-efb21",
+    "storage_bucket": "ssafy-efb21.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:820351599163:android:f602c4149a1eeadb78121e",
+        "android_client_info": {
+          "package_name": "com.ssafy.oauth2_test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "820351599163-4eijjslraqedtr43u99ec6b6cf3v2s75.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ssafy.oauth2_test",
+            "certificate_hash": "10e04c6a6e8c86a1cfe1404ef7928b83364f1ee3"
+          }
+        },
+        {
+          "client_id": "820351599163-5pivpe1edbrrbouj52pe0q684vgfjcmj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ssafy.oauth2_test",
+            "certificate_hash": "da38da7452306e85ed5b44a9b8f1a2ab9ac68974"
+          }
+        },
+        {
+          "client_id": "820351599163-pntca04qdvcs8fgde8r1ojfn1704g2hq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ssafy.oauth2_test",
+            "certificate_hash": "56655d4bb6ff0bb7947a03b37ce6977e1223acfe"
+          }
+        },
+        {
+          "client_id": "820351599163-u2k60m55iq8a2rr5ks8jg5p13n65kok4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ssafy.oauth2_test",
+            "certificate_hash": "8df1d24d2a6b273137512794b753557cdf81a6de"
+          }
+        },
+        {
+          "client_id": "820351599163-gnspga8mrhdg5bdhi7u8hlv2jj9etkgp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJRcyxau551ehoe7A24ijgqyZOzXZTcLA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "820351599163-gnspga8mrhdg5bdhi7u8hlv2jj9etkgp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

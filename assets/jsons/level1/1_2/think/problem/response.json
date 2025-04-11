@@ -1,0 +1,50 @@
+{
+    "problem_code": "l1s1c2mgn1",
+    "problem": {
+      "fixed": [
+        {
+          "object": [ "link1" , "link2"],
+          "dot": [ "link1" , "link2"],
+          "numeric1": [ "link1" , "link2"],
+          "hangeul1": [ "link1" , "link2"]
+        }
+      ],
+      "candidates": [
+        { "image_url": "link3", "image_name": "3_object" },
+        { "image_url": "link4", "image_name": "4_object" },
+        { "image_url": "link5", "image_name": "5_object" },
+        { "image_url": "link3", "image_name": "3_dot" },
+        { "image_url": "link4", "image_name": "4_dot" },
+        { "image_url": "link5", "image_name": "5_dot" },
+        { "image_url": "link3", "image_name": "3_numeric1" },
+        { "image_url": "link4", "image_name": "4_numeric1" },
+        { "image_url": "link5", "image_name": "5_numeric1" },
+        { "image_url": "link3", "image_name": "3_hangeul1" },
+        { "image_url": "link4", "image_name": "4_hangeul1" },
+        { "image_url": "link5", "image_name": "5_hangeul1" }
+      ]
+    },
+    "answer": {
+      "object": [
+        { "image_name": "3_object" },
+        { "image_name": "4_object" },
+        { "image_name": "5_object" }
+      ],
+      "dot": [
+        { "image_name": "3_dot" },
+        { "image_name": "4_dot" },
+        { "image_name": "5_dot" }
+      ],
+      "numeric1": [
+        { "image_name": "3_numeric1" },
+        { "image_name": "4_numeric1" },
+        { "image_name": "5_numeric1" }
+      ],
+      "hangeul1": [
+        { "image_name": "3_hangeul1" },
+        { "image_name": "4_hangeul1" },
+        { "image_name": "5_hangeul1" }
+      ]
+    }
+  }
+  

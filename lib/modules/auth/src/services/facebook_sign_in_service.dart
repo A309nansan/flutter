@@ -30,11 +30,12 @@ class FacebookSignInService {
         String userName = profileInfo['name'];
 
         UserModel userModel = UserModel(
-          socialPlatform: "facebook",
+          socialPlatform: "face_book",
           email: email,
           platformId: "facebook-$platformId",
           nickName: userName,
         );
+
 
         await authService.createOrGetUser(userModel);
       }

@@ -1,5 +1,6 @@
 import java.util.Properties
 import java.io.File
+import java.io.FileInputStream
 
 plugins {
     id("com.android.application")
@@ -28,10 +29,17 @@ val facebookAppId = dotenv.getProperty("FACEBOOK_APP_ID") ?: ""
 val fbLoginProtocolScheme = dotenv.getProperty("FB_LOGIN_PROTOCOL_SCHEME") ?: ""
 val facebookClientToken = dotenv.getProperty("FACEBOOK_CLIENT_TOKEN") ?: ""
 
+//val keystoreProperties = Properties().apply {
+//    val keystoreFile = rootProject.file("app/key.properties")
+//    if (keystoreFile.exists()) {
+//        load(FileInputStream(keystoreFile))
+//    }
+//}
+
 android {
-    namespace = "com.example.nansan_flutter"
+    namespace = "com.ssafy.soonamu"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "29.0.13113456 rc1"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -44,13 +52,13 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.nansan_flutter"
+        applicationId = "com.ssafy.soonamu"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        minSdk = 23
         targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        versionCode = 24
+        versionName = "1.1.25"
 
         if (kakaoKey.isEmpty()) throw GradleException("KAKAO_NATIVE_APP_KEY not found in .env file")
         if (defaultWebClientId.isEmpty()) throw GradleException("DEFAULT_WEB_CLIENT_ID not found in .env file")
@@ -70,11 +78,24 @@ android {
         resValue("string", "facebook_client_token", facebookClientToken)
     }
 
+    signingConfigs {
+        create("release") {
+//            keyAlias = keystoreProperties["keyAlias"] as String?
+//            keyPassword = keystoreProperties["keyPassword"] as String?
+//            storeFile = file(keystoreProperties["storeFile"] as String?)
+//            storePassword = keystoreProperties["storePassword"] as String?
+        }
+    }
+
     buildTypes {
-        debug {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 }
