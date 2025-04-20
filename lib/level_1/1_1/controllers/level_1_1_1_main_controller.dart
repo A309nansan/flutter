@@ -17,6 +17,9 @@ class LevelOneOneOneController extends ChangeNotifier {
   final TimerController timerController = TimerController();
   final ScreenshotController screenshotController = ScreenshotController();
   final String problemCode;
+  late int current;
+  late int total;
+  late bool isEnd;
   String nextProblemCode = '';
   int? elapsedSeconds;
   int childId = 0;
@@ -24,10 +27,7 @@ class LevelOneOneOneController extends ChangeNotifier {
   Map<String, dynamic> answerData = {};
   bool isCorrect = false;
   bool isSubmitted = false;
-  bool isEnd = false;
   bool isLoading = true;
-  int current = 1;
-  int total = 1;
 
   // 페이지별 특수항목
   List<AnswerCandidate> candidates = [];
