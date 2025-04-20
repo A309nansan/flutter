@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:nansan_flutter/modules/drag_drop/controllers/drag_drop_controller.dart';
+import 'package:nansan_flutter/level_1/1_2/controllers/level_1_1_2_think_controller.dart';
 import 'package:nansan_flutter/modules/drag_drop/widgets/draggable_card_list.dart';
 import 'package:nansan_flutter/modules/drag_drop/widgets/empty_zone.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
@@ -23,12 +23,7 @@ import 'package:collection/collection.dart';
 
 class LevelOneOneTwoThink extends StatefulWidget {
   final String problemCode;
-  final DragDropController controller;
-  const LevelOneOneTwoThink({
-    super.key,
-    required this.problemCode,
-    required this.controller,
-  });
+  const LevelOneOneTwoThink({super.key, required this.problemCode});
 
   @override
   State<LevelOneOneTwoThink> createState() => LevelOneOneTwoThinkState();
@@ -36,27 +31,10 @@ class LevelOneOneTwoThink extends StatefulWidget {
 
 class LevelOneOneTwoThinkState extends State<LevelOneOneTwoThink>
     with TickerProviderStateMixin {
-  final ProblemApiService _apiService = ProblemApiService();
-  final ScreenshotController screenshotController = ScreenshotController();
-  final TimerController _timerController = TimerController();
   late AnimationController submitController;
   late Animation<double> submitAnimation;
-  late int childId;
-  late int current;
-  late int total;
-  late Map problemData;
-  late Map answerData;
-  late Map<String, dynamic> selectedAnswers;
-  int? elapsedSeconds;
-  String nextProblemCode = 'enlv1s1c2jy1';
-  String problemCode = 'enlv1s1c2gn1';
-  bool isSubmitted = false;
-  bool isCorrect = false;
-  bool showSubmitPopup = false;
-  bool isEnd = false;
-  bool isLoading = true;
-  List<List<String>> fixedImageUrls = [];
-  List<Map<String, String>> candidates = [];
+  final Level112ThinkController _level112thinkController =
+      Level112ThinkController(problemCode: 'enlv1s1c2gn1');
 
   @override
   void initState() {
@@ -85,119 +63,6 @@ class LevelOneOneTwoThinkState extends State<LevelOneOneTwoThink>
     _timerController.dispose();
     isSubmitted = false;
     super.dispose();
-  }
-
-  Future<void> _loadQuestionData() async {
-    try {
-      final response = await _apiService.loadProblemData(problemCode);
-      setState(() {
-        nextProblemCode = response.nextProblemCode;
-        problemCode = response.problemCode;
-        problemData = response.problem;
-        answerData = response.answer;
-        current = response.current;
-        total = response.total;
-      });
-      _processProblemData(problemData);
-    } catch (e) {
-      debugPrint('Error loading question data: $e');
-    }
-  }
-
-  Future<void> _submitAnswer() async {
-    _timerController.stop();
-
-    if (isSubmitted) return;
-    final submitRequest = SubmitRequest(
-      childId: childId,
-      problemCode: problemCode,
-      dateTime: DateTime.now().toIso8601String(),
-      solvingTime: _timerController.elapsedSeconds,
-      isCorrected: isCorrect,
-      problem: problemData,
-      answer: answerData,
-      input: selectedAnswers,
-    );
-
-    try {
-      await _apiService.submitAnswer(jsonEncode(submitRequest.toJson()));
-      setState(() => isSubmitted = true);
-    } catch (e) {
-      debugPrint('Submit error: $e');
-    }
-  }
-
-  void _processProblemData(Map problemData) {
-    final Map<String, dynamic> fixedCardUrl = problemData['fixed'];
-    final fixedcategories = {'dot', 'numeric1', 'hangeul1'};
-    String? dynamicCategory;
-
-    for (var key in fixedCardUrl.keys) {
-      if (!fixedcategories.contains(key)) {
-        dynamicCategory = key;
-        break;
-      }
-    }
-
-    fixedImageUrls = [
-      if (dynamicCategory != null)
-        (fixedCardUrl[dynamicCategory] as List<dynamic>).cast<String>(),
-      (fixedCardUrl['dot'] ?? []).cast<String>(),
-      (fixedCardUrl['numeric1'] ?? []).cast<String>(),
-      (fixedCardUrl['hangeul1'] ?? []).cast<String>(),
-    ];
-
-    final List<dynamic> candidateList = problemData['candidates'];
-    setState(() {
-      candidates =
-          candidateList
-              .map(
-                (c) => {
-                  'image_name': c['image_name'].toString(),
-                  'image_url': c['image_url'].toString(),
-                },
-              )
-              .toList();
-    });
-  }
-
-  void _processInputData() {
-    final Map<String, dynamic> cardUrl = problemData['fixed'];
-    final categories = {'dot', 'numeric1', 'hangeul1'};
-    String? dynamicCategory;
-
-    for (var key in cardUrl.keys) {
-      if (!categories.contains(key)) {
-        dynamicCategory = key;
-        break;
-      }
-    }
-
-    final gridData = List.generate(
-      4,
-      (_) => List<Map<String, dynamic>?>.filled(3, null),
-    );
-
-    widget.controller.zoneCards.forEach((zoneKey, cardData) {
-      if (cardData != null) {
-        final row = (zoneKey - 1) ~/ 3; // 0-based row index (0~3)
-        final col = (zoneKey - 1) % 3; // 0-based column index (0~2)
-        gridData[row][col] = {'image_name': cardData.imageName};
-      }
-    });
-
-    // 최종 데이터 구조 변환
-    setState(() {
-      selectedAnswers['$dynamicCategory'] = gridData[0];
-      selectedAnswers['dot'] = gridData[1];
-      selectedAnswers['hangeul1'] = gridData[3];
-      selectedAnswers['numeric1'] = gridData[2];
-    });
-  }
-
-  void checkAnswer() {
-    isCorrect = DeepCollectionEquality().equals(answerData, selectedAnswers);
-    _submitAnswer();
   }
 
   Widget _buildHeaderItem() => SizedBox(
