@@ -48,6 +48,8 @@ class _ProfileScreenState extends State<ProfileScreen>
     if (jsonStr != null) {
       final user = UserInfoModel.fromJson(jsonStr);
       userRole = user.role;
+      debugPrint('업데이트 후 $userRole');
+      debugPrint('유저 전체 $user');
     }
   }
 
@@ -129,6 +131,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     });
                                     loadProfiles();
                                   },
+                                  userRole: userRole,
                                 ),
                               )
                               : GridView.builder(
