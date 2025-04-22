@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import '../../../../shared/widgets/toase_message.dart';
 
-class AddProfile extends StatelessWidget{
+class AddProfile extends StatelessWidget {
   final VoidCallback? onProfileAdded;
   final String? userRole;
 
@@ -17,6 +17,7 @@ class AddProfile extends StatelessWidget{
       padding: EdgeInsets.all(10),
       child: ElevatedButton(
         onPressed: () async {
+          debugPrint('이수호 $userRole');
           if (userRole == "PARENT") {
             final result = await Modular.to.pushNamed('/auth/add_child');
             if (result == true && onProfileAdded != null) {
@@ -38,11 +39,7 @@ class AddProfile extends StatelessWidget{
           minimumSize: Size.zero,
           elevation: 3,
         ),
-        child: Icon(
-          Icons.add,
-          size: screenWidth * 0.06,
-          color: Colors.black54,
-        ),
+        child: Icon(Icons.add, size: screenWidth * 0.06, color: Colors.black54),
       ),
     );
   }

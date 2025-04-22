@@ -64,6 +64,7 @@ class AuthService {
         "/user/user/update-role",
         data: {"newRole": role},
       );
+      await updateUserInfo();
       Modular.to.navigate("/profile");
       debugPrint("✅ role 업데이트 완료: $response");
     } catch (e) {
@@ -85,6 +86,11 @@ class AuthService {
     } catch (e) {
       debugPrint("사용자 id 가져오기 실패: $e");
     }
+  }
+
+  Future<void> updateUserInfo() async {
+    final user = await RequestService.get("/user/me");
+    await SecureStorageService.saveUserInfoJson(jsonEncode(user));
   }
 
   /// 로그아웃 요청
