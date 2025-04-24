@@ -129,6 +129,23 @@ flutter:
     - assets/images/category/m/5/
     - assets/images/category/m/6/
     - assets/images/image3d/
+    - assets/images/number/
+    - assets/images/number/apple/
+    - assets/images/number/apple_card/
+    - assets/images/number/banana_card/
+    - assets/images/number/carrot/
+    - assets/images/number/corn/
+    - assets/images/number/dice/
+    - assets/images/number/fish/
+    - assets/images/number/grape/
+    - assets/images/number/grape_card/
+    - assets/images/number/hangeul1/
+    - assets/images/number/hangeul2/
+    - assets/images/number/numeric1/
+    - assets/images/number/numeric2/
+    - assets/images/number/soccerball/
+    - assets/images/number/turtle/
+    - assets/images/number/unit/
     - assets/jsons/
     - assets/jsons/level1/
     - assets/jsons/level1/1_1/

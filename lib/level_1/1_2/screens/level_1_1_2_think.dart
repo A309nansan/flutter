@@ -46,7 +46,7 @@ class LevelOneOneTwoThinkState extends State<LevelOneOneTwoThink>
   late int total;
   late Map problemData;
   late Map answerData;
-  late Map<String, dynamic> selectedAnswers;
+  Map<String, dynamic> selectedAnswers = {};
   int? elapsedSeconds;
   String nextProblemCode = 'enlv1s1c2jy1';
   String problemCode = 'enlv1s1c2gn1';
