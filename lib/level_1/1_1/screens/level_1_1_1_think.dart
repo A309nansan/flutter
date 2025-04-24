@@ -2,6 +2,10 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:nansan_flutter/modules/draw_line/controllers/draw_line_controller.dart';
+import 'package:nansan_flutter/modules/draw_line/models/draw_line_models.dart';
+import 'package:nansan_flutter/modules/draw_line/widgets/draw_line_dot_widget.dart';
+import 'package:nansan_flutter/modules/draw_line/widgets/draw_lines_painter.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
 import 'package:nansan_flutter/shared/controllers/timer_controller.dart';
@@ -21,9 +25,8 @@ import 'package:collection/collection.dart';
 class LevelOneOneOneThink extends StatefulWidget {
   final String problemCode;
   const LevelOneOneOneThink({super.key, required this.problemCode});
-
   @override
-  State<LevelOneOneOneThink> createState() => LevelOneOneOneThinkState();
+  State createState() => LevelOneOneOneThinkState();
 }
 
 class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
@@ -31,6 +34,7 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
   final ScreenshotController screenshotController = ScreenshotController();
   final TimerController _timerController = TimerController();
   final ProblemApiService _apiService = ProblemApiService();
+
   late AnimationController submitController;
   late Animation<double> submitAnimation;
   late int childId;
@@ -39,28 +43,42 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
   late int elapsedSeconds;
   late String problemCode = widget.problemCode;
   late String nextProblemCode;
+
   bool isSubmitted = false;
   bool isCorrect = false;
   bool showSubmitPopup = false;
   bool isEnd = false;
   bool isLoading = true;
+
   Map problemData = {};
   Map answerData = {};
   Map<String, dynamic> selectedAnswers = {};
-  List<List<String>> fixedImageUrls = [];
-  List<Map<String, String>> candidates = [];
 
-  // 페이지별 변수 설정
+  List<List<String>> fixedImageUrls = [];
+  List<List<String>> candidates = [];
+
+  // 도트 관련 변수
+  Map<String, Offset> dotAbsoluteOffsets = {};
   final List<GlobalKey> dotAKeys = List.generate(9, (_) => GlobalKey());
   final List<GlobalKey> dotBKeys = List.generate(9, (_) => GlobalKey());
   final List<GlobalKey> dotCKeys = List.generate(9, (_) => GlobalKey());
   final List<GlobalKey> dotDKeys = List.generate(9, (_) => GlobalKey());
-  List offsetsA = [];
-  List offsetsB = [];
-  List offsetsC = [];
-  List offsetsD = [];
 
-  // 페이지 실행 시 작동하는 함수. 수정 필요 x
+  List<Offset?> offsetsA = [];
+  List<Offset?> offsetsB = [];
+  List<Offset?> offsetsC = [];
+  List<Offset?> offsetsD = [];
+
+  Offset? _currentDragPosition;
+
+  // DrawLineDots 및 Controller
+  late DrawLineDotsController drawLineDotsController;
+  List<DrawLineDot> drawLineDots = [];
+  List<DrawLineConnection> drawLineConnections = [];
+
+  // 도트 선택 상태
+  DrawLineDot? selectedDot;
+
   @override
   void initState() {
     super.initState();
@@ -68,11 +86,11 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
       vsync: this,
       duration: const Duration(milliseconds: 400),
     );
-
-    submitAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+    submitAnimation = Tween(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: submitController, curve: Curves.elasticOut),
     );
-    // 비동기 로직 실행 후 UI 업데이트
+    drawLineDotsController = DrawLineDotsController();
+
     _loadQuestionData().then((_) {
       setState(() {
         isLoading = false;
@@ -82,7 +100,6 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
     });
   }
 
-  // 페이지를 나갈 때, 실행되는 함수. 수정 필요 x
   @override
   void dispose() {
     _timerController.dispose();
@@ -90,8 +107,7 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
     super.dispose();
   }
 
-  // 페이지 실행 시, 문제 데이터를 불러오는 함수. 수정 필요 x
-  Future<void> _loadQuestionData() async {
+  Future _loadQuestionData() async {
     try {
       final response = await _apiService.loadProblemData(problemCode);
       setState(() {
@@ -102,20 +118,19 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
         total = response.total;
       });
       _processProblemData(problemData);
-
       WidgetsBinding.instance.addPostFrameCallback((_) {
         offsetsA = getDotOffsets(dotAKeys);
         offsetsB = getDotOffsets(dotBKeys);
         offsetsC = getDotOffsets(dotCKeys);
         offsetsD = getDotOffsets(dotDKeys);
+        _initDrawLineDots();
       });
     } catch (e) {
       debugPrint('Error loading question data: $e');
     }
   }
 
-  // 문제 제출할때 함수. 수정 필요 x
-  Future<void> _submitAnswer() async {
+  Future _submitAnswer() async {
     if (isSubmitted) return;
     final submitRequest = SubmitRequest(
       childId: childId,
@@ -127,7 +142,6 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
       answer: answerData,
       input: selectedAnswers,
     );
-
     try {
       await _apiService.submitAnswer(jsonEncode(submitRequest.toJson()));
       setState(() => isSubmitted = true);
@@ -137,12 +151,131 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
   }
 
   // 문제 데이터 받아온 후, 문제에 맞게 데이터 조작
-  void _processProblemData(Map problemData) {}
+  void _processProblemData(Map problemData) {
+    // 문제 데이터에서 도트에 필요한 정보 추출
+    // 예시: problemData['dotA'], problemData['dotB'] 등에서 id, position 등 추출
+    // 아래는 예시 데이터 구조에 따라 수정 필요
+    // dotA, dotB, dotC, dotD 각각 9개씩 있다고 가정
+    drawLineDots.clear();
+    drawLineConnections.clear();
+    drawLineDotsController.clearAll();
 
-  // 문제 푸는 로직 수행할때, seletedAnswers 데이터 넣는 로직
-  void _processInputData() {}
+    // dotA 생성
+    if (problemData['dotA'] != null) {
+      for (var i = 0; i < problemData['dotA'].length; i++) {
+        final item = problemData['dotA'][i];
+        drawLineDots.add(
+          DrawLineDot(
+            id: 'A$i',
+            key: 'A',
+            position: Offset(item['x'] ?? 0.1, item['y'] ?? (i * 0.1 + 0.1)),
+          ),
+        );
+      }
+    }
+    // dotB 생성
+    if (problemData['dotB'] != null) {
+      for (var i = 0; i < problemData['dotB'].length; i++) {
+        final item = problemData['dotB'][i];
+        drawLineDots.add(
+          DrawLineDot(
+            id: 'B$i',
+            key: 'B',
+            position: Offset(item['x'] ?? 0.5, item['y'] ?? (i * 0.1 + 0.1)),
+          ),
+        );
+      }
+    }
+    // dotC 생성
+    if (problemData['dotC'] != null) {
+      for (var i = 0; i < problemData['dotC'].length; i++) {
+        final item = problemData['dotC'][i];
+        drawLineDots.add(
+          DrawLineDot(
+            id: 'C$i',
+            key: 'C',
+            position: Offset(item['x'] ?? 0.7, item['y'] ?? (i * 0.1 + 0.1)),
+          ),
+        );
+      }
+    }
+    // dotD 생성
+    if (problemData['dotD'] != null) {
+      for (var i = 0; i < problemData['dotD'].length; i++) {
+        final item = problemData['dotD'][i];
+        drawLineDots.add(
+          DrawLineDot(
+            id: 'D$i',
+            key: 'D',
+            position: Offset(item['x'] ?? 0.9, item['y'] ?? (i * 0.1 + 0.1)),
+          ),
+        );
+      }
+    }
 
-  // 정답 여부 체크(보통은 이거쓰면됨)
+    // DrawLineDotsController에 도트 추가
+    for (final dot in drawLineDots) {
+      drawLineDotsController.addDot(dot);
+    }
+  }
+
+  void _initDrawLineDots() {
+    for (int i = 0; i < 9; i++) {
+      if (i < offsetsA.length && offsetsA[i] != null) {
+        dotAbsoluteOffsets['A$i'] = offsetsA[i]!;
+      }
+      if (i < offsetsB.length && offsetsB[i] != null) {
+        dotAbsoluteOffsets['B$i'] = offsetsB[i]!;
+      }
+      if (i < offsetsC.length && offsetsC[i] != null) {
+        dotAbsoluteOffsets['C$i'] = offsetsC[i]!;
+      }
+      if (i < offsetsD.length && offsetsD[i] != null) {
+        dotAbsoluteOffsets['D$i'] = offsetsD[i]!;
+      }
+    }
+    setState(() {});
+  }
+  // DrawLineDot.position은 절대값으로 덮어쓰지 않음!
+
+  // 연결 규칙: A-B, C-D만 연결 가능
+  bool _canConnect(DrawLineDot from, DrawLineDot to) {
+    if ((from.key == 'A' && to.key == 'B') ||
+        (from.key == 'B' && to.key == 'A')) {
+      return true;
+    }
+    if ((from.key == 'C' && to.key == 'D') ||
+        (from.key == 'D' && to.key == 'C')) {
+      return true;
+    }
+    return false;
+  }
+
+  // 도트 클릭 이벤트
+  void _onDotPointerDown(PointerDownEvent event, DrawLineDot dot) {
+    setState(() {
+      if (selectedDot == null) {
+        selectedDot = dot;
+      } else if (selectedDot != null && selectedDot != dot) {
+        if (_canConnect(selectedDot!, dot)) {
+          // 이미 연결되어 있는지 확인
+          if (!drawLineDotsController.isDotConnected(selectedDot!) &&
+              !drawLineDotsController.isDotConnected(dot)) {
+            final connection = DrawLineConnection(
+              dot1: selectedDot!,
+              dot2: dot,
+            );
+            drawLineDotsController.connections.add(connection);
+            drawLineConnections = List.from(drawLineDotsController.connections);
+            // 정답 제출용 데이터에 반영 (예시)
+            selectedAnswers[selectedDot!.id] = dot.id;
+          }
+        }
+        selectedDot = null;
+      }
+    });
+  }
+
   void checkAnswer() {
     isCorrect = const DeepCollectionEquality().equals(
       answerData,
@@ -151,16 +284,13 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
     _submitAnswer();
   }
 
-  // 문제푸는 스크린 이미지 서버로 전송. 수정 필요 x
-  Future<void> submitActivity(BuildContext context) async {
+  Future submitActivity(BuildContext context) async {
     try {
       final imageBytes = await screenshotController.capture() as Uint8List;
       if (!context.mounted) return;
-
       final childProfileJson = await SecureStorageService.getChildProfile();
       final childProfile = jsonDecode(childProfileJson!);
       final childId = childProfile['id'];
-
       await ImageService.uploadImage(
         imageBytes: imageBytes,
         childId: childId,
@@ -171,7 +301,6 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
     }
   }
 
-  // 다음페이지로 가는 함수. 수정 필요 x
   void onNextPressed() {
     final nextCode = nextProblemCode;
     if (nextCode.isEmpty) {
@@ -179,7 +308,6 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
       Modular.to.pop();
       return;
     }
-
     try {
       final route = EnProblemService().getLevelPath(nextCode);
       Modular.to.pushReplacementNamed(route, arguments: nextCode);
@@ -188,7 +316,6 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
     }
   }
 
-  // 팝업 조작 함수. 수정 필요 x
   void closeSubmit() {
     submitController.reverse().then((_) {
       setState(() {
@@ -213,7 +340,6 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
               border: Border.all(color: Colors.lightBlue),
             ),
           ),
-          // 마지막 줄에는 SizedBox를 추가하지 않음
           if (index != count - 1) SizedBox(height: sizedHeight),
         ],
       );
@@ -226,22 +352,29 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
     double sizedHeight,
     List<GlobalKey> keys,
     int count,
+    String dotKey,
+    int offsetBase, // A:0, B:9, C:18, D:27
   ) {
     return List.generate(count, (index) {
+      final dotId = '$dotKey$index';
+      final dot = drawLineDots.firstWhere(
+        (d) => d.id == dotId,
+        orElse:
+            () => DrawLineDot(id: dotId, key: dotKey, position: Offset.zero),
+      );
       return Column(
         children: [
           Container(
             alignment: Alignment.center,
             width: screenWidth,
             height: screenHeight,
-            child: Container(
-              key: keys[index], // GlobalKey 사용
-              width: screenWidth * 0.5,
-              height: screenWidth * 0.5,
-              decoration: BoxDecoration(
-                color: Colors.lightBlue,
-                borderRadius: BorderRadius.circular(50),
-              ),
+            child: DrawLineDotWidget(
+              dot: dot,
+              parentSize: Size(screenWidth, screenHeight),
+              isSelected: selectedDot?.id == dot.id,
+              isHovered: false,
+              isConnected: drawLineDotsController.isDotConnected(dot),
+              onPointerDown: _onDotPointerDown,
             ),
           ),
           if (index != count - 1) SizedBox(height: sizedHeight),
@@ -259,7 +392,19 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
     }).toList();
   }
 
-  // UI 담당
+  void _onPointerMove(PointerMoveEvent event) {
+    if (selectedDot != null) {
+      setState(() {
+        _currentDragPosition = event.position; // 실시간 좌표 업데이트
+      });
+    }
+  }
+
+  void _onPointerUp(PointerUpEvent event) {
+    _currentDragPosition = null;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -299,80 +444,108 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
                                   questionTextSize: screenWidth * 0.03,
                                 ),
                                 SizedBox(height: screenHeight * 0.02),
-                                // 여기에 문제 푸는 ui 및 삽입
-                                Stack(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        SizedBox(width: screenWidth * 0.02),
-                                        Column(
-                                          children: _buildContainers(
-                                            screenHeight * 0.1,
-                                            screenHeight * 0.068,
-                                            screenHeight * 0.01,
-                                            9,
+                                // 문제 푸는 ui 및 삽입
+                                Listener(
+                                  onPointerMove: _onPointerMove,
+                                  onPointerUp: _onPointerUp,
+                                  child: Stack(
+                                    children: [
+                                      Positioned.fill(
+                                        child: CustomPaint(
+                                          size: Size(
+                                            screenWidth,
+                                            screenHeight * 0.6,
+                                          ),
+                                          painter: DrawLinesPainter(
+                                            connections: drawLineConnections,
+                                            startDot: selectedDot,
+                                            currentPosition: null,
+                                            isDrawingTemporaryLine: true,
+                                            dotAbsoluteOffsets:
+                                                dotAbsoluteOffsets,
                                           ),
                                         ),
-                                        Column(
-                                          children: _buildDotContainers(
-                                            screenHeight * 0.04,
-                                            screenHeight * 0.068,
-                                            screenHeight * 0.01,
-                                            dotAKeys,
-                                            9,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          SizedBox(width: screenWidth * 0.02),
+                                          Column(
+                                            children: _buildContainers(
+                                              screenHeight * 0.1,
+                                              screenHeight * 0.068,
+                                              screenHeight * 0.01,
+                                              9,
+                                            ),
                                           ),
-                                        ),
-                                        SizedBox(width: screenWidth * 0.1),
-                                        Column(
-                                          children: _buildDotContainers(
-                                            screenHeight * 0.04,
-                                            screenHeight * 0.068,
-                                            screenHeight * 0.01,
-                                            dotBKeys,
-                                            9,
+                                          Column(
+                                            children: _buildDotContainers(
+                                              screenHeight * 0.04,
+                                              screenHeight * 0.068,
+                                              screenHeight * 0.01,
+                                              dotAKeys,
+                                              9,
+                                              'A',
+                                              0,
+                                            ),
                                           ),
-                                        ),
-                                        Column(
-                                          children: _buildContainers(
-                                            screenHeight * 0.1,
-                                            screenHeight * 0.068,
-                                            screenHeight * 0.01,
-                                            9,
+                                          SizedBox(width: screenWidth * 0.1),
+                                          Column(
+                                            children: _buildDotContainers(
+                                              screenHeight * 0.04,
+                                              screenHeight * 0.068,
+                                              screenHeight * 0.01,
+                                              dotBKeys,
+                                              9,
+                                              'B',
+                                              9,
+                                            ),
                                           ),
-                                        ),
-                                        Column(
-                                          children: _buildDotContainers(
-                                            screenHeight * 0.04,
-                                            screenHeight * 0.068,
-                                            screenHeight * 0.01,
-                                            dotCKeys,
-                                            9,
+                                          Column(
+                                            children: _buildContainers(
+                                              screenHeight * 0.1,
+                                              screenHeight * 0.068,
+                                              screenHeight * 0.01,
+                                              9,
+                                            ),
                                           ),
-                                        ),
-                                        SizedBox(width: screenWidth * 0.1),
-                                        Column(
-                                          children: _buildDotContainers(
-                                            screenHeight * 0.04,
-                                            screenHeight * 0.068,
-                                            screenHeight * 0.01,
-                                            dotDKeys,
-                                            9,
+                                          Column(
+                                            children: _buildDotContainers(
+                                              screenHeight * 0.04,
+                                              screenHeight * 0.068,
+                                              screenHeight * 0.01,
+                                              dotCKeys,
+                                              9,
+                                              'C',
+                                              18,
+                                            ),
                                           ),
-                                        ),
-                                        Column(
-                                          children: _buildContainers(
-                                            screenHeight * 0.1,
-                                            screenHeight * 0.068,
-                                            screenHeight * 0.01,
-                                            9,
+                                          SizedBox(width: screenWidth * 0.1),
+                                          Column(
+                                            children: _buildDotContainers(
+                                              screenHeight * 0.04,
+                                              screenHeight * 0.068,
+                                              screenHeight * 0.01,
+                                              dotDKeys,
+                                              9,
+                                              'D',
+                                              27,
+                                            ),
                                           ),
-                                        ),
-                                        SizedBox(width: screenWidth * 0.02),
-                                      ],
-                                    ),
-                                  ],
+                                          Column(
+                                            children: _buildContainers(
+                                              screenHeight * 0.1,
+                                              screenHeight * 0.068,
+                                              screenHeight * 0.01,
+                                              9,
+                                            ),
+                                          ),
+                                          SizedBox(width: screenWidth * 0.02),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
@@ -399,9 +572,7 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
                                     );
                                   },
                                   child: Row(
-                                    key: ValueKey<String>(
-                                      '${isSubmitted}_$isCorrect',
-                                    ),
+                                    key: ValueKey('${isSubmitted}_$isCorrect'),
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       if (!isSubmitted)
@@ -421,7 +592,6 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
                                                     checkAnswer(),
                                                   },
                                         ),
-
                                       if (isSubmitted &&
                                           isCorrect == false) ...[
                                         ButtonWidget(
@@ -449,7 +619,6 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
                                           onPressed: () => onNextPressed(),
                                         ),
                                       ],
-
                                       if (isSubmitted && isCorrect == true)
                                         ButtonWidget(
                                           height: screenHeight * 0.035,

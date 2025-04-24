@@ -30,35 +30,25 @@ class DrawLineDotWidget extends StatelessWidget {
       dotColor = Colors.green;
     }
 
-    final absolutePosition = Offset(
-      dot.position.dx * parentSize.width,
-      dot.position.dy * parentSize.height,
-    );
-
-    return Positioned(
-      left: absolutePosition.dx - 15,
-      top: absolutePosition.dy - 15,
-      child: Listener(
-        onPointerDown:
-            isConnected ? null : (event) => onPointerDown(event, dot),
-        child: MouseRegion(
-          cursor:
-              isConnected ? SystemMouseCursors.basic : SystemMouseCursors.click,
-          child: Container(
-            width: 30,
-            height: 30,
-            decoration: BoxDecoration(
-              color: dotColor,
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.black, width: 2),
-            ),
-            child: Center(
-              child: Text(
-                dot.key,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+    return Listener(
+      onPointerDown: isConnected ? null : (event) => onPointerDown(event, dot),
+      child: MouseRegion(
+        cursor:
+            isConnected ? SystemMouseCursors.basic : SystemMouseCursors.click,
+        child: Container(
+          width: 30,
+          height: 30,
+          decoration: BoxDecoration(
+            color: dotColor,
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.black, width: 2),
+          ),
+          child: Center(
+            child: Text(
+              dot.key,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),

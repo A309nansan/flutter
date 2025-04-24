@@ -171,6 +171,8 @@ class EnChapterListItem extends StatelessWidget {
                                     );
                                   } catch (e) {
                                     // 라우팅 실패 시 다이얼로그 띄우기
+                                    debugPrint('레벨 : $level');
+                                    debugPrint('프라블럼코드 : $problemCode');
                                     showDialog(
                                       context: context,
                                       builder:
