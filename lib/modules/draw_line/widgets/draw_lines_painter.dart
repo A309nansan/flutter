@@ -3,18 +3,18 @@ import 'package:flutter/material.dart';
 import '../models/draw_line_models.dart';
 
 class DrawLinesPainter extends CustomPainter {
-  final Size parentSize;
   final List<DrawLineConnection> connections;
   final DrawLineDot? startDot;
   final Offset? currentPosition;
   final bool isDrawingTemporaryLine;
+  final Map<String, Offset> dotAbsoluteOffsets;
 
   DrawLinesPainter({
-    required this.parentSize,
     required this.connections,
     this.startDot,
     this.currentPosition,
     this.isDrawingTemporaryLine = false,
+    required this.dotAbsoluteOffsets,
   });
 
   @override
@@ -26,15 +26,13 @@ class DrawLinesPainter extends CustomPainter {
           ..strokeCap = StrokeCap.round;
 
     for (var connection in connections) {
-      final p1 = Offset(
-        connection.dot1.position.dx * parentSize.width,
-        connection.dot1.position.dy * parentSize.height,
-      );
-      final p2 = Offset(
-        connection.dot2.position.dx * parentSize.width,
-        connection.dot2.position.dy * parentSize.height,
-      );
-      canvas.drawLine(p1, p2, permanentPaint);
+      // 절대 위치 사용
+      final p1 = dotAbsoluteOffsets[connection.dot1.id];
+      final p2 = dotAbsoluteOffsets[connection.dot2.id];
+
+      if (p1 != null && p2 != null) {
+        canvas.drawLine(p1, p2, permanentPaint);
+      }
     }
 
     if (isDrawingTemporaryLine && startDot != null && currentPosition != null) {
@@ -43,10 +41,10 @@ class DrawLinesPainter extends CustomPainter {
             ..color = Colors.grey
             ..strokeWidth = 2
             ..strokeCap = StrokeCap.round;
-      final p1 = Offset(
-        startDot!.position.dx * parentSize.width,
-        startDot!.position.dy * parentSize.height,
-      );
+
+      // 시작점도 절대 위치 사용
+      final p1 = dotAbsoluteOffsets[startDot!.id] ?? startDot!.position;
+
       drawDashedLine(
         canvas: canvas,
         p1: p1,
@@ -70,16 +68,12 @@ class DrawLinesPainter extends CustomPainter {
     var dy = p2.dy - p1.dy;
     final magnitude = sqrt(dx * dx + dy * dy);
     if (magnitude == 0) return;
-
     dx = dx / magnitude;
     dy = dy / magnitude;
-
     final steps = magnitude ~/ (dashWidth + dashSpace);
     final int gap = dashWidth + dashSpace;
-
     var startX = p1.dx;
     var startY = p1.dy;
-
     for (int i = 0; i < steps; i++) {
       final endX = startX + dx * dashWidth;
       final endY = startY + dy * dashWidth;
@@ -97,8 +91,7 @@ class DrawLinesPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(DrawLinesPainter oldDelegate) {
-    return oldDelegate.parentSize != parentSize ||
-        oldDelegate.connections != connections ||
+    return oldDelegate.connections != connections ||
         oldDelegate.startDot != startDot ||
         oldDelegate.currentPosition != currentPosition ||
         oldDelegate.isDrawingTemporaryLine != isDrawingTemporaryLine;

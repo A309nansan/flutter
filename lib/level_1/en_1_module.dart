@@ -9,6 +9,8 @@ import 'package:nansan_flutter/level_1/2_1/screens/level_1_2_1_main1.dart';
 import 'package:nansan_flutter/level_1/2_1/screens/level_1_2_1_think.dart';
 import 'package:nansan_flutter/level_1/2_2/level_1_2_2_think1.dart';
 import 'package:nansan_flutter/level_1/2_2/level_1_2_2_think2.dart';
+import 'package:nansan_flutter/level_1/2_3/level_1_2_3_think3.dart';
+import 'package:nansan_flutter/level_1/2_3/level_1_2_3_think4.dart';
 import 'package:nansan_flutter/modules/drag_drop/controllers/drag_drop_controller.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:provider/provider.dart';
@@ -154,24 +156,7 @@ class En1Module extends Module {
         return LevelOneTwoOneMain1(problemCode: nextCode);
       },
     );
-    // level1 2과 2차시 개념 1번
-    r.child(
-      // 'enlv1s2c2gn2'
-      '/enlv1s2c2gn1',
-      child: (context) {
-        final nextCode = r.args.data as String;
-        return LevelOneTwoTwoThink2(problemCode: nextCode);
-      },
-    );
-    // level1 2과 2차시 개념 2번
-    r.child(
-      '/enlv1s2c2gn2',
-      child: (context) {
-        final nextCode = r.args.data as String;
-        return LevelOneTwoTwoThink2(problemCode: nextCode);
-      },
-    );
-    // 2과 3차시 개념1
+    // 2과 2차시 개념1
     r.child(
       '/enlv1s2c2gn1',
       child: (context) {
@@ -186,6 +171,31 @@ class En1Module extends Module {
         );
       },
     );
+    // level1 2과 2차시 개념 2번
+    r.child(
+      '/enlv1s2c2gn2',
+      child: (context) {
+        final nextCode = r.args.data as String;
+        return LevelOneTwoTwoThink2(problemCode: nextCode);
+      },
+    );
+    // 2과 3차시 개념3
+    // r.child(
+    //   '/enlv1s2c3gn3',
+    //   child: (context) {
+    //     final nextCode = r.args.data as String;
+    //     return LevelOneTwoThreeThink3(problemCode: nextCode);
+    //   },
+    // );
+    // 2과 3차시 개념4
+    r.child(
+      '/enlv1s2c3gn4',
+      child: (context) {
+        final nextCode = r.args.data as String;
+        return LevelOneTwoThreeThink4(problemCode: nextCode);
+      },
+    );
+    // 3과 2차시 기초1
     r.child(
       '/enlv1s3c2kc1',
       child: (context) {
@@ -193,6 +203,7 @@ class En1Module extends Module {
         return LevelOneThreeTwoBasic(problemCode: nextCode);
       },
     );
+    // 3과 2차시 주요1
     r.child(
       '/enlv1s3c2jy1',
       child: (context) {
@@ -200,6 +211,7 @@ class En1Module extends Module {
         return LevelOneThreeTwoMain(problemCode: nextCode);
       },
     );
+    // 4과 2차시 주요1
     r.child(
       '/enlv1s4c2jy1',
       child: (context) {

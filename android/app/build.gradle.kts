@@ -29,12 +29,12 @@ val facebookAppId = dotenv.getProperty("FACEBOOK_APP_ID") ?: ""
 val fbLoginProtocolScheme = dotenv.getProperty("FB_LOGIN_PROTOCOL_SCHEME") ?: ""
 val facebookClientToken = dotenv.getProperty("FACEBOOK_CLIENT_TOKEN") ?: ""
 
-//val keystoreProperties = Properties().apply {
-//    val keystoreFile = rootProject.file("app/key.properties")
-//    if (keystoreFile.exists()) {
-//        load(FileInputStream(keystoreFile))
-//    }
-//}
+val keystoreProperties = Properties().apply {
+    val keystoreFile = rootProject.file("app/key.properties")
+    if (keystoreFile.exists()) {
+        load(FileInputStream(keystoreFile))
+    }
+}
 
 android {
     namespace = "com.ssafy.soonamu"
@@ -57,8 +57,8 @@ android {
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 23
         targetSdk = flutter.targetSdkVersion
-        versionCode = 24
-        versionName = "1.1.25"
+        versionCode = 25
+        versionName = "1.1.26"
 
         if (kakaoKey.isEmpty()) throw GradleException("KAKAO_NATIVE_APP_KEY not found in .env file")
         if (defaultWebClientId.isEmpty()) throw GradleException("DEFAULT_WEB_CLIENT_ID not found in .env file")
@@ -80,10 +80,10 @@ android {
 
     signingConfigs {
         create("release") {
-//            keyAlias = keystoreProperties["keyAlias"] as String?
-//            keyPassword = keystoreProperties["keyPassword"] as String?
-//            storeFile = file(keystoreProperties["storeFile"] as String?)
-//            storePassword = keystoreProperties["storePassword"] as String?
+            keyAlias = keystoreProperties["keyAlias"] as String?
+            keyPassword = keystoreProperties["keyPassword"] as String?
+            storeFile = file(keystoreProperties["storeFile"] as String?)
+            storePassword = keystoreProperties["storePassword"] as String?
         }
     }
 
