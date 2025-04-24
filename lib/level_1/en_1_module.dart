@@ -1,3 +1,4 @@
+import 'package:nansan_flutter/level_1/1_1/screens/level_1_1_1_think.dart';
 import 'package:nansan_flutter/level_1/1_3/screens/level_1_1_3_main2.dart';
 import 'package:nansan_flutter/level_1/1_3/screens/level_1_1_3_main3.dart';
 import 'package:nansan_flutter/level_1/1_3/screens/level_1_1_3_think.dart';
@@ -27,8 +28,16 @@ class En1Module extends Module {
   }
 
   @override
-  // level1 1과 1차시 주요학습활동
   void routes(RouteManager r) {
+    // level1 1과 1차시 주요학습활동
+    r.child(
+      '/enlv1s1c1gn1',
+      child: (context) {
+        final nextCode = r.args.data as String;
+        return LevelOneOneOneThink(problemCode: nextCode);
+      },
+    );
+    // level1 1과 1차시 주요학습활동
     r.child(
       '/enlv1s1c1jy1',
       child: (context) {
