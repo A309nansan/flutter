@@ -17,7 +17,6 @@ class AddProfile extends StatelessWidget {
       padding: EdgeInsets.all(10),
       child: ElevatedButton(
         onPressed: () async {
-          debugPrint('이수호 $userRole');
           if (userRole == "PARENT") {
             final result = await Modular.to.pushNamed('/auth/add_child');
             if (result == true && onProfileAdded != null) {
