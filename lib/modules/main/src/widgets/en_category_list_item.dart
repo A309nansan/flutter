@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:getwidget/components/button/gf_button_bar.dart';
 import 'package:getwidget/components/card/gf_card.dart';
 import 'package:getwidget/components/list_tile/gf_list_tile.dart';
 import 'package:getwidget/position/gf_position.dart';
@@ -15,7 +14,7 @@ class EnCategoryListItem extends StatelessWidget {
     super.key,
     required this.listItem,
     required this.scale,
-    required this.level
+    required this.level,
   });
 
   @override
@@ -31,7 +30,7 @@ class EnCategoryListItem extends StatelessWidget {
           arguments: {
             "categoryIndex": listItem.id,
             "categoryName": listItem.name,
-            "categoryLevel" : level
+            "categoryLevel": level,
           },
         );
       },
@@ -43,7 +42,7 @@ class EnCategoryListItem extends StatelessWidget {
         titlePosition: GFPosition.start,
         elevation: 5.0,
         title: GFListTile(
-          padding: EdgeInsets.symmetric(vertical:screenHeight * 0.005),
+          padding: EdgeInsets.symmetric(vertical: screenHeight * 0.005),
           title: Text(
             listItem.name,
             style: TextStyle(
@@ -62,7 +61,11 @@ class EnCategoryListItem extends StatelessWidget {
         color: Colors.white,
         content: Container(
           width: MediaQuery.of(context).size.width,
-          padding: EdgeInsets.only(top: screenHeight * 0.02, left: 30, right: 20),
+          padding: EdgeInsets.only(
+            top: screenHeight * 0.02,
+            left: 30,
+            right: 20,
+          ),
           child: Column(
             children: [
               SizedBox(
@@ -82,9 +85,12 @@ class EnCategoryListItem extends StatelessWidget {
                 // height: MediaQuery.of(context).size.width * 0.1,
                 constraints: BoxConstraints(
                   minHeight: MediaQuery.of(context).size.width * 0.13,
-                  maxHeight: MediaQuery.of(context).size.width * 0.5
+                  maxHeight: MediaQuery.of(context).size.width * 0.5,
                 ),
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: MediaQuery.of(context).size.width * 0.01),
+                padding: EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: MediaQuery.of(context).size.width * 0.01,
+                ),
                 child: Text(
                   listItem.description ?? '',
                   style: TextStyle(
@@ -107,7 +113,7 @@ class EnCategoryListItem extends StatelessWidget {
                         arguments: {
                           "categoryIndex": listItem.id,
                           "categoryName": listItem.name,
-                          "categoryLevel" : level
+                          "categoryLevel": level,
                         },
                       );
                     },
@@ -124,7 +130,7 @@ class EnCategoryListItem extends StatelessWidget {
                     child: Text(
                       "학습하기",
                       style: TextStyle(
-                        fontSize:  screenHeight * 0.01,
+                        fontSize: screenHeight * 0.01,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                       ),
