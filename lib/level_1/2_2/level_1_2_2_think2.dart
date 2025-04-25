@@ -16,7 +16,10 @@ import 'package:nansan_flutter/shared/widgets/en_problem_splash_screen.dart';
 import 'package:nansan_flutter/shared/widgets/en_progress_bar_widget.dart';
 import 'package:nansan_flutter/shared/widgets/new_header_widget.dart';
 import 'package:nansan_flutter/shared/widgets/new_question_text.dart';
+import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
 import 'package:screenshot/screenshot.dart';
+
+import '../../shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
 
 class LevelOneTwoTwoThink2 extends StatefulWidget {
   final String problemCode;
@@ -48,13 +51,7 @@ class _LevelOneTwoTwoThink2State extends State<LevelOneTwoTwoThink2>
   Map<String, dynamic> selectedAnswers = {};
   late AnimationController submitController;
   late Animation<double> submitAnimation;
-
-  //페이지별 변수
-  List<int> p1Data = [];
-  List<int> p2Data = [];
-  List<int> p3Data = [];
-  List<int> p4Data = [];
-  List<int> p5Data = [];
+  final Map<String, GlobalKey<HandwritingRecognitionZoneState>> zoneKeys = {};
 
   @override
   void initState() {
@@ -103,8 +100,8 @@ class _LevelOneTwoTwoThink2State extends State<LevelOneTwoTwoThink2>
           (key, value) => MapEntry(key, List<int>.from(value)),
         );
         answerData = response.answer;
+        selectedAnswers = response.problem;
       });
-      _processProblemData(problemData);
     } catch (e) {
       debugPrint('Error loading question data: $e');
     }
@@ -142,20 +139,6 @@ class _LevelOneTwoTwoThink2State extends State<LevelOneTwoTwoThink2>
     }
   }
 
-  void _processProblemData(problemData) {
-    p1Data = problemData['p1'];
-    p2Data = problemData['p2'];
-    p3Data = problemData['p3'];
-    p4Data = problemData['p4'];
-    p5Data = problemData['p5'];
-
-    debugPrint('1번 $p1Data');
-    debugPrint('2번 $p2Data');
-    debugPrint('3번 $p3Data');
-    debugPrint('4번 $p4Data');
-    debugPrint('5번 $p5Data');
-  }
-
   void _processInputData() {}
 
   // 정답 체크하는 함수. 정답 체크로직 구현 필요.
@@ -166,6 +149,7 @@ class _LevelOneTwoTwoThink2State extends State<LevelOneTwoTwoThink2>
   }
 
   Future<void> submitActivity(BuildContext context) async {
+    await recognizeAll();
     try {
       final imageBytes = await screenshotController.capture() as Uint8List;
       if (!context.mounted) return;
@@ -181,6 +165,33 @@ class _LevelOneTwoTwoThink2State extends State<LevelOneTwoTwoThink2>
       );
     } catch (e) {
       debugPrint("이미지 캡처 중 오류 발생: $e");
+    }
+  }
+
+  Future<void> recognizeAll() async {
+    for (final entry in zoneKeys.entries) {
+      final key = entry.key; // e.g. "p1-2"
+      final zoneKey = entry.value;
+      final state = zoneKey.currentState;
+
+      // Skip the entry if state is null or the widget is unmounted
+      if (state == null) {
+        debugPrint("Skipping $key — state is null");
+        continue;
+      }
+
+      try {
+        final recognized = await state.recognize();
+        final parts = key.split('-');
+        final rowKey = parts[0];
+        final index = int.parse(parts[1]);
+
+        final row = List<int>.from(selectedAnswers[rowKey]);
+        row[index] = int.tryParse(recognized) ?? -1;
+        selectedAnswers[rowKey] = row;
+      } catch (e) {
+        debugPrint("Recognition failed for $key: $e");
+      }
     }
   }
 
@@ -246,118 +257,41 @@ class _LevelOneTwoTwoThink2State extends State<LevelOneTwoTwoThink2>
                             ),
                             SizedBox(height: screenHeight * 0.01),
                             Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  alignment: Alignment.center,
-                                  width: screenWidth * 0.05,
-                                  height: screenWidth * 0.05,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(50),
-                                    color: Colors.purple[100],
-                                  ),
-                                  child: Text(
-                                    '1',
-                                    style: TextStyle(
-                                      fontSize: screenWidth * 0.035,
+                              children: List.generate(5, (index) {
+                                final key = 'p${index + 1}';
+                                final data = problemData[key] ?? [];
+
+                                return Padding(
+                                  padding: EdgeInsets.only(bottom: screenHeight * 0.02),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 16.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          alignment: Alignment.center,
+                                          width: screenWidth * 0.05,
+                                          height: screenWidth * 0.05,
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(50),
+                                            color: Colors.purple[100],
+                                          ),
+                                          child: Text(
+                                            '${index + 1}',
+                                            style: TextStyle(fontSize: screenWidth * 0.035),
+                                          ),
+                                        ),
+                                        DynamicNumberRow(
+                                          rowId: key,
+                                          data: data,
+                                          zoneKeys: zoneKeys,
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ),
-                                DynamicNumberRow(data: p1Data),
-                              ],
-                            ),
-                            SizedBox(height: screenHeight * 0.02),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  alignment: Alignment.center,
-                                  width: screenWidth * 0.05,
-                                  height: screenWidth * 0.05,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(50),
-                                    color: Colors.purple[100],
-                                  ),
-                                  child: Text(
-                                    '2',
-                                    style: TextStyle(
-                                      fontSize: screenWidth * 0.035,
-                                    ),
-                                  ),
-                                ),
-                                DynamicNumberRow(data: p2Data),
-                              ],
-                            ),
-                            SizedBox(height: screenHeight * 0.02),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  alignment: Alignment.center,
-                                  width: screenWidth * 0.05,
-                                  height: screenWidth * 0.05,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(50),
-                                    color: Colors.purple[100],
-                                  ),
-                                  child: Text(
-                                    '3',
-                                    style: TextStyle(
-                                      fontSize: screenWidth * 0.035,
-                                    ),
-                                  ),
-                                ),
-                                DynamicNumberRow(data: p3Data),
-                              ],
-                            ),
-                            SizedBox(height: screenHeight * 0.02),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  alignment: Alignment.center,
-                                  width: screenWidth * 0.05,
-                                  height: screenWidth * 0.05,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(50),
-                                    color: Colors.purple[100],
-                                  ),
-                                  child: Text(
-                                    '4',
-                                    style: TextStyle(
-                                      fontSize: screenWidth * 0.035,
-                                    ),
-                                  ),
-                                ),
-                                DynamicNumberRow(data: p4Data),
-                              ],
-                            ),
-                            SizedBox(height: screenHeight * 0.02),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  alignment: Alignment.center,
-                                  width: screenWidth * 0.05,
-                                  height: screenWidth * 0.05,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(50),
-                                    color: Colors.purple[100],
-                                  ),
-                                  child: Text(
-                                    '5',
-                                    style: TextStyle(
-                                      fontSize: screenWidth * 0.035,
-                                    ),
-                                  ),
-                                ),
-                                DynamicNumberRow(data: p5Data),
-                              ],
+                                );
+                              }),
                             ),
                             Spacer(),
                             Row(
@@ -393,16 +327,17 @@ class _LevelOneTwoTwoThink2State extends State<LevelOneTwoTwoThink2>
                                             buttonText: "제출하기",
                                             fontSize: screenWidth * 0.02,
                                             borderRadius: 10,
-                                            onPressed:
-                                                (isSubmitted)
-                                                    ? null
-                                                    : () => {
-                                                      submitController
-                                                          .forward(),
-                                                      showSubmitPopup = true,
-                                                      submitActivity(context),
-                                                      checkAnswer(),
-                                                    },
+                                            onPressed: isSubmitted
+                                                ? null
+                                                : () async {
+                                              await submitController.forward();
+                                              setState(() {
+                                                showSubmitPopup = true;
+                                              });
+
+                                              await submitActivity(context);  // This calls recognizeAll()
+                                              checkAnswer();
+                                            },
                                           ),
 
                                         if (isSubmitted &&
@@ -413,14 +348,14 @@ class _LevelOneTwoTwoThink2State extends State<LevelOneTwoTwoThink2>
                                             buttonText: "제출하기",
                                             fontSize: screenWidth * 0.02,
                                             borderRadius: 10,
-                                            onPressed:
-                                                () => {
-                                                  setState(() {
-                                                    checkAnswer();
-                                                    showSubmitPopup = true;
-                                                  }),
-                                                  submitController.forward(),
-                                                },
+                                            onPressed: () async {
+                                              await submitActivity(context);
+                                              checkAnswer();
+                                              setState(() {
+                                                showSubmitPopup = true;
+                                              });
+                                              await submitController.forward();
+                                            },
                                           ),
                                           const SizedBox(width: 20),
                                           ButtonWidget(
@@ -453,6 +388,38 @@ class _LevelOneTwoTwoThink2State extends State<LevelOneTwoTwoThink2>
                       ),
                     ),
                   ),
+                  if (showSubmitPopup)
+                    Positioned.fill(
+                      child: Stack(
+                        children: [
+                          Container(color: Colors.black54),
+                          Center(
+                            child: FadeTransition(
+                              opacity: submitAnimation,
+                              child: ScaleTransition(
+                                scale: submitAnimation,
+                                child: Material(
+                                  type: MaterialType.transparency,
+                                  child: SuccessfulPopup(
+                                    scaleAnimation:
+                                    const AlwaysStoppedAnimation(1.0),
+                                    isCorrect: isCorrect,
+                                    customMessage:
+                                    isCorrect ? "🎉 정답이에요!" : "틀렸어요...",
+                                    isEnd: isEnd,
+                                    closePopup: closeSubmit,
+                                    onClose:
+                                    isCorrect
+                                        ? () async => onNextPressed()
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                 ],
               ),
     );

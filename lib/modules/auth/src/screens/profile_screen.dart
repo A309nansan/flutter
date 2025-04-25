@@ -129,6 +129,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     });
                                     loadProfiles();
                                   },
+                                  userRole: userRole,
                                 ),
                               )
                               : GridView.builder(
