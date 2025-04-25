@@ -262,6 +262,8 @@ class LevelOneTwoThreeThink1State extends State<LevelOneTwoThreeThink1> with Tic
                                   (isSubmitted)
                                       ? null
                                       : () => {
+                                    // 나중에 onnextpressed 삭제
+                                    onNextPressed(),
                                     submitController.forward(),
                                     showSubmitPopup = true,
                                     submitActivity(context),
