@@ -1,11 +1,16 @@
 import '../models/draw_line_models.dart';
 
 class DrawLineDotsController {
-  List<DrawLineDot> dots = [];
-  List<DrawLineConnection> connections = [];
+  List dots = [];
+  List connections = [];
 
   void addDot(DrawLineDot dot) {
     dots.add(dot);
+  }
+
+  // 연결을 추가하는 전용 메서드 추가
+  void addConnection(DrawLineConnection connection) {
+    connections.add(connection);
   }
 
   void clearAll() {
