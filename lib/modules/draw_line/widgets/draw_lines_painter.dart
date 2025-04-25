@@ -7,14 +7,14 @@ class DrawLinesPainter extends CustomPainter {
   final DrawLineDot? startDot;
   final Offset? currentPosition;
   final bool isDrawingTemporaryLine;
-  final Map<String, Offset> dotAbsoluteOffsets;
+
+  // dotAbsoluteOffsets 파라미터 제거
 
   DrawLinesPainter({
     required this.connections,
     this.startDot,
     this.currentPosition,
     this.isDrawingTemporaryLine = false,
-    required this.dotAbsoluteOffsets,
   });
 
   @override
@@ -26,13 +26,11 @@ class DrawLinesPainter extends CustomPainter {
           ..strokeCap = StrokeCap.round;
 
     for (var connection in connections) {
-      // 절대 위치 사용
-      final p1 = dotAbsoluteOffsets[connection.dot1.id];
-      final p2 = dotAbsoluteOffsets[connection.dot2.id];
+      // 상대 위치를 캔버스 크기에 맞게 변환
+      final p1 = _getPositionOnCanvas(connection.dot1.position, size);
+      final p2 = _getPositionOnCanvas(connection.dot2.position, size);
 
-      if (p1 != null && p2 != null) {
-        canvas.drawLine(p1, p2, permanentPaint);
-      }
+      canvas.drawLine(p1, p2, permanentPaint);
     }
 
     if (isDrawingTemporaryLine && startDot != null && currentPosition != null) {
@@ -42,8 +40,8 @@ class DrawLinesPainter extends CustomPainter {
             ..strokeWidth = 2
             ..strokeCap = StrokeCap.round;
 
-      // 시작점도 절대 위치 사용
-      final p1 = dotAbsoluteOffsets[startDot!.id] ?? startDot!.position;
+      // 시작점을 상대 위치에서 변환
+      final p1 = _getPositionOnCanvas(startDot!.position, size);
 
       drawDashedLine(
         canvas: canvas,
@@ -54,6 +52,14 @@ class DrawLinesPainter extends CustomPainter {
         paint: tempPaint,
       );
     }
+  }
+
+  // 상대 위치를 캔버스 위치로 변환하는 메서드 추가
+  Offset _getPositionOnCanvas(Offset relativePosition, Size size) {
+    return Offset(
+      relativePosition.dx * size.width,
+      relativePosition.dy * size.height,
+    );
   }
 
   void drawDashedLine({
@@ -68,23 +74,31 @@ class DrawLinesPainter extends CustomPainter {
     var dy = p2.dy - p1.dy;
     final magnitude = sqrt(dx * dx + dy * dy);
     if (magnitude == 0) return;
+
     dx = dx / magnitude;
     dy = dy / magnitude;
+
     final steps = magnitude ~/ (dashWidth + dashSpace);
     final int gap = dashWidth + dashSpace;
+
     var startX = p1.dx;
     var startY = p1.dy;
+
     for (int i = 0; i < steps; i++) {
       final endX = startX + dx * dashWidth;
       final endY = startY + dy * dashWidth;
+
       canvas.drawLine(Offset(startX, startY), Offset(endX, endY), paint);
+
       startX += dx * gap;
       startY += dy * gap;
     }
+
     final remaining = magnitude - steps * gap;
     if (remaining > 0) {
       final endX = startX + dx * min(remaining, dashWidth.toDouble());
       final endY = startY + dy * min(remaining, dashWidth.toDouble());
+
       canvas.drawLine(Offset(startX, startY), Offset(endX, endY), paint);
     }
   }
