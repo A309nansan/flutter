@@ -188,6 +188,14 @@ class En1Module extends Module {
         return LevelOneTwoThreeThink1(problemCode: nextCode);
       },
     );
+    // 2과 3차시 개념3
+    r.child(
+      '/enlv1s2c3gn3',
+      child: (context) {
+        final nextCode = r.args.data as String;
+        return LevelOneTwoThreeThink3(problemCode: nextCode);
+      },
+    );
     // 2과 3차시 개념4
     r.child(
       '/enlv1s2c3gn4',
