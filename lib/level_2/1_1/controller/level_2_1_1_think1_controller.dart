@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import '../../../shared/services/en_problem_service.dart';
 import '../../../shared/services/request_service.dart';
+import '../../../shared/services/secure_storage_service.dart';
 import '../models/problem.dart';
 import '../widgets/dot_connector.dart';
 
@@ -36,10 +37,13 @@ class LevelTwoOneOneThink1Controller {
   DateTime? submissionTime;
   late int currentProblemNumber;
   late int totalProblemCount;
-
+  late int childId;
 
   Future<void> init(String code) async {
     problemCode = code;
+    childId = (await SecureStorageService.getChildId())!;
+    EnProblemService.saveContinueProblem(problemCode, childId);
+
     final response = await RequestService.post(
       "/en/problem/make",
       data: {"problem_code": code},
@@ -159,6 +163,7 @@ class LevelTwoOneOneThink1Controller {
     final nextCode = originalProblem.nextProblemCode;
     if (nextCode == null || nextCode.isEmpty) {
       debugPrint("📌 다음 문제가 없습니다.");
+      EnProblemService.clearChapterProblem(childId, problemCode);
       Modular.to.pop();
       return;
     }

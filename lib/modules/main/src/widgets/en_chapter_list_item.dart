@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:nansan_flutter/shared/widgets/toase_message.dart';
 
+import '../../../../shared/widgets/problem_dialog.dart';
 import '../models/en_category_model.dart';
 
 class EnChapterListItem extends StatelessWidget {
   final EnCategoryModel listItem;
   final int level;
+  final int childId;
 
   const EnChapterListItem({
     super.key,
     required this.listItem,
     required this.level,
+    required this.childId,
   });
 
   @override
@@ -139,63 +142,9 @@ class EnChapterListItem extends StatelessWidget {
                               height: screenHeight * 0.03,
                               child: ElevatedButton(
                                 onPressed: () async {
-                                  var problemCode = listItem.problemCode;
+                                  final problemCode = listItem.problemCode;
 
-                                  if (problemCode == null ||
-                                      problemCode.isEmpty) {
-                                    showDialog(
-                                      context: context,
-                                      builder:
-                                          (context) => AlertDialog(
-                                            title: Text('ℹ️ 정보'),
-                                            content: Text('해당 차시 문제를 준비중입니다.'),
-                                            actions: [
-                                              TextButton(
-                                                onPressed:
-                                                    () =>
-                                                        Navigator.pop(context),
-                                                child: Text('확인'),
-                                              ),
-                                            ],
-                                          ),
-                                    );
-                                    return;
-                                  }
-
-                                  final route = '/level$level/$problemCode';
-
-                                  try {
-                                    await Modular.to.pushNamed(
-                                      route,
-                                      arguments: problemCode,
-                                    );
-                                  } catch (e) {
-                                    // 라우팅 실패 시 다이얼로그 띄우기
-                                    debugPrint('레벨 : $level');
-                                    debugPrint('프라블럼코드 : $problemCode');
-                                    showDialog(
-                                      context: context,
-                                      builder:
-                                          (context) => AlertDialog(
-                                            title: Text('ℹ️ 정보'),
-                                            content: Text('해당 차시 문제를 준비중입니다.'),
-                                            backgroundColor: Colors.white,
-                                            actions: [
-                                              TextButton(
-                                                onPressed:
-                                                    () =>
-                                                        Navigator.pop(context),
-                                                child: Text(
-                                                  '확인',
-                                                  style: TextStyle(
-                                                    color: Colors.black,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                    );
-                                  }
+                                  await ProblemDialog.showProblemDialog(context, problemCode, childId, level);
                                 },
                                 //   onPressed: () {
                                 //   var problemCode = listItem.problemCode;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:nansan_flutter/modules/main/src/widgets/en_chapter_list_item.dart';
+import '../../../../shared/services/en_problem_service.dart';
 import '../../../../shared/widgets/appbar_widget.dart';
 import '../../../../shared/widgets/en_list_splash_screen.dart';
 import '../models/en_category_model.dart';
@@ -23,6 +24,7 @@ class EnChapterListScreen extends StatefulWidget{
 }
 
 class _EnChapterListScreenState extends State<EnChapterListScreen> {
+  late final int? childId;
   List<EnCategoryModel> chapterList = [];
   bool isLoading = false;
 
@@ -30,6 +32,7 @@ class _EnChapterListScreenState extends State<EnChapterListScreen> {
   void initState() {
     super.initState();
     setState(() => isLoading = true);
+    init();
     _loadChapters();
   }
 
@@ -39,6 +42,10 @@ class _EnChapterListScreenState extends State<EnChapterListScreen> {
       chapterList = result;
       isLoading = false;
     });
+  }
+
+  void init() async {
+    childId = await EnProblemService.getChildId();
   }
 
   @override
@@ -98,7 +105,7 @@ class _EnChapterListScreenState extends State<EnChapterListScreen> {
                 physics: NeverScrollableScrollPhysics(),
                 itemCount: chapterList.length,
                 itemBuilder: (context, index) {
-                  return EnChapterListItem(listItem: chapterList[index], level: widget.categoryLevel);
+                  return EnChapterListItem(listItem: chapterList[index], level: widget.categoryLevel, childId: childId!,);
                 },
               ),
             ),

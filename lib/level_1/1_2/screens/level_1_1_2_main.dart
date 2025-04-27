@@ -61,6 +61,7 @@ class LevelOneOneTwoMainState extends State<LevelOneOneTwoMain>
   @override
   void initState() {
     super.initState();
+    init();
     submitController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 400),
@@ -272,10 +273,6 @@ class LevelOneOneTwoMainState extends State<LevelOneOneTwoMain>
       final imageBytes = await screenshotController.capture() as Uint8List;
       if (!context.mounted) return;
 
-      final childProfileJson = await SecureStorageService.getChildProfile();
-      final childProfile = jsonDecode(childProfileJson!);
-      final childId = childProfile['id'];
-
       await ImageService.uploadImage(
         imageBytes: imageBytes,
         childId: childId,
@@ -290,6 +287,7 @@ class LevelOneOneTwoMainState extends State<LevelOneOneTwoMain>
     final nextCode = nextProblemCode;
     if (nextCode.isEmpty) {
       debugPrint("📌 다음 문제가 없습니다.");
+      EnProblemService.clearChapterProblem(childId, widget.problemCode);
       Modular.to.pop();
       return;
     }
@@ -308,6 +306,11 @@ class LevelOneOneTwoMainState extends State<LevelOneOneTwoMain>
         showSubmitPopup = false;
       });
     });
+  }
+
+  void init() async {
+    childId = (await SecureStorageService.getChildId())!;
+    EnProblemService.saveContinueProblem(widget.problemCode, childId);
   }
 
   @override

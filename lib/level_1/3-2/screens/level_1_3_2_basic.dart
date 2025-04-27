@@ -8,6 +8,7 @@ import '../../../modules/level_api/services/problem_api_service.dart';
 import '../../../shared/services/image_service.dart';
 import '../../../shared/widgets/appbar_widget.dart';
 import '../../../shared/widgets/button_widget.dart';
+import '../../../shared/widgets/en_progress_bar_widget.dart';
 import '../../../shared/widgets/successful_popup.dart';
 import '../../../shared/widgets/toase_message.dart';
 import '../../../shared/services/secure_storage_service.dart';
@@ -54,13 +55,9 @@ class _LevelOneThreeTwoBasicState extends State<LevelOneThreeTwoBasic>
 
       controller.submissionTime = DateTime.now();
 
-      final childProfileJson = await SecureStorageService.getChildProfile();
-      final childProfile = jsonDecode(childProfileJson!);
-      final childId = childProfile['id'];
-
       await ImageService.uploadImage(
         imageBytes: imageBytes,
-        childId: childId,
+        childId: controller.childId,
         localDateTime: controller.submissionTime!,
       );
 
@@ -100,14 +97,11 @@ class _LevelOneThreeTwoBasicState extends State<LevelOneThreeTwoBasic>
       controller.submitController.forward();
 
       if (!isSubmitted) {
-        final childProfileJson = await SecureStorageService.getChildProfile();
-        final childProfile = jsonDecode(childProfileJson!);
-        final childId = childProfile['id'];
         controller.submissionTime ??= DateTime.now();
 
         final result = controller.buildResultJson(
           dateTime: controller.submissionTime!,
-          childId: childId,
+          childId: controller.childId,
         );
 
         await ProblemApiService().submitAnswer(result);
@@ -319,67 +313,79 @@ class _LevelOneThreeTwoBasicState extends State<LevelOneThreeTwoBasic>
                   ),
                 ),
 
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 30.0,
-                    vertical: screenHeight * 0.02,
-                  ),
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    transitionBuilder: (child, animation) {
-                      return FadeTransition(opacity: animation, child: child);
-                    },
-                    child: Row(
-                      key: ValueKey<String>(
-                        '${isSubmitted}_${controller.showCorrect}',
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: screenHeight * 0.02),
+                      child: EnProgressBarWidget(
+                          current: controller.currentProblemNumber,
+                          total: controller.totalProblemCount
                       ),
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        if (!isSubmitted)
-                          ButtonWidget(
-                            height: screenHeight * 0.035,
-                            width: screenWidth * 0.18,
-                            buttonText: "제출하기",
-                            fontSize: screenWidth * 0.02,
-                            borderRadius: 10,
-                            onPressed:
-                                (isSubmitting || isSubmitted)
-                                    ? null
-                                    : saveSubmissionData,
-                          ),
-
-                        if (isSubmitted && isCorrectAnswer == false) ...[
-                          ButtonWidget(
-                            height: screenHeight * 0.035,
-                            width: screenWidth * 0.18,
-                            buttonText: "제출하기",
-                            fontSize: screenWidth * 0.02,
-                            borderRadius: 10,
-                            onPressed: saveSubmissionData,
-                          ),
-                          const SizedBox(width: 20),
-                          ButtonWidget(
-                            height: screenHeight * 0.035,
-                            width: screenWidth * 0.18,
-                            buttonText: isEnd ? "학습종료" : "다음문제",
-                            fontSize: screenWidth * 0.02,
-                            borderRadius: 10,
-                            onPressed: () => controller.onNextPressed(),
-                          ),
-                        ],
-
-                        if (isSubmitted && isCorrectAnswer == true)
-                          ButtonWidget(
-                            height: screenHeight * 0.035,
-                            width: screenWidth * 0.18,
-                            buttonText: isEnd ? "학습종료" : "다음문제",
-                            fontSize: screenWidth * 0.02,
-                            borderRadius: 10,
-                            onPressed: () => controller.onNextPressed(),
-                          ),
-                      ],
                     ),
-                  ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 30.0,
+                        vertical: screenHeight * 0.02,
+                      ),
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        transitionBuilder: (child, animation) {
+                          return FadeTransition(opacity: animation, child: child);
+                        },
+                        child: Row(
+                          key: ValueKey<String>(
+                            '${isSubmitted}_${controller.showCorrect}',
+                          ),
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            if (!isSubmitted)
+                              ButtonWidget(
+                                height: screenHeight * 0.035,
+                                width: screenWidth * 0.18,
+                                buttonText: "제출하기",
+                                fontSize: screenWidth * 0.02,
+                                borderRadius: 10,
+                                onPressed:
+                                    (isSubmitting || isSubmitted)
+                                        ? null
+                                        : saveSubmissionData,
+                              ),
+
+                            if (isSubmitted && isCorrectAnswer == false) ...[
+                              ButtonWidget(
+                                height: screenHeight * 0.035,
+                                width: screenWidth * 0.18,
+                                buttonText: "제출하기",
+                                fontSize: screenWidth * 0.02,
+                                borderRadius: 10,
+                                onPressed: saveSubmissionData,
+                              ),
+                              const SizedBox(width: 20),
+                              ButtonWidget(
+                                height: screenHeight * 0.035,
+                                width: screenWidth * 0.18,
+                                buttonText: isEnd ? "학습종료" : "다음문제",
+                                fontSize: screenWidth * 0.02,
+                                borderRadius: 10,
+                                onPressed: () => controller.onNextPressed(),
+                              ),
+                            ],
+
+                            if (isSubmitted && isCorrectAnswer == true)
+                              ButtonWidget(
+                                height: screenHeight * 0.035,
+                                width: screenWidth * 0.18,
+                                buttonText: isEnd ? "학습종료" : "다음문제",
+                                fontSize: screenWidth * 0.02,
+                                borderRadius: 10,
+                                onPressed: () => controller.onNextPressed(),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
