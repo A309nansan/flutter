@@ -192,7 +192,7 @@ class _LevelOneThreeTwoMainState extends State<LevelOneThreeTwoMain>
                 Screenshot(
                   controller: screenshotController,
                   child: Container(
-                    height: screenHeight * 0.86,
+                    height: screenHeight * 0.85,
                     color: Colors.white,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -344,67 +344,79 @@ class _LevelOneThreeTwoMainState extends State<LevelOneThreeTwoMain>
                     ),
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 30.0,
-                    vertical: screenHeight * 0.02,
-                  ),
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    transitionBuilder: (child, animation) {
-                      return FadeTransition(opacity: animation, child: child);
-                    },
-                    child: Row(
-                      key: ValueKey<String>(
-                        '${isSubmitted}_${controller.isCorrect}',
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 30.0),
+                      child: EnProgressBarWidget(
+                          current: controller.currentProblemNumber,
+                          total: controller.totalProblemCount
                       ),
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        if (!isSubmitted)
-                          ButtonWidget(
-                            height: screenHeight * 0.035,
-                            width: screenWidth * 0.18,
-                            buttonText: "제출하기",
-                            fontSize: screenWidth * 0.02,
-                            borderRadius: 10,
-                            onPressed:
-                                (isSubmitting || isSubmitted)
-                                    ? null
-                                    : saveSubmissionData,
-                          ),
-
-                        if (isSubmitted && isCorrectAnswer == false) ...[
-                          ButtonWidget(
-                            height: screenHeight * 0.035,
-                            width: screenWidth * 0.18,
-                            buttonText: "제출하기",
-                            fontSize: screenWidth * 0.02,
-                            borderRadius: 10,
-                            onPressed: saveSubmissionData,
-                          ),
-                          const SizedBox(width: 20),
-                          ButtonWidget(
-                            height: screenHeight * 0.035,
-                            width: screenWidth * 0.18,
-                            buttonText: isEnd ? "학습종료" : "다음문제",
-                            fontSize: screenWidth * 0.02,
-                            borderRadius: 10,
-                            onPressed: () => controller.onNextPressed(),
-                          ),
-                        ],
-
-                        if (isSubmitted && isCorrectAnswer == true)
-                          ButtonWidget(
-                            height: screenHeight * 0.035,
-                            width: screenWidth * 0.18,
-                            buttonText: isEnd ? "학습종료" : "다음문제",
-                            fontSize: screenWidth * 0.02,
-                            borderRadius: 10,
-                            onPressed: () => controller.onNextPressed(),
-                          ),
-                      ],
                     ),
-                  ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 30.0,
+                        vertical: screenHeight * 0.02,
+                      ),
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        transitionBuilder: (child, animation) {
+                          return FadeTransition(opacity: animation, child: child);
+                        },
+                        child: Row(
+                          key: ValueKey<String>(
+                            '${isSubmitted}_${controller.isCorrect}',
+                          ),
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            if (!isSubmitted)
+                              ButtonWidget(
+                                height: screenHeight * 0.035,
+                                width: screenWidth * 0.18,
+                                buttonText: "제출하기",
+                                fontSize: screenWidth * 0.02,
+                                borderRadius: 10,
+                                onPressed:
+                                    (isSubmitting || isSubmitted)
+                                        ? null
+                                        : saveSubmissionData,
+                              ),
+
+                            if (isSubmitted && isCorrectAnswer == false) ...[
+                              ButtonWidget(
+                                height: screenHeight * 0.035,
+                                width: screenWidth * 0.18,
+                                buttonText: "제출하기",
+                                fontSize: screenWidth * 0.02,
+                                borderRadius: 10,
+                                onPressed: saveSubmissionData,
+                              ),
+                              const SizedBox(width: 20),
+                              ButtonWidget(
+                                height: screenHeight * 0.035,
+                                width: screenWidth * 0.18,
+                                buttonText: isEnd ? "학습종료" : "다음문제",
+                                fontSize: screenWidth * 0.02,
+                                borderRadius: 10,
+                                onPressed: () => controller.onNextPressed(),
+                              ),
+                            ],
+
+                            if (isSubmitted && isCorrectAnswer == true)
+                              ButtonWidget(
+                                height: screenHeight * 0.035,
+                                width: screenWidth * 0.18,
+                                buttonText: isEnd ? "학습종료" : "다음문제",
+                                fontSize: screenWidth * 0.02,
+                                borderRadius: 10,
+                                onPressed: () => controller.onNextPressed(),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

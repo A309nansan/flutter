@@ -3,6 +3,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import '../../../shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
 import '../../../shared/services/en_problem_service.dart';
 import '../../../shared/services/request_service.dart';
+import '../../../shared/services/secure_storage_service.dart';
 
 class LevelTwoOneOneMain1Controller {
   final TickerProvider ticker;
@@ -26,9 +27,12 @@ class LevelTwoOneOneMain1Controller {
   DateTime? submissionTime;
   late int currentProblemNumber;
   late int totalProblemCount;
+  late int childId;
 
   Future<void> init(String code) async {
     problemCode = code;
+    childId = (await SecureStorageService.getChildId())!;
+    EnProblemService.saveContinueProblem(problemCode, childId);
 
     final response = await RequestService.post(
       "/en/problem/make",
@@ -145,6 +149,7 @@ class LevelTwoOneOneMain1Controller {
     final nextCode = originalProblem["next_problem_code"] as String?;
     if (nextCode == null || nextCode.isEmpty) {
       debugPrint("📌 다음 문제가 없습니다.");
+      EnProblemService.clearChapterProblem(childId, problemCode);
       Modular.to.pop();
       return;
     }

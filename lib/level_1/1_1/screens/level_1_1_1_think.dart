@@ -79,7 +79,7 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
   @override
   void initState() {
     super.initState();
-
+    init();
     submitController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 400),
@@ -147,6 +147,11 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
     } catch (e) {
       debugPrint('Submit error: $e');
     }
+  }
+
+  void init() async {
+    childId = (await SecureStorageService.getChildId())!;
+    EnProblemService.saveContinueProblem(widget.problemCode, childId);
   }
 
   // 문제 데이터 처리 - 상대 좌표만 사용
@@ -267,6 +272,7 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
 
     if (nextCode.isEmpty) {
       debugPrint("📌 다음 문제가 없습니다.");
+      EnProblemService.clearChapterProblem(childId, widget.problemCode);
       Modular.to.pop();
       return;
     }

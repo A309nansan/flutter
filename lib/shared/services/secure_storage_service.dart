@@ -84,6 +84,14 @@ class SecureStorageService {
     await _storage.delete(key: 'child_profile');
   }
 
+  static Future<int?> getChildId() async {
+    final childProfileJson = await SecureStorageService.getChildProfile();
+    final childProfile = jsonDecode(childProfileJson!);
+    final childId = childProfile['id'];
+
+    return childId;
+  }
+
   // 개인정보 동의 여부 저장
   static Future<void> setPrivacyAgreementStatus(bool agreed) async {
     await _storage.write(key: 'privacy_agreed', value: agreed.toString());

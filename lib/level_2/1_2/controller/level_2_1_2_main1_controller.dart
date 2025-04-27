@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import '../../../shared/services/en_problem_service.dart';
 import '../../../shared/services/request_service.dart';
+import '../../../shared/services/secure_storage_service.dart';
 import '../models/pattern_type.dart';
 
 class LevelTwoOneTwoMain1Controller {
@@ -30,6 +31,7 @@ class LevelTwoOneTwoMain1Controller {
   bool isPatternCorrect = false;
   late int currentProblemNumber;
   late int totalProblemCount;
+  late int childId;
 
   late final AnimationController popController;
   late final AnimationController submitController;
@@ -47,6 +49,9 @@ class LevelTwoOneTwoMain1Controller {
 
   Future<void> init(String code) async {
     problemCode = code;
+    childId = (await SecureStorageService.getChildId())!;
+    EnProblemService.saveContinueProblem(problemCode, childId);
+
     final response = await RequestService.post(
       "/en/problem/make",
       data: {"problem_code": problemCode},
@@ -237,6 +242,7 @@ class LevelTwoOneTwoMain1Controller {
     final nextCode = originalProblem["next_problem_code"] as String?;
     if (nextCode == null || nextCode.isEmpty) {
       debugPrint("📌 다음 문제가 없습니다.");
+      EnProblemService.clearChapterProblem(childId, problemCode);
       Modular.to.pop();
       return;
     }
