@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import '../../../shared/services/en_problem_service.dart';
 import '../../../shared/services/request_service.dart';
+import '../../../shared/services/secure_storage_service.dart';
 
 class LevelTwoOneTwoMain2Controller {
   final TickerProvider ticker;
@@ -16,6 +17,7 @@ class LevelTwoOneTwoMain2Controller {
   DateTime? submissionTime;
   late int currentProblemNumber;
   late int totalProblemCount;
+  late int childId;
 
   bool isInitialized = false;
   bool isShowSample = false;
@@ -40,6 +42,8 @@ class LevelTwoOneTwoMain2Controller {
 
   Future<void> init(String problemCode) async {
     this.problemCode = problemCode;
+    childId = (await SecureStorageService.getChildId())!;
+    EnProblemService.saveContinueProblem(problemCode, childId);
 
     final response = await RequestService.post(
       "/en/problem/make",
@@ -192,6 +196,7 @@ class LevelTwoOneTwoMain2Controller {
   void onNextPressed() {
     final nextCode = originalProblem["next_problem_code"] as String?;
     if (nextCode == null || nextCode.isEmpty) {
+      EnProblemService.clearChapterProblem(childId, problemCode);
       Modular.to.pop();
       return;
     }

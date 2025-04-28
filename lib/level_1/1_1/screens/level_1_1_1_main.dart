@@ -30,6 +30,7 @@ class _LevelOneOneOneMainState extends State<LevelOneOneOneMain>
   void initState() {
     super.initState();
     controller = LevelOneOneOneController(problemCode: widget.problemCode);
+    controller.init();
 
     submitController = AnimationController(
       vsync: this,

@@ -151,6 +151,7 @@ class LevelOneOneOneController extends ChangeNotifier {
     final nextCode = nextProblemCode;
     if (nextCode.isEmpty) {
       debugPrint("📌 다음 문제가 없습니다.");
+      EnProblemService.clearChapterProblem(childId, problemCode);
       Modular.to.pop();
       return;
     }
@@ -170,10 +171,6 @@ class LevelOneOneOneController extends ChangeNotifier {
       final imageBytes = await screenshotController.capture() as Uint8List;
       if (!context.mounted) return;
 
-      final childProfileJson = await SecureStorageService.getChildProfile();
-      final childProfile = jsonDecode(childProfileJson!);
-      final childId = childProfile['id'];
-
       await ImageService.uploadImage(
         imageBytes: imageBytes,
         childId: childId,
@@ -182,5 +179,10 @@ class LevelOneOneOneController extends ChangeNotifier {
     } catch (e) {
       debugPrint("이미지 캡처 중 오류 발생: $e");
     }
+  }
+
+  void init() async {
+    childId = (await SecureStorageService.getChildId())!;
+    EnProblemService.saveContinueProblem(problemCode, childId);
   }
 }

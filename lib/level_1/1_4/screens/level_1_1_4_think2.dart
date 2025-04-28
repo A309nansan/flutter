@@ -93,6 +93,7 @@ class _LevelOneOneFourThink2State extends State<LevelOneOneFourThink2>
       final childProfileJson = await SecureStorageService.getChildProfile();
       final childProfile = jsonDecode(childProfileJson!);
       childId = childProfile['id'];
+      EnProblemService.saveContinueProblem(widget.problemCode, childId);
 
       setState(() {
         // problem과 answer 데이터 저장
@@ -190,6 +191,7 @@ class _LevelOneOneFourThink2State extends State<LevelOneOneFourThink2>
     final nextCode = nextProblemCode;
     if (nextCode.isEmpty) {
       debugPrint("📌 다음 문제가 없습니다.");
+      EnProblemService.clearChapterProblem(childId, widget.problemCode);
       Modular.to.pop();
       return;
     }
