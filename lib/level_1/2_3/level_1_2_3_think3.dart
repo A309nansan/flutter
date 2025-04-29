@@ -1,16 +1,22 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:nansan_flutter/level_1/2_3/widgets/clickable_container.dart';
-import 'package:nansan_flutter/level_1/2_3/widgets/example_container.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
 import 'package:nansan_flutter/shared/controllers/timer_controller.dart';
+import 'package:nansan_flutter/shared/services/en_problem_service.dart';
+import 'package:nansan_flutter/shared/services/image_service.dart';
 import 'package:nansan_flutter/shared/services/secure_storage_service.dart';
+import 'package:nansan_flutter/shared/widgets/appbar_widget.dart';
 import 'package:nansan_flutter/shared/widgets/button_widget.dart';
 import 'package:nansan_flutter/shared/widgets/en_problem_splash_screen.dart';
-import 'package:nansan_flutter/shared/widgets/header_widget.dart';
-import 'package:nansan_flutter/shared/widgets/question_text.dart';
+import 'package:nansan_flutter/shared/widgets/en_progress_bar_widget.dart';
+import 'package:nansan_flutter/shared/widgets/new_header_widget.dart';
+import 'package:nansan_flutter/shared/widgets/new_question_text.dart';
+import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:collection/collection.dart';
 
 class LevelOneTwoThreeThink3 extends StatefulWidget {
   final String problemCode;
@@ -20,31 +26,47 @@ class LevelOneTwoThreeThink3 extends StatefulWidget {
   State<LevelOneTwoThreeThink3> createState() => _LevelOneTwoThreeThink3State();
 }
 
-class _LevelOneTwoThreeThink3State extends State<LevelOneTwoThreeThink3> {
-  // 필수코드
+class _LevelOneTwoThreeThink3State extends State<LevelOneTwoThreeThink3> with TickerProviderStateMixin {
+  final ScreenshotController screenshotController = ScreenshotController();
   final TimerController _timerController = TimerController();
   final ProblemApiService _apiService = ProblemApiService();
-  int childId = 0;
-  int? elapsedSeconds;
-  int current = 1;
-  int total = 1;
-  String nextProblemCode = 'enlv1s2c3gn4';
-  String problemCode = 'enlv1s2c3gn3';
-  bool isAnswerSubmitted = false;
+  late AnimationController submitController;
+  late Animation<double> submitAnimation;
+  late int childId;
+  late int current;
+  late int total;
+  late int elapsedSeconds;
+  late String problemCode = widget.problemCode;
+  late String nextProblemCode;
+  bool isSubmitted = false;
   bool isCorrect = false;
-  bool isLoading = true;
+  bool showSubmitPopup = false;
   bool isEnd = false;
-  Map<String, dynamic> problemData = {};
-  Map<String, dynamic> answerData = {};
+  bool isLoading = true;
+  Map problemData = {};
+  Map answerData = {};
   Map<String, dynamic> selectedAnswers = {};
+  List<List<String>> fixedImageUrls = [];
+  List<Map<String, String>> candidates = [];
 
   //페이지별 변수
   List<int> numberList = [];
   int givenNumber = 0;
+  String? selectedButton = "";
+  int? selectedIndex;
 
+  // 페이지 실행 시 작동하는 함수. 수정 필요 x
   @override
   void initState() {
     super.initState();
+    submitController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+
+    submitAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: submitController, curve: Curves.elasticOut),
+    );
     // 비동기 로직 실행 후 UI 업데이트
     _loadQuestionData().then((_) {
       setState(() {
@@ -55,27 +77,20 @@ class _LevelOneTwoThreeThink3State extends State<LevelOneTwoThreeThink3> {
     });
   }
 
+  // 페이지를 나갈 때, 실행되는 함수. 수정 필요 x
   @override
   void dispose() {
-    super.dispose();
     _timerController.dispose();
-    isAnswerSubmitted = false;
+    isSubmitted = false;
+    super.dispose();
   }
 
-  // problemcode에 따라 데이터 호출하는 함수
+  // 페이지 실행 시, 문제 데이터를 불러오는 함수. 수정 필요 x
   Future<void> _loadQuestionData() async {
     try {
       final response = await _apiService.loadProblemData(problemCode);
-
-      final childProfileJson = await SecureStorageService.getChildProfile();
-      final childProfile = jsonDecode(childProfileJson!);
-      childId = childProfile['id'];
-
       setState(() {
         nextProblemCode = response.nextProblemCode;
-        problemCode = response.problemCode;
-
-        // problem과 answer 데이터 저장
         problemData = response.problem;
         answerData = response.answer;
         current = response.current;
@@ -87,20 +102,14 @@ class _LevelOneTwoThreeThink3State extends State<LevelOneTwoThreeThink3> {
     }
   }
 
-  // 제출함수(제출하기 버튼 누를시 작동하도록 설정)
+  // 문제 제출할때 함수. 수정 필요 x
   Future<void> _submitAnswer() async {
-    if (isAnswerSubmitted) return; // 이미 제출된 경우 중복 제출 방지
-
-    // 현재 날짜와 시간 (ISO 8601 형식)
-    final now = DateTime.now();
-    final dateTime = now.toIso8601String();
-
-    // SubmitRequest 객체 생성
+    if (isSubmitted) return;
     final submitRequest = SubmitRequest(
       childId: childId,
       problemCode: problemCode,
-      dateTime: dateTime,
-      solvingTime: elapsedSeconds ?? 0,
+      dateTime: DateTime.now().toIso8601String(),
+      solvingTime: _timerController.elapsedSeconds,
       isCorrected: isCorrect,
       problem: problemData,
       answer: answerData,
@@ -108,18 +117,15 @@ class _LevelOneTwoThreeThink3State extends State<LevelOneTwoThreeThink3> {
     );
 
     try {
-      // API 서비스 호출
       await _apiService.submitAnswer(jsonEncode(submitRequest.toJson()));
-      setState(() {
-        isAnswerSubmitted = true;
-      });
+      setState(() => isSubmitted = true);
     } catch (e) {
-      debugPrint('답변 제출 중 오류 발생: $e');
-      // 오류 처리 (필요에 따라 사용자에게 알림)
+      debugPrint('Submit error: $e');
     }
   }
 
-  void _processProblemData(problemData) {
+  // 문제 데이터 받아온 후, 문제에 맞게 데이터 조작
+  void _processProblemData(Map problemData) {
     numberList =
         (problemData['list'] as List<dynamic>).map((e) => e as int).toList();
     givenNumber = problemData['number'] as int;
@@ -128,150 +134,472 @@ class _LevelOneTwoThreeThink3State extends State<LevelOneTwoThreeThink3> {
     debugPrint('$givenNumber');
   }
 
-  void _processInputData() {}
+  // 문제 푸는 로직 수행할때, seletedAnswers 데이터 넣는 로직
+  void _processInputData() {
+    selectedAnswers = {"left": false, "right": false};
 
-  // 정답 체크하는 함수. 정답 체크로직 구현 필요.
-  void checkAnswer() {}
+    if (selectedButton == 'left') {
+      selectedAnswers["left"] = true;
+    } else if (selectedButton == 'right') {
+      selectedAnswers["right"] = true;
+    }
 
-  int? selectedIndex;
+    debugPrint('$selectedAnswers');
+  }
 
+  // 정답 여부 체크(보통은 이거쓰면됨)
+  void checkAnswer() {
+    _processInputData();
+
+    isCorrect = const DeepCollectionEquality().equals(
+      answerData,
+      selectedAnswers,
+    );
+    debugPrint('$isCorrect');
+
+    _submitAnswer();
+  }
+
+  // 문제푸는 스크린 이미지 서버로 전송. 수정 필요 x
+  Future<void> submitActivity(BuildContext context) async {
+    try {
+      final imageBytes = await screenshotController.capture() as Uint8List;
+      if (!context.mounted) return;
+
+      final childProfileJson = await SecureStorageService.getChildProfile();
+      final childProfile = jsonDecode(childProfileJson!);
+      final childId = childProfile['id'];
+
+      await ImageService.uploadImage(
+        imageBytes: imageBytes,
+        childId: childId,
+        localDateTime: DateTime.now(),
+      );
+    } catch (e) {
+      debugPrint("이미지 캡처 중 오류 발생: $e");
+    }
+  }
+
+  // 다음페이지로 가는 함수. 수정 필요 x
+  void onNextPressed() {
+    final nextCode = nextProblemCode;
+    if (nextCode.isEmpty) {
+      debugPrint("📌 다음 문제가 없습니다.");
+      Modular.to.pop();
+      return;
+    }
+
+    try {
+      final route = EnProblemService().getLevelPath(nextCode);
+      Modular.to.pushReplacementNamed(route, arguments: nextCode);
+    } catch (e) {
+      debugPrint("⚠️ 경로 생성 중 오류: $e");
+    }
+  }
+
+  // 팝업 조작 함수. 수정 필요 x
+  void closeSubmit() {
+    submitController.reverse().then((_) {
+      setState(() {
+        showSubmitPopup = false;
+      });
+    });
+  }
+
+  // UI 담당
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      appBar: AppBar(title: Text('빠진 수 찾기')),
+      appBar: AppbarWidget(
+        title: null,
+        leading: IconButton(
+          icon: const Icon(Icons.chevron_left, size: 40.0),
+          onPressed: () => Modular.to.pop(),
+        ),
+      ),
       body:
       isLoading
           ? const Center(child: EnProblemSplashScreen())
-          : Padding(
-        padding: const EdgeInsets.all(16.0),
-        child:
-        numberList.isNotEmpty
-            ? Column(
-          children: [
-            SizedBox(height: 16),
-            HeaderWidget(headerText: '개념학습활동'),
-            SizedBox(height: 16),
-            QuestionTextWidget(
-              questionText:
-              '숫자가 들어갈 알맞은 위치를 찾아 <보기> 와 같이 O표 하세요.',
-            ),
-            SizedBox(height: 15),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Stack(
-                alignment: Alignment.center,
+          : Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Container(
+              color: Colors.white,
+              child: Column(
                 children: [
-                  Container(
-                      height: screenHeight * 0.3,
-                      width: screenWidth * 0.85,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.orangeAccent,
-                          width: 4,
+                  Screenshot(
+                    controller: screenshotController,
+                    child: Column(
+                      children: [
+                        NewHeaderWidget(
+                          headerText: '주요학습활동',
+                          headerTextSize: screenWidth * 0.028,
+                          subTextSize: screenWidth * 0.018,
                         ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                              width: screenWidth * 0.75,
-                              height: screenHeight * 0.1,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: List.generate(5, (index) {
-                                  final contents = ['1', '', '3', '○', '5'];//데이터 넣기
+                        SizedBox(height: screenHeight * 0.01),
+                        NewQuestionTextWidget(
+                          questionText:
+                          '회색 빈칸에 알맞은 1 작은 수를 나타내는 그림은 무엇일까요?',
+                          questionTextSize: screenWidth * 0.03,
+                        ),
+                        SizedBox(height: screenHeight * 0.02),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 5),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Container(
+                                  height: screenHeight * 0.3,
+                                  width: screenWidth * 0.85,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.orangeAccent,
+                                      width: 4,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                          width: screenWidth * 0.75,
+                                          height: screenHeight * 0.1,
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: List.generate(5, (index) {
+                                              final contents = ['1', '', '3', '○', '5'];//데이터 넣기
 
-                                  return Container(
-                                    height: screenHeight * 0.06,
-                                    width:  screenWidth * 0.15,
-                                    decoration: BoxDecoration(
-                                      color: Color(0xFFFef1c4),
-                                      border: Border.all(color: Color(0xFF9c6a17)),
-                                    ),
-                                    child: Center(
-                                        child: contents[index] == '○'
-                                            ? Container(
-                                          width: 40,
-                                          height: 40,
-                                          decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              border: Border.all(
-                                                color: Colors.black,
-                                                width: 2,
-                                              )
-                                          ),
-                                        )
-                                            :
-                                        Text(
-                                          contents[index],
-                                          style: TextStyle(
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        )
-                                    ),
-                                  );
-                                }),
-                              )
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 0),
-                            child: Image.asset(
-                              'assets/images/logo1.png', //화살표 구현
-                              width: screenWidth * 0.3,
-                              height: screenHeight * 0.06,
-                            ),
-                          ),
-                          SizedBox(
-                              child: Container(
-                                height: screenHeight * 0.06,
-                                width:  screenWidth * 0.15,
-                                margin: EdgeInsets.symmetric(horizontal: 2),
-                                decoration: BoxDecoration(
-                                  color: Color(0xFFFef1c4),
-                                  border: Border.all(color: Color(0xFF9c6a17)),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    'Num',
+                                              return Container(
+                                                height: screenHeight * 0.06,
+                                                width:  screenWidth * 0.15,
+                                                decoration: BoxDecoration(
+                                                  color: Color(0xFFFef1c4),
+                                                  border: Border.all(color: Color(0xFF9c6a17)),
+                                                ),
+                                                child: Center(
+                                                    child: contents[index] == '○'
+                                                        ? Container(
+                                                      width: 40,
+                                                      height: 40,
+                                                      decoration: BoxDecoration(
+                                                          shape: BoxShape.circle,
+                                                          border: Border.all(
+                                                            color: Colors.black,
+                                                            width: 2,
+                                                          )
+                                                      ),
+                                                    )
+                                                        :
+                                                    Text(
+                                                      contents[index],
+                                                      style: TextStyle(
+                                                        fontSize: 24,
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    )
+                                                ),
+                                              );
+                                            }),
+                                          )
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 0),
+                                        child: Image.asset(
+                                          'assets/images/logo1.png', //화살표 구현
+                                          width: screenWidth * 0.3,
+                                          height: screenHeight * 0.06,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                          child: Container(
+                                            height: screenHeight * 0.06,
+                                            width:  screenWidth * 0.15,
+                                            margin: EdgeInsets.symmetric(horizontal: 2),
+                                            decoration: BoxDecoration(
+                                              color: Color(0xFFFef1c4),
+                                              border: Border.all(color: Color(0xFF9c6a17)),
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                '4',
+                                                style: TextStyle(
+                                                  fontSize: 24,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                      ),
+                                    ],
+                                  )
+                              ),
+                              Positioned(
+                                top: 0,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 5,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.orangeAccent,
+                                    borderRadius: BorderRadius.circular(5),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        blurRadius: 3,
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Text(
+                                    "<보기>",
                                     style: TextStyle(
-                                      fontSize: 24,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ),
-                              )
+                              ),
+                            ],
                           ),
-                        ],
-                      )
+                        ),
+                        SizedBox(height: screenHeight * 0.05),
+                        Column(
+                          children: [
+                            SizedBox(
+                              width: screenWidth * 0.75,
+                              height: screenHeight * 0.1,
+                              child: GridView.count(
+                                crossAxisCount: 5,
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                padding: EdgeInsets.zero,
+                                childAspectRatio: 1.5,
+                                children: List.generate(5, (index) {
+                                  final contents2 = [numberList[0], 'left', numberList[1], 'right', numberList[2]];
+                                  final isSelectable = contents2[index] == 'left' || contents2[index] == 'right';
+                                  final isSelected = selectedIndex == index;
+
+                                  return Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      SizedBox(
+                                        width: screenWidth * 0.15,
+                                        height: screenHeight * 0.1,
+                                        child: ElevatedButton(
+                                          onPressed: isSelectable
+                                              ? () {
+                                            setState(() {
+                                              if(contents2[index] == 'left'){
+                                                selectedButton = 'left';
+                                              } else if (contents2[index] == 'right'){
+                                                selectedButton = 'right';
+                                              }
+                                              selectedIndex = index;
+                                            });
+                                          }
+                                              : null,
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: const Color(0xFFFef1c4),
+                                            foregroundColor: Colors.black,
+                                            elevation: 3,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.zero,
+                                              side: const BorderSide(color: Color(0xFF9c6a17)),
+                                            ),
+                                            padding: const EdgeInsets.all(5.0),
+                                            disabledBackgroundColor: const Color(0xFFFef1c4),
+                                            disabledForegroundColor: Colors.black,
+                                          ),
+                                          child: contents2[index] != 'left' && contents2[index] != 'right'
+                                              ? Text(
+                                            '${contents2[index]}',
+                                            style: const TextStyle(
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          )
+                                              : const SizedBox.shrink(),
+
+                                        ),
+                                      ),
+
+                                      if (isSelected)
+                                        Positioned(
+                                          child: IgnorePointer(
+                                            child: Container(
+                                              width: 40,
+                                              height: 40,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: Colors.black,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  );
+                                }),
+                              ),
+                            ),
+
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 0),
+                              child: Image.asset(
+                                'assets/images/logo2.png', //화살표 구현하기
+                                width: screenWidth * 0.3,
+                                height: screenHeight * 0.06,
+                              ),
+                            ),
+                            SizedBox(
+                                child: Container(
+                                  height: screenHeight * 0.06,
+                                  width:  screenWidth * 0.15,
+                                  margin: EdgeInsets.symmetric(horizontal: 2),
+                                  decoration: BoxDecoration(
+                                    color: Color(0xFFFef1c4),
+                                    border: Border.all(color: Color(0xFF9c6a17)),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      '$givenNumber',
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                  Positioned(
-                    top: 0,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
+                  Spacer(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      EnProgressBarWidget(
+                        current: current,
+                        total: total,
                       ),
-                      decoration: BoxDecoration(
-                        color: Colors.orangeAccent,
-                        borderRadius: BorderRadius.circular(5),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 3,
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 30.0,
+                          vertical: screenHeight * 0.02,
+                        ),
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 300),
+                          transitionBuilder: (child, animation) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            );
+                          },
+                          child: Row(
+                            key: ValueKey<String>(
+                              '${isSubmitted}_$isCorrect',
+                            ),
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              if (!isSubmitted)
+                                ButtonWidget(
+                                  height: screenHeight * 0.035,
+                                  width: screenWidth * 0.18,
+                                  buttonText: "제출하기",
+                                  fontSize: screenWidth * 0.02,
+                                  borderRadius: 10,
+                                  onPressed:
+                                  (isSubmitted)
+                                      ? null
+                                      : () => {
+                                    submitController.forward(),
+                                    showSubmitPopup = true,
+                                    submitActivity(context),
+                                    checkAnswer(),
+                                  },
+                                ),
+
+                              if (isSubmitted &&
+                                  isCorrect == false) ...[
+                                ButtonWidget(
+                                  height: screenHeight * 0.035,
+                                  width: screenWidth * 0.18,
+                                  buttonText: "제출하기",
+                                  fontSize: screenWidth * 0.02,
+                                  borderRadius: 10,
+                                  onPressed:
+                                      () => {
+                                    setState(() {
+                                      checkAnswer();
+                                      showSubmitPopup = true;
+                                    }),
+                                    submitController.forward(),
+                                  },
+                                ),
+                                const SizedBox(width: 20),
+                                ButtonWidget(
+                                  height: screenHeight * 0.035,
+                                  width: screenWidth * 0.18,
+                                  buttonText: isEnd ? "학습종료" : "다음문제",
+                                  fontSize: screenWidth * 0.02,
+                                  borderRadius: 10,
+                                  onPressed: () => onNextPressed(),
+                                ),
+                              ],
+
+                              if (isSubmitted && isCorrect == true)
+                                ButtonWidget(
+                                  height: screenHeight * 0.035,
+                                  width: screenWidth * 0.18,
+                                  buttonText: isEnd ? "학습종료" : "다음문제",
+                                  fontSize: screenWidth * 0.02,
+                                  borderRadius: 10,
+                                  onPressed: () => onNextPressed(),
+                                ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
-                      child: const Text(
-                        "<보기>",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (showSubmitPopup)
+            Positioned.fill(
+              child: Stack(
+                children: [
+                  Container(color: Colors.black54),
+                  Center(
+                    child: FadeTransition(
+                      opacity: submitAnimation,
+                      child: ScaleTransition(
+                        scale: submitAnimation,
+                        child: Material(
+                          type: MaterialType.transparency,
+                          child: SuccessfulPopup(
+                            scaleAnimation:
+                            const AlwaysStoppedAnimation(1.0),
+                            isCorrect: isCorrect,
+                            customMessage:
+                            isCorrect ? "🎉 정답이에요!" : "틀렸어요...",
+                            isEnd: isEnd,
+                            closePopup: closeSubmit,
+                            onClose:
+                            isCorrect
+                                ? () async => onNextPressed()
+                                : null,
+                          ),
                         ),
                       ),
                     ),
@@ -279,143 +607,7 @@ class _LevelOneTwoThreeThink3State extends State<LevelOneTwoThreeThink3> {
                 ],
               ),
             ),
-            SizedBox(height: screenHeight * 0.05),
-            Column(
-              children: [
-                SizedBox(
-                  width: screenWidth * 0.75,
-                  height: screenHeight * 0.1,
-                  child: GridView.count(
-                    crossAxisCount: 5,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    padding: EdgeInsets.zero,
-                    childAspectRatio: 1.5,
-                    children: List.generate(5, (index) {
-                      final contents2 = ['5', null, '7', null, '8']; // 예시용
-                      final isSelectable = contents2[index] == null;
-                      final isSelected = selectedIndex == index;
-
-                      return Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          SizedBox(
-                            width: screenWidth * 0.15,
-                            height: screenHeight * 0.1,
-                            child: ElevatedButton(
-                              onPressed: isSelectable
-                                  ? () {
-                                setState(() {
-                                  selectedIndex = index;
-                                });
-                              }
-                                  : null,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFFef1c4),
-                                foregroundColor: Colors.black,
-                                elevation: 3,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.zero,
-                                  side: const BorderSide(color: Color(0xFF9c6a17)),
-                                ),
-                                padding: const EdgeInsets.all(5.0),
-                                disabledBackgroundColor: const Color(0xFFFef1c4),
-                                disabledForegroundColor: Colors.black,
-                              ),
-                              child: contents2[index] != null
-                                  ? Text(
-                                '$givenNumber',
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              )
-                                  : const SizedBox.shrink(),
-                            ),
-                          ),
-
-                          if (isSelected)
-                            Positioned(
-                              child: IgnorePointer(
-                                child: Container(
-                                  width: 40,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: Colors.black,
-                                      width: 2,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                        ],
-                      );
-                    }),
-                  ),
-                ),
-
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 0),
-                  child: Image.asset(
-                    'assets/images/logo2.png', //화살표 구현하기
-                    width: screenWidth * 0.3,
-                    height: screenHeight * 0.06,
-                  ),
-                ),
-                SizedBox(
-                    child: Container(
-                      height: screenHeight * 0.06,
-                      width:  screenWidth * 0.15,
-                      margin: EdgeInsets.symmetric(horizontal: 2),
-                      decoration: BoxDecoration(
-                        color: Color(0xFFFef1c4),
-                        border: Border.all(color: Color(0xFF9c6a17)),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Num',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    )
-                ),
-              ],
-            ),
-            SizedBox(height: 40),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ButtonWidget(
-                  width: 120,
-                  height: 60,
-                  buttonText: '제출하기',
-                  fontSize: 18,
-                ),
-                SizedBox(width: 10),
-                ButtonWidget(
-                  height: 60,
-                  width: 120,
-                  buttonText:
-                  nextProblemCode == '' ? '학습 완료' : '다음 문제',
-                  fontSize: 18,
-                  onPressed: () {
-                    var route =
-                    nextProblemCode == ''
-                        ? '/level1'
-                        : '/level1/$nextProblemCode';
-                    Modular.to.pushNamed(route);
-                  },
-                ),
-              ],
-            ),
-          ],
-        )
-            : const Center(child: CircularProgressIndicator()),
+        ],
       ),
     );
   }

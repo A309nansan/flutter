@@ -18,15 +18,15 @@ import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:collection/collection.dart';
 
-class Template extends StatefulWidget {
+class LevelOneTwoThreeThink3 extends StatefulWidget {
   final String problemCode;
-  const Template({super.key, required this.problemCode});
+  const LevelOneTwoThreeThink3({super.key, required this.problemCode});
 
   @override
-  State<Template> createState() => TemplateState();
+  State<LevelOneTwoThreeThink3> createState() => _LevelOneTwoThreeThink3State();
 }
 
-class TemplateState extends State<Template> with TickerProviderStateMixin {
+class _LevelOneTwoThreeThink3State extends State<LevelOneTwoThreeThink3> with TickerProviderStateMixin {
   final ScreenshotController screenshotController = ScreenshotController();
   final TimerController _timerController = TimerController();
   final ProblemApiService _apiService = ProblemApiService();
@@ -48,6 +48,12 @@ class TemplateState extends State<Template> with TickerProviderStateMixin {
   Map<String, dynamic> selectedAnswers = {};
   List<List<String>> fixedImageUrls = [];
   List<Map<String, String>> candidates = [];
+
+  //페이지별 변수
+  List<int> numberList = [];
+  int givenNumber = 0;
+  String? selectedButton = "";
+  int? selectedIndex;
 
   // 페이지 실행 시 작동하는 함수. 수정 필요 x
   @override
@@ -119,17 +125,37 @@ class TemplateState extends State<Template> with TickerProviderStateMixin {
   }
 
   // 문제 데이터 받아온 후, 문제에 맞게 데이터 조작
-  void _processProblemData(Map problemData) {}
+  void _processProblemData(Map problemData) {
+    numberList =
+        (problemData['list'] as List<dynamic>).map((e) => e as int).toList();
+    givenNumber = problemData['number'] as int;
+
+    debugPrint('$numberList');
+    debugPrint('$givenNumber');
+  }
 
   // 문제 푸는 로직 수행할때, seletedAnswers 데이터 넣는 로직
-  void _processInputData() {}
+  void _processInputData() {
+    selectedAnswers = {"left": false, "right": false};
+
+    if (selectedButton == 'left') {
+      selectedAnswers["left"] = true;
+    } else if (selectedButton == 'right') {
+      selectedAnswers["right"] = true;
+    }
+
+    debugPrint('$selectedAnswers');
+  }
 
   // 정답 여부 체크(보통은 이거쓰면됨)
   void checkAnswer() {
+    _processInputData();
+
     isCorrect = const DeepCollectionEquality().equals(
       answerData,
       selectedAnswers,
     );
+
     _submitAnswer();
   }
 
@@ -220,7 +246,239 @@ class TemplateState extends State<Template> with TickerProviderStateMixin {
                                   questionTextSize: screenWidth * 0.03,
                                 ),
                                 SizedBox(height: screenHeight * 0.02),
-                                // 여기에 문제 푸는 ui 및 삽입
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 5),
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      Container(
+                                          height: screenHeight * 0.3,
+                                          width: screenWidth * 0.85,
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                              color: Colors.orangeAccent,
+                                              width: 4,
+                                            ),
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              SizedBox(
+                                                  width: screenWidth * 0.75,
+                                                  height: screenHeight * 0.1,
+                                                  child: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                                    children: List.generate(5, (index) {
+                                                      final contents = ['1', '', '3', '○', '5'];//데이터 넣기
+
+                                                      return Container(
+                                                        height: screenHeight * 0.06,
+                                                        width:  screenWidth * 0.15,
+                                                        decoration: BoxDecoration(
+                                                          color: Color(0xFFFef1c4),
+                                                          border: Border.all(color: Color(0xFF9c6a17)),
+                                                        ),
+                                                        child: Center(
+                                                            child: contents[index] == '○'
+                                                                ? Container(
+                                                              width: 40,
+                                                              height: 40,
+                                                              decoration: BoxDecoration(
+                                                                  shape: BoxShape.circle,
+                                                                  border: Border.all(
+                                                                    color: Colors.black,
+                                                                    width: 2,
+                                                                  )
+                                                              ),
+                                                            )
+                                                                :
+                                                            Text(
+                                                              contents[index],
+                                                              style: TextStyle(
+                                                                fontSize: 24,
+                                                                fontWeight: FontWeight.bold,
+                                                              ),
+                                                            )
+                                                        ),
+                                                      );
+                                                    }),
+                                                  )
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.symmetric(vertical: 0),
+                                                child: Image.asset(
+                                                  'assets/images/logo1.png', //화살표 구현
+                                                  width: screenWidth * 0.3,
+                                                  height: screenHeight * 0.06,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                  child: Container(
+                                                    height: screenHeight * 0.06,
+                                                    width:  screenWidth * 0.15,
+                                                    margin: EdgeInsets.symmetric(horizontal: 2),
+                                                    decoration: BoxDecoration(
+                                                      color: Color(0xFFFef1c4),
+                                                      border: Border.all(color: Color(0xFF9c6a17)),
+                                                    ),
+                                                    child: Center(
+                                                      child: Text(
+                                                        '4',
+                                                        style: TextStyle(
+                                                          fontSize: 24,
+                                                          fontWeight: FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  )
+                                              ),
+                                            ],
+                                          )
+                                      ),
+                                      Positioned(
+                                        top: 0,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 5,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.orangeAccent,
+                                            borderRadius: BorderRadius.circular(5),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black12,
+                                                blurRadius: 3,
+                                              ),
+                                            ],
+                                          ),
+                                          child: const Text(
+                                            "<보기>",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: screenHeight * 0.05),
+                                Column(
+                                  children: [
+                                    SizedBox(
+                                      width: screenWidth * 0.75,
+                                      height: screenHeight * 0.1,
+                                      child: GridView.count(
+                                        crossAxisCount: 5,
+                                        shrinkWrap: true,
+                                        physics: const NeverScrollableScrollPhysics(),
+                                        padding: EdgeInsets.zero,
+                                        childAspectRatio: 1.5,
+                                        children: List.generate(5, (index) {
+                                          final contents2 = [numberList[0], 'left', numberList[1], 'right', numberList[2]];
+                                          final isSelectable = contents2[index] == 'left' || contents2[index] == 'right';
+                                          final isSelected = selectedIndex == index;
+
+                                          return Stack(
+                                            alignment: Alignment.center,
+                                            children: [
+                                              SizedBox(
+                                                width: screenWidth * 0.15,
+                                                height: screenHeight * 0.1,
+                                                child: ElevatedButton(
+                                                  onPressed: isSelectable
+                                                      ? () {
+                                                    setState(() {
+                                                      if(contents2[index] == 'left'){
+                                                        selectedButton = 'left';
+                                                      } else if (contents2[index] == 'right'){
+                                                        selectedButton = 'right';
+                                                      }
+                                                      selectedIndex = index;
+                                                    });
+                                                  }
+                                                      : null,
+                                                  style: ElevatedButton.styleFrom(
+                                                    backgroundColor: const Color(0xFFFef1c4),
+                                                    foregroundColor: Colors.black,
+                                                    elevation: 3,
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.zero,
+                                                      side: const BorderSide(color: Color(0xFF9c6a17)),
+                                                    ),
+                                                    padding: const EdgeInsets.all(5.0),
+                                                    disabledBackgroundColor: const Color(0xFFFef1c4),
+                                                    disabledForegroundColor: Colors.black,
+                                                  ),
+                                                  child: contents2[index] != 'left' && contents2[index] != 'right'
+                                                      ? Text(
+                                                    '${contents2[index]}',
+                                                    style: const TextStyle(
+                                                      fontSize: 24,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  )
+                                                      : const SizedBox.shrink(),
+
+                                                ),
+                                              ),
+
+                                              if (isSelected)
+                                                Positioned(
+                                                  child: IgnorePointer(
+                                                    child: Container(
+                                                      width: 40,
+                                                      height: 40,
+                                                      decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        border: Border.all(
+                                                          color: Colors.black,
+                                                          width: 2,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                            ],
+                                          );
+                                        }),
+                                      ),
+                                    ),
+
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 0),
+                                      child: Image.asset(
+                                        'assets/images/logo2.png', //화살표 구현하기
+                                        width: screenWidth * 0.3,
+                                        height: screenHeight * 0.06,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                        child: Container(
+                                          height: screenHeight * 0.06,
+                                          width:  screenWidth * 0.15,
+                                          margin: EdgeInsets.symmetric(horizontal: 2),
+                                          decoration: BoxDecoration(
+                                            color: Color(0xFFFef1c4),
+                                            border: Border.all(color: Color(0xFF9c6a17)),
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              '$givenNumber',
+                                              style: TextStyle(
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
                           ),
