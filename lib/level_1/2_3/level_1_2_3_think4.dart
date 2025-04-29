@@ -49,6 +49,16 @@ class LevelOneTwoThreeThink4State extends State<LevelOneTwoThreeThink4> with Tic
   List<List<String>> fixedImageUrls = [];
   List<Map<String, String>> candidates = [];
 
+  //UI부분 데이터
+  final List<String> sequences = [
+    '1-2-3-4', '3-1-2-5', '2-5-6-9', '5-6-7-8',
+    '1-3-2-4', '2-3-1-5', '3-7-1-6', '7-8-5-6',
+    '6-8-7-9', '1-9-2-8', '3-1-5-6', '6-7-1-5',
+    '6-7-8-9', '6-9-2-5', '1-5-3-6', '1-5-6-7',
+  ];
+
+  Set<int> selectedIndexes = {};
+
   // 페이지 실행 시 작동하는 함수. 수정 필요 x
   @override
   void initState() {
@@ -220,7 +230,71 @@ class LevelOneTwoThreeThink4State extends State<LevelOneTwoThreeThink4> with Tic
                                   questionTextSize: screenWidth * 0.03,
                                 ),
                                 SizedBox(height: screenHeight * 0.02),
-                                // 여기에 문제 푸는 ui 및 삽입
+                                Container(
+                                  height: screenHeight * 0.6,
+                                  width: screenWidth * 0.8,
+                                  child: Center(
+                                    child: GridView.count(
+                                      shrinkWrap: true,
+                                      crossAxisCount: 4,
+                                      childAspectRatio: 1.3,//1.8
+                                      physics: const NeverScrollableScrollPhysics(),
+                                      children: List.generate(sequences.length, (index) {
+                                        final isSelected = selectedIndexes.contains(index);
+                                        return Stack(
+                                          alignment: Alignment.center,
+                                          children: [
+                                            SizedBox(
+                                              width: screenWidth * 0.2,
+                                              height: screenHeight * 0.125,
+                                              child: ElevatedButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    if (isSelected) {
+                                                      selectedIndexes.remove(index);
+                                                    } else {
+                                                      selectedIndexes.add(index);
+                                                    }
+                                                  });
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: const Color(0xFFFef1c4),
+                                                  foregroundColor: Colors.black,
+                                                  elevation: 3,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.zero,
+                                                    side: const BorderSide(color: Color(0xFF9c6a17)),
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  sequences[index],
+                                                  style: const TextStyle(fontSize: 30),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ),
+                                            ),
+                                            if (isSelected)
+                                              Positioned(
+                                                child: IgnorePointer(
+                                                  child: Container(
+                                                    width: 80,
+                                                    height: 80,
+                                                    decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        border: Border.all(
+                                                          color: Colors.red,
+                                                          width: 4,
+                                                        )
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
+                                        );
+                                      }),
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
