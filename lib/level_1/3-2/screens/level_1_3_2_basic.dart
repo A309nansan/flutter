@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:nansan_flutter/shared/widgets/new_header_widget.dart';
@@ -11,7 +10,6 @@ import '../../../shared/widgets/button_widget.dart';
 import '../../../shared/widgets/en_progress_bar_widget.dart';
 import '../../../shared/widgets/successful_popup.dart';
 import '../../../shared/widgets/toase_message.dart';
-import '../../../shared/services/secure_storage_service.dart';
 import '../controller/level_1_3_2_basic_controller.dart';
 import '../widgets/basic_sample_popup.dart';
 
@@ -317,10 +315,13 @@ class _LevelOneThreeTwoBasicState extends State<LevelOneThreeTwoBasic>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: screenHeight * 0.02),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 30.0,
+                        vertical: screenHeight * 0.02,
+                      ),
                       child: EnProgressBarWidget(
-                          current: controller.currentProblemNumber,
-                          total: controller.totalProblemCount
+                        current: controller.currentProblemNumber,
+                        total: controller.totalProblemCount,
                       ),
                     ),
                     Padding(
@@ -331,7 +332,10 @@ class _LevelOneThreeTwoBasicState extends State<LevelOneThreeTwoBasic>
                       child: AnimatedSwitcher(
                         duration: const Duration(milliseconds: 300),
                         transitionBuilder: (child, animation) {
-                          return FadeTransition(opacity: animation, child: child);
+                          return FadeTransition(
+                            opacity: animation,
+                            child: child,
+                          );
                         },
                         child: Row(
                           key: ValueKey<String>(
