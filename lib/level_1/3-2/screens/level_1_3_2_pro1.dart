@@ -105,6 +105,10 @@ class LevelOneThreeTwoPro1State extends State<LevelOneThreeTwoPro1>
 
   // 문제 제출할때 함수. 수정 필요 x
   Future<void> _submitAnswer() async {
+    final childProfileJson = await SecureStorageService.getChildProfile();
+    final childProfile = jsonDecode(childProfileJson!);
+    final childId = childProfile['id'];
+
     if (isSubmitted) return;
     final submitRequest = SubmitRequest(
       childId: childId,
@@ -143,7 +147,7 @@ class LevelOneThreeTwoPro1State extends State<LevelOneThreeTwoPro1>
   }
 
   // 정답 여부 체크(보통은 이거쓰면됨)
-  void checkAnswer() {
+  Future<void> checkAnswer() async {
     isCorrect = const DeepCollectionEquality().equals(
       answerData,
       selectedAnswers,
@@ -299,15 +303,15 @@ class LevelOneThreeTwoPro1State extends State<LevelOneThreeTwoPro1>
                                           buttonText: "제출하기",
                                           fontSize: screenWidth * 0.02,
                                           borderRadius: 10,
-                                          onPressed:
-                                              (isSubmitted)
-                                                  ? null
-                                                  : () => {
-                                                    submitController.forward(),
-                                                    showSubmitPopup = true,
-                                                    submitActivity(context),
-                                                    checkAnswer(),
-                                                  },
+                                          onPressed: () async {
+                                            if (isSubmitted) return;
+                                            await checkAnswer();
+                                            await submitActivity(context);
+                                            setState(() {
+                                              showSubmitPopup = true;
+                                            });
+                                            submitController.forward();
+                                          },
                                         ),
 
                                       if (isSubmitted &&
