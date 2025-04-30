@@ -26,7 +26,8 @@ class LevelOneTwoThreeThink4 extends StatefulWidget {
   State<LevelOneTwoThreeThink4> createState() => LevelOneTwoThreeThink4State();
 }
 
-class LevelOneTwoThreeThink4State extends State<LevelOneTwoThreeThink4> with TickerProviderStateMixin {
+class LevelOneTwoThreeThink4State extends State<LevelOneTwoThreeThink4>
+    with TickerProviderStateMixin {
   final ScreenshotController screenshotController = ScreenshotController();
   final TimerController _timerController = TimerController();
   final ProblemApiService _apiService = ProblemApiService();
@@ -51,10 +52,22 @@ class LevelOneTwoThreeThink4State extends State<LevelOneTwoThreeThink4> with Tic
 
   //UI부분 데이터
   final List<String> numberList = [
-    '1-2-3-4', '3-1-2-5', '2-5-6-9', '5-6-7-8',
-    '1-3-2-4', '2-3-1-5', '3-7-1-6', '7-8-5-6',
-    '6-8-7-9', '1-9-2-8', '3-1-5-6', '6-7-1-5',
-    '6-7-8-9', '6-9-2-5', '1-5-3-6', '1-5-6-7',
+    '1-2-3-4',
+    '3-1-2-5',
+    '2-5-6-9',
+    '5-6-7-8',
+    '1-3-2-4',
+    '2-3-1-5',
+    '3-7-1-6',
+    '7-8-5-6',
+    '6-8-7-9',
+    '1-9-2-8',
+    '3-1-5-6',
+    '6-7-1-5',
+    '6-7-8-9',
+    '6-9-2-5',
+    '1-5-3-6',
+    '1-5-6-7',
   ];
 
   final List<String> numberListText = [];
@@ -150,7 +163,7 @@ class LevelOneTwoThreeThink4State extends State<LevelOneTwoThreeThink4> with Tic
       int row = index ~/ 4;
       int col = index % 4;
 
-      selectedAnswers['row$index'] = numberList[index];  // 선택된 값 추가
+      selectedAnswers['row$index'] = numberList[index]; // 선택된 값 추가
     }
   }
 
@@ -220,7 +233,8 @@ class LevelOneTwoThreeThink4State extends State<LevelOneTwoThreeThink4> with Tic
     return Scaffold(
       appBar: AppbarWidget(
         title: null,
-        leading: IconButton( //뒤로가기
+        leading: IconButton(
+          //뒤로가기
           icon: const Icon(Icons.chevron_left, size: 40.0),
           onPressed: () => Modular.to.pop(),
         ),
@@ -241,18 +255,17 @@ class LevelOneTwoThreeThink4State extends State<LevelOneTwoThreeThink4> with Tic
                             child: Column(
                               children: [
                                 NewHeaderWidget(
-                                  headerText: '주요학습활동',
+                                  headerText: '개념학습활동',
                                   headerTextSize: screenWidth * 0.028,
                                   subTextSize: screenWidth * 0.018,
                                 ),
                                 SizedBox(height: screenHeight * 0.01),
                                 NewQuestionTextWidget(
-                                  questionText:
-                                      '회색 빈칸에 알맞은 1 작은 수를 나타내는 그림은 무엇일까요?',
+                                  questionText: '숫자가 순서대로 나열된 것을 찾아 O표 하세요',
                                   questionTextSize: screenWidth * 0.03,
                                 ),
                                 SizedBox(height: screenHeight * 0.02),
-                                Container(
+                                SizedBox(
                                   height: screenHeight * 0.6,
                                   width: screenWidth * 0.8,
                                   child: Center(
@@ -260,9 +273,13 @@ class LevelOneTwoThreeThink4State extends State<LevelOneTwoThreeThink4> with Tic
                                       shrinkWrap: true,
                                       crossAxisCount: 4,
                                       childAspectRatio: 1.3,
-                                      physics: const NeverScrollableScrollPhysics(),
-                                      children: List.generate(numberList.length, (index) {
-                                        final isSelected = selectedIndexes.contains(index);
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      children: List.generate(numberList.length, (
+                                        index,
+                                      ) {
+                                        final isSelected = selectedIndexes
+                                            .contains(index);
                                         return Stack(
                                           alignment: Alignment.center,
                                           children: [
@@ -273,24 +290,35 @@ class LevelOneTwoThreeThink4State extends State<LevelOneTwoThreeThink4> with Tic
                                                 onPressed: () {
                                                   setState(() {
                                                     if (isSelected) {
-                                                      selectedIndexes.remove(index);
+                                                      selectedIndexes.remove(
+                                                        index,
+                                                      );
                                                     } else {
-                                                      selectedIndexes.add(index);
+                                                      selectedIndexes.add(
+                                                        index,
+                                                      );
                                                     }
                                                   });
                                                 },
                                                 style: ElevatedButton.styleFrom(
-                                                  backgroundColor: const Color(0xFFFef1c4),
+                                                  backgroundColor: const Color(
+                                                    0xFFFef1c4,
+                                                  ),
                                                   foregroundColor: Colors.black,
                                                   elevation: 3,
                                                   shape: RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.zero,
-                                                    side: const BorderSide(color: Color(0xFF9c6a17)),
+                                                    borderRadius:
+                                                        BorderRadius.zero,
+                                                    side: const BorderSide(
+                                                      color: Color(0xFF9c6a17),
+                                                    ),
                                                   ),
                                                 ),
                                                 child: Text(
                                                   numberList[index],
-                                                  style: const TextStyle(fontSize: 30),
+                                                  style: const TextStyle(
+                                                    fontSize: 30,
+                                                  ),
                                                   textAlign: TextAlign.center,
                                                 ),
                                               ),
@@ -302,11 +330,11 @@ class LevelOneTwoThreeThink4State extends State<LevelOneTwoThreeThink4> with Tic
                                                     width: 80,
                                                     height: 80,
                                                     decoration: BoxDecoration(
-                                                        shape: BoxShape.circle,
-                                                        border: Border.all(
-                                                          color: Colors.red,
-                                                          width: 4,
-                                                        )
+                                                      shape: BoxShape.circle,
+                                                      border: Border.all(
+                                                        color: Colors.red,
+                                                        width: 4,
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
@@ -354,15 +382,18 @@ class LevelOneTwoThreeThink4State extends State<LevelOneTwoThreeThink4> with Tic
                                           buttonText: "제출하기",
                                           fontSize: screenWidth * 0.02,
                                           borderRadius: 10,
-                                          onPressed:
-                                              (isSubmitted)
-                                                  ? null
-                                                  : () => {
-                                                    submitController.forward(),
-                                                    showSubmitPopup = true,
-                                                    submitActivity(context),
-                                                    checkAnswer(),
-                                                  },
+                                          onPressed: () async {
+                                            if (isSubmitted) return;
+
+                                            setState(() {
+                                              showSubmitPopup = true;
+                                            });
+
+                                            submitController.forward();
+
+                                            await submitActivity(context);
+                                            checkAnswer();
+                                          },
                                         ),
 
                                       if (isSubmitted &&
