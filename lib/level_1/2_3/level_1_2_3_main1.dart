@@ -260,7 +260,7 @@ class _LevelOneTwoThreeMain1State extends State<LevelOneTwoThreeMain1>
                     SizedBox(height: screenHeight * 0.01),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: List.generate(5, (index) {
+                      children: List.generate(3, (index) {
                         final key = 'p${index + 1}';
                         final data = problemData[key] ?? [];
 

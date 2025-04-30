@@ -354,15 +354,15 @@ class LevelOneTwoThreeThink4State extends State<LevelOneTwoThreeThink4> with Tic
                                           buttonText: "제출하기",
                                           fontSize: screenWidth * 0.02,
                                           borderRadius: 10,
-                                          onPressed:
-                                              (isSubmitted)
-                                                  ? null
-                                                  : () => {
-                                                    submitController.forward(),
-                                                    showSubmitPopup = true,
-                                                    submitActivity(context),
-                                                    checkAnswer(),
-                                                  },
+                                          onPressed: () => onNextPressed()
+                                              // (isSubmitted)
+                                              //     ? null
+                                              //     : () => {
+                                              //       submitController.forward(),
+                                              //       showSubmitPopup = true,
+                                              //       submitActivity(context),
+                                              //       checkAnswer(),
+                                              //     },
                                         ),
 
                                       if (isSubmitted &&
