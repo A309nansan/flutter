@@ -147,8 +147,6 @@ class LevelOneTwoThreeThink1State extends State<LevelOneTwoThreeThink1>
       answerData,
       selectedAnswers,
     );
-    debugPrint(answerData.toString());
-    debugPrint(selectedAnswers.toString());
     _submitAnswer();
   }
 

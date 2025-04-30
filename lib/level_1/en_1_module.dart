@@ -216,13 +216,13 @@ class En1Module extends Module {
       },
     );
     // 3과 1차시 기초1
-    r.child(
-      '/enlv1s3c1kc1',
-      child: (context) {
-        final nextCode = r.args.data as String;
-        return LevelOneThreeOneBasic1(problemCode: nextCode);
-      },
-    );
+    // r.child(
+    //   '/enlv1s3c1kc1',
+    //   child: (context) {
+    //     final nextCode = r.args.data as String;
+    //     return LevelOneThreeOneBasic1(problemCode: nextCode);
+    //   },
+    // );
     // 3과 2차시 기초1
     r.child(
       '/enlv1s3c2kc1',
