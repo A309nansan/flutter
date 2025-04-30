@@ -667,12 +667,11 @@ class _LevelOneTwoThreeThink3State extends State<LevelOneTwoThreeThink3>
                                           onPressed: () async {
                                             if (isSubmitted) return;
                                             await checkAnswer();
-                                            await submitActivity(context);
                                             setState(() {
                                               showSubmitPopup = true;
                                             });
-
                                             submitController.forward();
+                                            await submitActivity(context);
                                           },
                                         ),
                                       if (isSubmitted &&

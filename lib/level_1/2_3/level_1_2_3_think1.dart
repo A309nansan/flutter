@@ -147,8 +147,6 @@ class LevelOneTwoThreeThink1State extends State<LevelOneTwoThreeThink1>
       answerData,
       selectedAnswers,
     );
-    debugPrint(answerData.toString());
-    debugPrint(selectedAnswers.toString());
     _submitAnswer();
   }
 
@@ -336,8 +334,8 @@ class LevelOneTwoThreeThink1State extends State<LevelOneTwoThreeThink1>
                                               // Handwriting Zone
                                               HandwritingRecognitionZone(
                                                 key: zoneKey,
-                                                width: screenWidth * 0.08,
-                                                height: screenWidth * 0.08,
+                                                width: screenWidth * 0.1,
+                                                height: screenWidth * 0.1,
                                               ),
                                               const SizedBox(width: 6),
                                               const Text(

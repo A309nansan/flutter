@@ -143,8 +143,8 @@ class _LevelOneTwoTwoThink2State extends State<LevelOneTwoTwoThink2>
   // void _processInputData() {}
 
   // 정답 체크하는 함수. 정답 체크로직 구현 필요.
-  void checkAnswer() {
-    // _processInputData();
+  Future<void> checkAnswer() async {
+    await recognizeAll();
     isCorrect = DeepCollectionEquality().equals(answerData, selectedAnswers);
     submitAnswer();
   }
@@ -265,23 +265,30 @@ class _LevelOneTwoTwoThink2State extends State<LevelOneTwoTwoThink2>
                                 final data = problemData[key] ?? [];
 
                                 return Padding(
-                                  padding: EdgeInsets.only(bottom: screenHeight * 0.02),
+                                  padding: EdgeInsets.only(
+                                    bottom: screenHeight * 0.02,
+                                  ),
                                   child: Padding(
                                     padding: const EdgeInsets.only(left: 16.0),
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Container(
                                           alignment: Alignment.center,
                                           width: screenWidth * 0.05,
                                           height: screenWidth * 0.05,
                                           decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(50),
+                                            borderRadius: BorderRadius.circular(
+                                              50,
+                                            ),
                                             color: Colors.purple[100],
                                           ),
                                           child: Text(
                                             '${index + 1}',
-                                            style: TextStyle(fontSize: screenWidth * 0.035),
+                                            style: TextStyle(
+                                              fontSize: screenWidth * 0.035,
+                                            ),
                                           ),
                                         ),
                                         DynamicNumberRow(
@@ -329,15 +336,14 @@ class _LevelOneTwoTwoThink2State extends State<LevelOneTwoTwoThink2>
                                             buttonText: "제출하기",
                                             fontSize: screenWidth * 0.02,
                                             borderRadius: 10,
-                                            onPressed: isSubmitted
-                                                ? null
-                                                : () async {
-                                              await submitController.forward();
-                                              await submitActivity(context);  // This calls recognizeAll()
-                                              checkAnswer();
+                                            onPressed: () async {
+                                              if (isSubmitted) return;
+                                              await checkAnswer();
                                               setState(() {
                                                 showSubmitPopup = true;
                                               });
+                                              submitController.forward();
+                                              await submitActivity(context);
                                             },
                                           ),
 
@@ -403,16 +409,16 @@ class _LevelOneTwoTwoThink2State extends State<LevelOneTwoTwoThink2>
                                   type: MaterialType.transparency,
                                   child: SuccessfulPopup(
                                     scaleAnimation:
-                                    const AlwaysStoppedAnimation(1.0),
+                                        const AlwaysStoppedAnimation(1.0),
                                     isCorrect: isCorrect,
                                     customMessage:
-                                    isCorrect ? "🎉 정답이에요!" : "틀렸어요...",
+                                        isCorrect ? "🎉 정답이에요!" : "틀렸어요...",
                                     isEnd: isEnd,
                                     closePopup: closeSubmit,
                                     onClose:
-                                    isCorrect
-                                        ? () async => onNextPressed()
-                                        : null,
+                                        isCorrect
+                                            ? () async => onNextPressed()
+                                            : null,
                                   ),
                                 ),
                               ),

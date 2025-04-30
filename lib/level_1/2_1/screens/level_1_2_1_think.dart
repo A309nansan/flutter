@@ -113,6 +113,7 @@ class _LevelOneTwoOneThinkState extends State<LevelOneTwoOneThink>
         answerData = response.answer;
         current = response.current;
         total = response.total;
+        debugPrint('$problemData');
       });
       _processProblemData(problemData);
     } catch (e) {

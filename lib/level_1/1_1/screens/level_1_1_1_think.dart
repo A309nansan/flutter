@@ -2,10 +2,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:nansan_flutter/modules/draw_line/controllers/draw_line_controller.dart';
-import 'package:nansan_flutter/modules/draw_line/models/draw_line_models.dart';
-import 'package:nansan_flutter/modules/draw_line/widgets/draw_line_dot_widget.dart';
-import 'package:nansan_flutter/modules/draw_line/widgets/draw_lines_painter.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
 import 'package:nansan_flutter/shared/controllers/timer_controller.dart';
@@ -58,24 +54,6 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
   List<List<String>> fixedImageUrls = [];
   List<List<String>> candidates = [];
 
-  // 도트 관련 변수
-  // GlobalKey 유지 (위젯 참조용)
-  final List<GlobalKey> dotAKeys = List.generate(9, (_) => GlobalKey());
-  final List<GlobalKey> dotBKeys = List.generate(9, (_) => GlobalKey());
-  final List<GlobalKey> dotCKeys = List.generate(9, (_) => GlobalKey());
-  final List<GlobalKey> dotDKeys = List.generate(9, (_) => GlobalKey());
-
-  // offset 리스트 제거
-  Offset? _currentDragPosition;
-
-  // DrawLineDots 및 Controller
-  late DrawLineDotsController drawLineDotsController;
-  List<DrawLineDot> drawLineDots = [];
-  List<DrawLineConnection> drawLineConnections = [];
-
-  // 도트 선택 상태
-  DrawLineDot? selectedDot;
-
   @override
   void initState() {
     super.initState();
@@ -88,8 +66,6 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
     submitAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: submitController, curve: Curves.elasticOut),
     );
-
-    drawLineDotsController = DrawLineDotsController();
 
     _loadQuestionData().then((_) {
       setState(() {
@@ -155,89 +131,7 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
   }
 
   // 문제 데이터 처리 - 상대 좌표만 사용
-  void _processProblemData(Map<String, dynamic> problemData) {
-    drawLineDots.clear();
-    drawLineConnections.clear();
-    drawLineDotsController.clearAll();
-
-    // dotA 생성 - 상대 좌표 사용
-    if (problemData['dotA'] != null) {
-      for (var i = 0; i < problemData['dotA'].length; i++) {
-        final item = problemData['dotA'][i];
-        drawLineDots.add(
-          DrawLineDot(
-            id: 'A$i',
-            key: 'A',
-            position: Offset(item['x'] ?? 0.1, item['y'] ?? (i * 0.1 + 0.1)),
-          ),
-        );
-      }
-    }
-
-    // dotB 생성 - 상대 좌표 사용
-    if (problemData['dotB'] != null) {
-      for (var i = 0; i < problemData['dotB'].length; i++) {
-        final item = problemData['dotB'][i];
-        drawLineDots.add(
-          DrawLineDot(
-            id: 'B$i',
-            key: 'B',
-            position: Offset(item['x'] ?? 0.5, item['y'] ?? (i * 0.1 + 0.1)),
-          ),
-        );
-      }
-    }
-
-    // dotC 생성 - 상대 좌표 사용
-    if (problemData['dotC'] != null) {
-      for (var i = 0; i < problemData['dotC'].length; i++) {
-        final item = problemData['dotC'][i];
-        drawLineDots.add(
-          DrawLineDot(
-            id: 'C$i',
-            key: 'C',
-            position: Offset(item['x'] ?? 0.7, item['y'] ?? (i * 0.1 + 0.1)),
-          ),
-        );
-      }
-    }
-
-    // dotD 생성 - 상대 좌표 사용
-    if (problemData['dotD'] != null) {
-      for (var i = 0; i < problemData['dotD'].length; i++) {
-        final item = problemData['dotD'][i];
-        drawLineDots.add(
-          DrawLineDot(
-            id: 'D$i',
-            key: 'D',
-            position: Offset(item['x'] ?? 0.9, item['y'] ?? (i * 0.1 + 0.1)),
-          ),
-        );
-      }
-    }
-
-    // DrawLineDotsController에 도트 추가
-    for (final dot in drawLineDots) {
-      drawLineDotsController.addDot(dot);
-    }
-  }
-
-  // 절대 위치 계산하는 _initDrawLineDots() 메서드 제거
-
-  // 연결 규칙 유지
-  bool _canConnect(DrawLineDot from, DrawLineDot to) {
-    if ((from.key == 'A' && to.key == 'B') ||
-        (from.key == 'B' && to.key == 'A')) {
-      return true;
-    }
-
-    if ((from.key == 'C' && to.key == 'D') ||
-        (from.key == 'D' && to.key == 'C')) {
-      return true;
-    }
-
-    return false;
-  }
+  void _processProblemData(Map<String, dynamic> problemData) {}
 
   void checkAnswer() {
     isCorrect = const DeepCollectionEquality().equals(
@@ -293,110 +187,6 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
     });
   }
 
-  List<Widget> _buildContainers(
-    double screenWidth,
-    double screenHeight,
-    double sizedHeight,
-    int count,
-  ) {
-    return List.generate(count, (index) {
-      return Column(
-        children: [
-          Container(
-            width: screenWidth,
-            height: screenHeight,
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.lightBlue),
-            ),
-          ),
-          if (index != count - 1) SizedBox(height: sizedHeight),
-        ],
-      );
-    });
-  }
-
-  List<Widget> _buildDotContainers(
-    double screenWidth,
-    double screenHeight,
-    double sizedHeight,
-    List<GlobalKey> keys,
-    int count,
-    String dotKey,
-    int offsetBase,
-  ) {
-    return List.generate(count, (index) {
-      final dotId = '$dotKey$index';
-      final dot = drawLineDots.firstWhere(
-        (d) => d.id == dotId,
-        orElse:
-            () => DrawLineDot(id: dotId, key: dotKey, position: Offset.zero),
-      );
-
-      return Column(
-        children: [
-          Container(
-            key: keys[index], // GlobalKey 유지 (위젯 참조용)
-            alignment: Alignment.center,
-            width: screenWidth,
-            height: screenHeight,
-            child: DrawLineDotWidget(
-              dot: dot,
-              parentSize: Size(screenWidth, screenHeight),
-              isSelected: selectedDot?.id == dot.id,
-              isHovered: false,
-              isConnected: drawLineDotsController.isDotConnected(dot),
-              onPointerDown: _onDotPointerDown,
-            ),
-          ),
-          if (index != count - 1) SizedBox(height: sizedHeight),
-        ],
-      );
-    });
-  }
-
-  // getDotOffsets() 메서드 제거
-
-  void _onPointerMove(PointerMoveEvent event) {
-    if (selectedDot != null) {
-      setState(() {
-        _currentDragPosition = event.position; // 실시간 좌표 업데이트
-      });
-    }
-  }
-
-  void _onPointerUp(PointerUpEvent event) {
-    setState(() {
-      _currentDragPosition = null;
-    });
-  }
-
-  void _onDotPointerDown(PointerDownEvent event, DrawLineDot dot) {
-    setState(() {
-      if (selectedDot == null) {
-        selectedDot = dot;
-      } else if (selectedDot != null && selectedDot != dot) {
-        if (_canConnect(selectedDot!, dot)) {
-          // 이미 연결되어 있는지 확인
-          if (!drawLineDotsController.isDotConnected(selectedDot!) &&
-              !drawLineDotsController.isDotConnected(dot)) {
-            final connection = DrawLineConnection(
-              dot1: selectedDot!,
-              dot2: dot,
-            );
-
-            drawLineDotsController.addConnection(connection);
-            drawLineConnections = List.from(drawLineDotsController.connections);
-
-            // 정답 제출용 데이터에 반영
-            selectedAnswers[selectedDot!.id] = dot.id;
-          }
-        }
-
-        selectedDot = null;
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -435,111 +225,102 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
                                   questionText: '같은 수를 의미하는 것끼리 선을 그어 이어 봅시다.',
                                   questionTextSize: screenWidth * 0.03,
                                 ),
-                                SizedBox(height: screenHeight * 0.02),
-                                // 문제 푸는 UI
-                                Listener(
-                                  onPointerMove: _onPointerMove,
-                                  onPointerUp: _onPointerUp,
-                                  child: Stack(
-                                    children: [
-                                      Positioned.fill(
-                                        child: CustomPaint(
-                                          size: Size(
-                                            screenWidth,
-                                            screenHeight * 0.6,
-                                          ),
-                                          painter: DrawLinesPainter(
-                                            connections: drawLineConnections,
-                                            startDot: selectedDot,
-                                            currentPosition:
-                                                _currentDragPosition,
-                                            isDrawingTemporaryLine:
-                                                selectedDot != null &&
-                                                _currentDragPosition != null,
-                                            // dotAbsoluteOffsets 파라미터 제거
-                                          ),
-                                        ),
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          SizedBox(width: screenWidth * 0.02),
-                                          Column(
-                                            children: _buildContainers(
-                                              screenHeight * 0.1,
-                                              screenHeight * 0.068,
-                                              screenHeight * 0.01,
-                                              9,
+                                SizedBox(height: screenHeight * 0.01),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                      children: List.generate(9 * 2 - 1, (
+                                        index,
+                                      ) {
+                                        if (index.isEven) {
+                                          int number =
+                                              (index ~/ 2) + 1; // 1부터 9까지
+                                          return Container(
+                                            width: screenWidth * 0.15,
+                                            height: screenHeight * 0.067,
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                color: Colors.lightBlue,
+                                                width: 1,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
                                             ),
-                                          ),
-                                          Column(
-                                            children: _buildDotContainers(
-                                              screenHeight * 0.04,
-                                              screenHeight * 0.068,
-                                              screenHeight * 0.01,
-                                              dotAKeys,
-                                              9,
-                                              'A',
-                                              0,
+                                            child: Image.asset(
+                                              'assets/images/number/dot/$number.png',
                                             ),
-                                          ),
-                                          SizedBox(width: screenWidth * 0.1),
-                                          Column(
-                                            children: _buildDotContainers(
-                                              screenHeight * 0.04,
-                                              screenHeight * 0.068,
-                                              screenHeight * 0.01,
-                                              dotBKeys,
-                                              9,
-                                              'B',
-                                              9,
+                                          );
+                                        } else {
+                                          // 간격 조정용 SizedBox
+                                          return SizedBox(
+                                            height: screenHeight * 0.0125,
+                                          ); // 원하는 간격으로 조정
+                                        }
+                                      }),
+                                    ),
+                                    Column(
+                                      children: List.generate(9 * 2 - 1, (
+                                        index,
+                                      ) {
+                                        if (index.isEven) {
+                                          int number =
+                                              (index ~/ 2) + 1; // 1부터 9까지
+                                          return Container(
+                                            width: screenWidth * 0.15,
+                                            height: screenHeight * 0.067,
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                color: Colors.lightBlue,
+                                                width: 1,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
                                             ),
-                                          ),
-                                          Column(
-                                            children: _buildContainers(
-                                              screenHeight * 0.1,
-                                              screenHeight * 0.068,
-                                              screenHeight * 0.01,
-                                              9,
+                                            child: Image.asset(
+                                              'assets/images/number/numeric1/$number.png',
                                             ),
-                                          ),
-                                          Column(
-                                            children: _buildDotContainers(
-                                              screenHeight * 0.04,
-                                              screenHeight * 0.068,
-                                              screenHeight * 0.01,
-                                              dotCKeys,
-                                              9,
-                                              'C',
-                                              18,
+                                          );
+                                        } else {
+                                          // 간격 조정용 SizedBox
+                                          return SizedBox(
+                                            height: screenHeight * 0.0125,
+                                          ); // 원하는 간격으로 조정
+                                        }
+                                      }),
+                                    ),
+                                    Column(
+                                      children: List.generate(9 * 2 - 1, (
+                                        index,
+                                      ) {
+                                        if (index.isEven) {
+                                          int number =
+                                              (index ~/ 2) + 1; // 1부터 9까지
+                                          return Container(
+                                            width: screenWidth * 0.15,
+                                            height: screenHeight * 0.067,
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                color: Colors.lightBlue,
+                                                width: 1,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
                                             ),
-                                          ),
-                                          SizedBox(width: screenWidth * 0.1),
-                                          Column(
-                                            children: _buildDotContainers(
-                                              screenHeight * 0.04,
-                                              screenHeight * 0.068,
-                                              screenHeight * 0.01,
-                                              dotDKeys,
-                                              9,
-                                              'D',
-                                              27,
+                                            child: Image.asset(
+                                              'assets/images/number/hangeul1/$number.png',
                                             ),
-                                          ),
-                                          Column(
-                                            children: _buildContainers(
-                                              screenHeight * 0.1,
-                                              screenHeight * 0.068,
-                                              screenHeight * 0.01,
-                                              9,
-                                            ),
-                                          ),
-                                          SizedBox(width: screenWidth * 0.02),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
+                                          );
+                                        } else {
+                                          // 간격 조정용 SizedBox
+                                          return SizedBox(
+                                            height: screenHeight * 0.0125,
+                                          ); // 원하는 간격으로 조정
+                                        }
+                                      }),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),

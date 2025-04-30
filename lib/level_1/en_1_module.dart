@@ -35,14 +35,14 @@ class En1Module extends Module {
 
   @override
   void routes(RouteManager r) {
-    // level1 1과 1차시 주요학습활동
-    r.child(
-      '/enlv1s1c1gn1',
-      child: (context) {
-        final nextCode = r.args.data as String;
-        return LevelOneOneOneThink(problemCode: nextCode);
-      },
-    );
+    // level1 1과 1차시 개념학습활동
+    // r.child(
+    //   '/enlv1s1c1gn1',
+    //   child: (context) {
+    //     final nextCode = r.args.data as String;
+    //     return LevelOneOneOneThink(problemCode: nextCode);
+    //   },
+    // );
     // level1 1과 1차시 주요학습활동
     r.child(
       '/enlv1s1c1jy1',
@@ -216,13 +216,13 @@ class En1Module extends Module {
       },
     );
     // 3과 1차시 기초1
-    r.child(
-      '/enlv1s3c1kc1',
-      child: (context) {
-        final nextCode = r.args.data as String;
-        return LevelOneThreeOneBasic1(problemCode: nextCode);
-      },
-    );
+    // r.child(
+    //   '/enlv1s3c1kc1',
+    //   child: (context) {
+    //     final nextCode = r.args.data as String;
+    //     return LevelOneThreeOneBasic1(problemCode: nextCode);
+    //   },
+    // );
     // 3과 2차시 기초1
     r.child(
       '/enlv1s3c2kc1',
@@ -240,13 +240,13 @@ class En1Module extends Module {
       },
     );
     // 3과 2차시 심화1
-    r.child(
-      '/enlv1s3c2sh1',
-      child: (context) {
-        final nextCode = r.args.data as String;
-        return LevelOneThreeTwoPro1(problemCode: nextCode);
-      },
-    );
+    // r.child(
+    //   '/enlv1s3c2sh1',
+    //   child: (context) {
+    //     final nextCode = r.args.data as String;
+    //     return LevelOneThreeTwoPro1(problemCode: nextCode);
+    //   },
+    // );
     // 4과 2차시 주요1
     r.child(
       '/enlv1s4c2jy1',
