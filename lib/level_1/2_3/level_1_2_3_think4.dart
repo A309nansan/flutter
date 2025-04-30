@@ -168,7 +168,7 @@ class LevelOneTwoThreeThink4State extends State<LevelOneTwoThreeThink4>
   }
 
   // 정답 여부 체크(보통은 이거쓰면됨)
-  void checkAnswer() {
+  Future<void> checkAnswer() async {
     _processInputData();
 
     isCorrect = const DeepCollectionEquality().equals(
@@ -391,8 +391,8 @@ class LevelOneTwoThreeThink4State extends State<LevelOneTwoThreeThink4>
 
                                             submitController.forward();
 
+                                            await checkAnswer();
                                             await submitActivity(context);
-                                            checkAnswer();
                                           },
                                         ),
 

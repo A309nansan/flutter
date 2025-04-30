@@ -605,8 +605,8 @@ class _LevelOneTwoThreeThink3State extends State<LevelOneTwoThreeThink3>
 
                                             submitController.forward();
 
-                                            await submitActivity(context);
                                             await checkAnswer();
+                                            await submitActivity(context);
                                           },
                                         ),
                                       if (isSubmitted &&
