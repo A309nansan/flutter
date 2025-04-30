@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart' hide Ink;
 import 'package:google_mlkit_digital_ink_recognition/google_mlkit_digital_ink_recognition.dart';
 import '../../../modules/math/src/utils/math_ui_constant.dart';
@@ -197,7 +199,8 @@ class HandwritingRecognitionZoneState
               ),
               // if (_isRecognizing)
               //   const Center(child: CircularProgressIndicator()),
-              if (_isRecognizing && widget.displayLoadingstate)  const Center(child: CircularProgressIndicator()),
+              if (_isRecognizing && widget.displayLoadingstate)
+                const Center(child: CircularProgressIndicator()),
             ],
           ),
         ),
@@ -287,7 +290,25 @@ class HandwritingRecognitionZoneState
       _ink.strokes.add(_currentStroke!);
       _currentStroke = null;
     });
+    // Ink를 JSON으로 변환 후 출력
+    final jsonString = jsonEncode(_ink.toJson());
+    debugPrint(jsonString, wrapWidth: 8000); // 긴 로그도 잘림 없이 출력[2][6]
   }
+}
+
+// 예시: 확장(extension)으로 toJson 추가
+extension StrokePointToJson on StrokePoint {
+  Map<String, dynamic> toJson() => {'x': x, 'y': y, 't': t};
+}
+
+extension StrokeToJson on Stroke {
+  List<Map<String, dynamic>> toJson() => points.map((p) => p.toJson()).toList();
+}
+
+extension InkToJson on Ink {
+  Map<String, dynamic> toJson() => {
+    'strokes': strokes.map((s) => s.toJson()).toList(),
+  };
 }
 
 class _InkPainter extends CustomPainter {
