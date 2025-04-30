@@ -18,17 +18,15 @@ import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:collection/collection.dart';
 
-import '../../shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
-
-class LevelOneTwoThreeThink1 extends StatefulWidget {
+class LevelOneThreeOneBasic1 extends StatefulWidget {
   final String problemCode;
-  const LevelOneTwoThreeThink1({super.key, required this.problemCode});
+  const LevelOneThreeOneBasic1({super.key, required this.problemCode});
 
   @override
-  State<LevelOneTwoThreeThink1> createState() => LevelOneTwoThreeThink1State();
+  State<LevelOneThreeOneBasic1> createState() => LevelOneThreeOneBasic1State();
 }
 
-class LevelOneTwoThreeThink1State extends State<LevelOneTwoThreeThink1> with TickerProviderStateMixin {
+class LevelOneThreeOneBasic1State extends State<LevelOneThreeOneBasic1> with TickerProviderStateMixin {
   final ScreenshotController screenshotController = ScreenshotController();
   final TimerController _timerController = TimerController();
   final ProblemApiService _apiService = ProblemApiService();
@@ -50,7 +48,6 @@ class LevelOneTwoThreeThink1State extends State<LevelOneTwoThreeThink1> with Tic
   Map<String, dynamic> selectedAnswers = {};
   List<List<String>> fixedImageUrls = [];
   List<Map<String, String>> candidates = [];
-  final Map<String, GlobalKey<HandwritingRecognitionZoneState>> zoneKeys = {};
 
   // 페이지 실행 시 작동하는 함수. 수정 필요 x
   @override
@@ -86,11 +83,6 @@ class LevelOneTwoThreeThink1State extends State<LevelOneTwoThreeThink1> with Tic
   Future<void> _loadQuestionData() async {
     try {
       final response = await _apiService.loadProblemData(problemCode);
-
-      final childProfileJson = await SecureStorageService.getChildProfile();
-      final childProfile = jsonDecode(childProfileJson!);
-      childId = childProfile['id'];
-
       setState(() {
         nextProblemCode = response.nextProblemCode;
         problemData = response.problem;
@@ -130,18 +122,10 @@ class LevelOneTwoThreeThink1State extends State<LevelOneTwoThreeThink1> with Tic
   void _processProblemData(Map problemData) {}
 
   // 문제 푸는 로직 수행할때, seletedAnswers 데이터 넣는 로직
-  Future<void> _processInputData() async {
-    selectedAnswers.clear();
-
-    for (final entry in zoneKeys.entries) {
-      final recognized = await entry.value.currentState!.recognize();
-      selectedAnswers[entry.key] = int.tryParse(recognized) ?? -1;
-    }
-  }
+  void _processInputData() {}
 
   // 정답 여부 체크(보통은 이거쓰면됨)
-  Future<void> checkAnswer() async {
-    await _processInputData();
+  void checkAnswer() {
     isCorrect = const DeepCollectionEquality().equals(
       answerData,
       selectedAnswers,
@@ -154,6 +138,10 @@ class LevelOneTwoThreeThink1State extends State<LevelOneTwoThreeThink1> with Tic
     try {
       final imageBytes = await screenshotController.capture() as Uint8List;
       if (!context.mounted) return;
+
+      final childProfileJson = await SecureStorageService.getChildProfile();
+      final childProfile = jsonDecode(childProfileJson!);
+      final childId = childProfile['id'];
 
       await ImageService.uploadImage(
         imageBytes: imageBytes,
@@ -199,7 +187,7 @@ class LevelOneTwoThreeThink1State extends State<LevelOneTwoThreeThink1> with Tic
 
     return Scaffold(
       appBar: AppbarWidget(
-        title: Text('알맞은 수 찾기'),
+        title: null,
         leading: IconButton(
           icon: const Icon(Icons.chevron_left, size: 40.0),
           onPressed: () => Modular.to.pop(),
@@ -221,108 +209,18 @@ class LevelOneTwoThreeThink1State extends State<LevelOneTwoThreeThink1> with Tic
                     child: Column(
                       children: [
                         NewHeaderWidget(
-                          headerText: '개념학습활동',
+                          headerText: '주요학습활동',
                           headerTextSize: screenWidth * 0.028,
                           subTextSize: screenWidth * 0.018,
                         ),
                         SizedBox(height: screenHeight * 0.01),
                         NewQuestionTextWidget(
                           questionText:
-                          '알맞은 수를 찾아보세요.',
+                          '회색 빈칸에 알맞은 1 작은 수를 나타내는 그림은 무엇일까요?',
                           questionTextSize: screenWidth * 0.03,
                         ),
                         SizedBox(height: screenHeight * 0.02),
                         // 여기에 문제 푸는 ui 및 삽입
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(9, (index) {
-                            final number = index + 1;
-                            return Container(
-                              width: 80,
-                              height: 60,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: Colors.yellow[100],
-                                border: Border.all(color: Colors.lightBlue),
-                              ),
-                              child: Text(
-                                '$number',
-                                style: const TextStyle(
-                                  fontSize: 28,
-                                ),
-                              ),
-                            );
-                          }),
-                        ),
-                        SizedBox(height: 20),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: List.generate(problemData.length, (index) {
-                            final key = 'p${index + 1}';
-                            final values = List<int>.from(problemData[key]);
-                            final a = values[0];
-                            final b = values[1];
-                            final isGreater = index < 4;
-
-                            final prompt = isGreater
-                                ? ' $a보다 $b 큰 수는 '
-                                : ' $a보다 $b 작은 수는 ';
-
-                            zoneKeys.putIfAbsent(key, () => GlobalKey<HandwritingRecognitionZoneState>());
-                            final zoneKey = zoneKeys[key]!;
-
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0),
-                              child: Align(
-                                alignment: Alignment.centerLeft,  // Ensure the Row aligns to the left
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 16.0),  // Add left padding here
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,  // Ensure children are left-aligned
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      // Number Badge
-                                      Container(
-                                        alignment: Alignment.center,
-                                        width: screenWidth * 0.05,
-                                        height: screenWidth * 0.05,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(50),
-                                          color: Colors.purple[100],
-                                        ),
-                                        child: Text(
-                                          '${index + 1}',  // Number Badge
-                                          style: TextStyle(fontSize: screenWidth * 0.035),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 6),
-                                      // Question Text
-                                      Flexible(
-                                        fit: FlexFit.loose,
-                                        child: Text(
-                                          prompt,
-                                          style: const TextStyle(fontSize: 24),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 6),
-                                      // Handwriting Zone
-                                      HandwritingRecognitionZone(
-                                        key: zoneKey,
-                                        width: 80,
-                                        height: 80,
-                                      ),
-                                      const SizedBox(width: 6),
-                                      const Text(
-                                        '입니다',
-                                        style: TextStyle(fontSize: 24),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          }),
-                        )
                       ],
                     ),
                   ),
@@ -379,16 +277,14 @@ class LevelOneTwoThreeThink1State extends State<LevelOneTwoThreeThink1> with Tic
                                   buttonText: "제출하기",
                                   fontSize: screenWidth * 0.02,
                                   borderRadius: 10,
-                                  onPressed: () async {
-                                    await checkAnswer(); // ✅ correctly awaited
+                                  onPressed:
+                                      () => {
                                     setState(() {
+                                      checkAnswer();
                                       showSubmitPopup = true;
-                                    });
-                                    submitController.forward(); // ✅ called after the popup flag is set
+                                    }),
+                                    submitController.forward(),
                                   },
-
-
-
                                 ),
                                 const SizedBox(width: 20),
                                 ButtonWidget(

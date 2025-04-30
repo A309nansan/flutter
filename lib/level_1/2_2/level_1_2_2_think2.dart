@@ -140,11 +140,11 @@ class _LevelOneTwoTwoThink2State extends State<LevelOneTwoTwoThink2>
     }
   }
 
-  void _processInputData() {}
+  // void _processInputData() {}
 
   // 정답 체크하는 함수. 정답 체크로직 구현 필요.
   void checkAnswer() {
-    _processInputData();
+    // _processInputData();
     isCorrect = DeepCollectionEquality().equals(answerData, selectedAnswers);
     submitAnswer();
   }
@@ -333,12 +333,11 @@ class _LevelOneTwoTwoThink2State extends State<LevelOneTwoTwoThink2>
                                                 ? null
                                                 : () async {
                                               await submitController.forward();
+                                              await submitActivity(context);  // This calls recognizeAll()
+                                              checkAnswer();
                                               setState(() {
                                                 showSubmitPopup = true;
                                               });
-
-                                              await submitActivity(context);  // This calls recognizeAll()
-                                              checkAnswer();
                                             },
                                           ),
 
