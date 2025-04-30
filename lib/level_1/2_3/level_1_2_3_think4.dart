@@ -51,24 +51,7 @@ class LevelOneTwoThreeThink4State extends State<LevelOneTwoThreeThink4>
   List<Map<String, String>> candidates = [];
 
   //UI부분 데이터
-  final List<String> numberList = [
-    '1-2-3-4',
-    '3-1-2-5',
-    '2-5-6-9',
-    '5-6-7-8',
-    '1-3-2-4',
-    '2-3-1-5',
-    '3-7-1-6',
-    '7-8-5-6',
-    '6-8-7-9',
-    '1-9-2-8',
-    '3-1-5-6',
-    '6-7-1-5',
-    '6-7-8-9',
-    '6-9-2-5',
-    '1-5-3-6',
-    '1-5-6-7',
-  ];
+  List<String> numberList = [];
 
   final List<String> numberListText = [];
   Set<int> selectedIndexes = {};
@@ -148,37 +131,43 @@ class LevelOneTwoThreeThink4State extends State<LevelOneTwoThreeThink4>
 
   // 문제 데이터 받아온 후, 문제에 맞게 데이터 조작
   void _processProblemData(Map problemData) {
-    if (problemData.containsKey('grid')) {
-      setState(() {
-        numberList.clear();
-        var grid = problemData['grid'] as List<List<String>>;
-        for (var row in grid) {
-          numberList.addAll(row);
-        }
-      });
-    }
-    debugPrint('$numberList');
+    // 2차원 배열을 1차원으로 변환
+    numberList =
+        (problemData["grid"] as List)
+            .expand((row) => List<String>.from(row))
+            .toList();
   }
 
   // 문제 푸는 로직 수행할때, seletedAnswers 데이터 넣는 로직
   void _processInputData() {
-    for (var index in selectedIndexes) {
-      // 4x4 그리드에서 선택된 인덱스를 행과 열로 나누어 처리
-      int row = index ~/ 4;
-      int col = index % 4;
+    // 선택한 인덱스들을 (row, col) 형태로 변환
+    List<Map<String, int>> selectedIndexesList =
+        selectedIndexes.map((index) {
+          int row = index ~/ 4; // 4x4 그리드 기준
+          int col = index % 4;
+          return {"row": row, "col": col};
+        }).toList();
 
-      selectedAnswers['row$index'] = numberList[index]; // 선택된 값 추가
-    }
+    // 선택한 개수와 위치를 selectedAnswers에 저장
+    selectedAnswers = {
+      "count": selectedIndexes.length,
+      "correct_indexes": selectedIndexesList,
+    };
   }
 
   // 정답 여부 체크(보통은 이거쓰면됨)
   Future<void> checkAnswer() async {
     _processInputData();
 
-    isCorrect = const DeepCollectionEquality().equals(
-      answerData,
-      selectedAnswers,
-    );
+    final unorderedEq = const DeepCollectionEquality.unordered();
+
+    isCorrect =
+        (answerData['count'] == selectedAnswers['count']) &&
+        unorderedEq.equals(
+          answerData['correct_indexes'],
+          selectedAnswers['correct_indexes'],
+        );
+    debugPrint("$answerData");
     _submitAnswer();
   }
 
@@ -320,8 +309,9 @@ class LevelOneTwoThreeThink4State extends State<LevelOneTwoThreeThink4>
                                                 ),
                                                 child: Text(
                                                   numberList[index],
-                                                  style: const TextStyle(
-                                                    fontSize: 30,
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        screenHeight * 0.02,
                                                   ),
                                                   textAlign: TextAlign.center,
                                                 ),
