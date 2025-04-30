@@ -26,13 +26,14 @@ class LevelOneTwoThreeThink3 extends StatefulWidget {
   State<LevelOneTwoThreeThink3> createState() => _LevelOneTwoThreeThink3State();
 }
 
-class _LevelOneTwoThreeThink3State extends State<LevelOneTwoThreeThink3> with TickerProviderStateMixin {
+class _LevelOneTwoThreeThink3State extends State<LevelOneTwoThreeThink3>
+    with TickerProviderStateMixin {
   final ScreenshotController screenshotController = ScreenshotController();
   final TimerController _timerController = TimerController();
   final ProblemApiService _apiService = ProblemApiService();
   late AnimationController submitController;
   late Animation<double> submitAnimation;
-  late int childId;
+  late int childId = 1;
   late int current;
   late int total;
   late int elapsedSeconds;
@@ -135,7 +136,7 @@ class _LevelOneTwoThreeThink3State extends State<LevelOneTwoThreeThink3> with Ti
   }
 
   // 문제 푸는 로직 수행할때, seletedAnswers 데이터 넣는 로직
-  void _processInputData() {
+  Future<void> _processInputData() async {
     selectedAnswers = {"left": false, "right": false};
 
     if (selectedButton == 'left') {
@@ -148,8 +149,8 @@ class _LevelOneTwoThreeThink3State extends State<LevelOneTwoThreeThink3> with Ti
   }
 
   // 정답 여부 체크(보통은 이거쓰면됨)
-  void checkAnswer() {
-    _processInputData();
+  Future<void> checkAnswer() async {
+    await _processInputData();
 
     isCorrect = const DeepCollectionEquality().equals(
       answerData,
@@ -221,394 +222,474 @@ class _LevelOneTwoThreeThink3State extends State<LevelOneTwoThreeThink3> with Ti
         ),
       ),
       body:
-      isLoading
-          ? const Center(child: EnProblemSplashScreen())
-          : Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Container(
-              color: Colors.white,
-              child: Column(
+          isLoading
+              ? const Center(child: EnProblemSplashScreen())
+              : Stack(
                 children: [
-                  Screenshot(
-                    controller: screenshotController,
-                    child: Column(
-                      children: [
-                        NewHeaderWidget(
-                          headerText: '주요학습활동',
-                          headerTextSize: screenWidth * 0.028,
-                          subTextSize: screenWidth * 0.018,
-                        ),
-                        SizedBox(height: screenHeight * 0.01),
-                        NewQuestionTextWidget(
-                          questionText:
-                          '회색 빈칸에 알맞은 1 작은 수를 나타내는 그림은 무엇일까요?',
-                          questionTextSize: screenWidth * 0.03,
-                        ),
-                        SizedBox(height: screenHeight * 0.02),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 5),
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              Container(
-                                  height: screenHeight * 0.3,
-                                  width: screenWidth * 0.85,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: Colors.orangeAccent,
-                                      width: 4,
-                                    ),
-                                    borderRadius: BorderRadius.circular(10),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Container(
+                      color: Colors.white,
+                      child: Column(
+                        children: [
+                          Screenshot(
+                            controller: screenshotController,
+                            child: Column(
+                              children: [
+                                NewHeaderWidget(
+                                  headerText: '개념학습활동',
+                                  headerTextSize: screenWidth * 0.028,
+                                  subTextSize: screenWidth * 0.018,
+                                ),
+                                SizedBox(height: screenHeight * 0.01),
+                                NewQuestionTextWidget(
+                                  questionText:
+                                      '숫자가 들어갈 알맞은 위치를 찾아 <보기>와 같이 O표 하세요.',
+                                  questionTextSize: screenWidth * 0.03,
+                                ),
+                                SizedBox(height: screenHeight * 0.02),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 5,
                                   ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                  child: Stack(
+                                    alignment: Alignment.center,
                                     children: [
-                                      SizedBox(
-                                          width: screenWidth * 0.75,
-                                          height: screenHeight * 0.1,
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: List.generate(5, (index) {
-                                              final contents = ['1', '', '3', '○', '5'];//데이터 넣기
+                                      Container(
+                                        height: screenHeight * 0.3,
+                                        width: screenWidth * 0.85,
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: Colors.orangeAccent,
+                                            width: 4,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                        ),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            SizedBox(
+                                              width: screenWidth * 0.75,
+                                              height: screenHeight * 0.1,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: List.generate(5, (
+                                                  index,
+                                                ) {
+                                                  final contents = [
+                                                    '1',
+                                                    '',
+                                                    '3',
+                                                    '○',
+                                                    '5',
+                                                  ]; //데이터 넣기
 
-                                              return Container(
+                                                  return Container(
+                                                    height: screenHeight * 0.06,
+                                                    width: screenWidth * 0.15,
+                                                    decoration: BoxDecoration(
+                                                      color: Color(0xFFFef1c4),
+                                                      border: Border.all(
+                                                        color: Color(
+                                                          0xFF9c6a17,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    child: Center(
+                                                      child:
+                                                          contents[index] == '○'
+                                                              ? Container(
+                                                                width: 40,
+                                                                height: 40,
+                                                                decoration: BoxDecoration(
+                                                                  shape:
+                                                                      BoxShape
+                                                                          .circle,
+                                                                  border: Border.all(
+                                                                    color:
+                                                                        Colors
+                                                                            .black,
+                                                                    width: 2,
+                                                                  ),
+                                                                ),
+                                                              )
+                                                              : Text(
+                                                                contents[index],
+                                                                style: TextStyle(
+                                                                  fontSize: 24,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                ),
+                                                              ),
+                                                    ),
+                                                  );
+                                                }),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical: 0,
+                                                  ),
+                                              child: Image.asset(
+                                                'assets/images/logo1.png', //화살표 구현
+                                                width: screenWidth * 0.3,
                                                 height: screenHeight * 0.06,
-                                                width:  screenWidth * 0.15,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              child: Container(
+                                                height: screenHeight * 0.06,
+                                                width: screenWidth * 0.15,
+                                                margin: EdgeInsets.symmetric(
+                                                  horizontal: 2,
+                                                ),
                                                 decoration: BoxDecoration(
                                                   color: Color(0xFFFef1c4),
-                                                  border: Border.all(color: Color(0xFF9c6a17)),
+                                                  border: Border.all(
+                                                    color: Color(0xFF9c6a17),
+                                                  ),
                                                 ),
                                                 child: Center(
-                                                    child: contents[index] == '○'
-                                                        ? Container(
+                                                  child: Text(
+                                                    '4',
+                                                    style: TextStyle(
+                                                      fontSize: 24,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: 0,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 5,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.orangeAccent,
+                                            borderRadius: BorderRadius.circular(
+                                              5,
+                                            ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black12,
+                                                blurRadius: 3,
+                                              ),
+                                            ],
+                                          ),
+                                          child: const Text(
+                                            "<보기>",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: screenHeight * 0.05),
+                                Column(
+                                  children: [
+                                    SizedBox(
+                                      width: screenWidth * 0.75,
+                                      height: screenHeight * 0.1,
+                                      child: GridView.count(
+                                        crossAxisCount: 5,
+                                        shrinkWrap: true,
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        padding: EdgeInsets.zero,
+                                        childAspectRatio: 1.5,
+                                        children: List.generate(5, (index) {
+                                          final contents2 = [
+                                            numberList[0],
+                                            'left',
+                                            numberList[1],
+                                            'right',
+                                            numberList[2],
+                                          ];
+                                          final isSelectable =
+                                              contents2[index] == 'left' ||
+                                              contents2[index] == 'right';
+                                          final isSelected =
+                                              selectedIndex == index;
+
+                                          return Stack(
+                                            alignment: Alignment.center,
+                                            children: [
+                                              SizedBox(
+                                                width: screenWidth * 0.15,
+                                                height: screenHeight * 0.1,
+                                                child: ElevatedButton(
+                                                  onPressed:
+                                                      isSelectable
+                                                          ? () {
+                                                            setState(() {
+                                                              if (contents2[index] ==
+                                                                  'left') {
+                                                                selectedButton =
+                                                                    'left';
+                                                              } else if (contents2[index] ==
+                                                                  'right') {
+                                                                selectedButton =
+                                                                    'right';
+                                                              }
+                                                              selectedIndex =
+                                                                  index;
+                                                            });
+                                                          }
+                                                          : null,
+                                                  style: ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                        const Color(0xFFFef1c4),
+                                                    foregroundColor:
+                                                        Colors.black,
+                                                    elevation: 3,
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius.zero,
+                                                          side:
+                                                              const BorderSide(
+                                                                color: Color(
+                                                                  0xFF9c6a17,
+                                                                ),
+                                                              ),
+                                                        ),
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                          5.0,
+                                                        ),
+                                                    disabledBackgroundColor:
+                                                        const Color(0xFFFef1c4),
+                                                    disabledForegroundColor:
+                                                        Colors.black,
+                                                  ),
+                                                  child:
+                                                      contents2[index] !=
+                                                                  'left' &&
+                                                              contents2[index] !=
+                                                                  'right'
+                                                          ? Text(
+                                                            '${contents2[index]}',
+                                                            style:
+                                                                const TextStyle(
+                                                                  fontSize: 24,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                ),
+                                                          )
+                                                          : const SizedBox.shrink(),
+                                                ),
+                                              ),
+
+                                              if (isSelected)
+                                                Positioned(
+                                                  child: IgnorePointer(
+                                                    child: Container(
                                                       width: 40,
                                                       height: 40,
                                                       decoration: BoxDecoration(
-                                                          shape: BoxShape.circle,
-                                                          border: Border.all(
-                                                            color: Colors.black,
-                                                            width: 2,
-                                                          )
+                                                        shape: BoxShape.circle,
+                                                        border: Border.all(
+                                                          color: Colors.black,
+                                                          width: 2,
+                                                        ),
                                                       ),
-                                                    )
-                                                        :
-                                                    Text(
-                                                      contents[index],
-                                                      style: TextStyle(
-                                                        fontSize: 24,
-                                                        fontWeight: FontWeight.bold,
-                                                      ),
-                                                    )
+                                                    ),
+                                                  ),
                                                 ),
-                                              );
-                                            }),
-                                          )
+                                            ],
+                                          );
+                                        }),
                                       ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 0),
-                                        child: Image.asset(
-                                          'assets/images/logo1.png', //화살표 구현
-                                          width: screenWidth * 0.3,
-                                          height: screenHeight * 0.06,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                          child: Container(
-                                            height: screenHeight * 0.06,
-                                            width:  screenWidth * 0.15,
-                                            margin: EdgeInsets.symmetric(horizontal: 2),
-                                            decoration: BoxDecoration(
-                                              color: Color(0xFFFef1c4),
-                                              border: Border.all(color: Color(0xFF9c6a17)),
-                                            ),
-                                            child: Center(
-                                              child: Text(
-                                                '4',
-                                                style: TextStyle(
-                                                  fontSize: 24,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ),
-                                          )
-                                      ),
-                                    ],
-                                  )
-                              ),
-                              Positioned(
-                                top: 0,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 5,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.orangeAccent,
-                                    borderRadius: BorderRadius.circular(5),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black12,
-                                        blurRadius: 3,
-                                      ),
-                                    ],
-                                  ),
-                                  child: const Text(
-                                    "<보기>",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
                                     ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: screenHeight * 0.05),
-                        Column(
-                          children: [
-                            SizedBox(
-                              width: screenWidth * 0.75,
-                              height: screenHeight * 0.1,
-                              child: GridView.count(
-                                crossAxisCount: 5,
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                padding: EdgeInsets.zero,
-                                childAspectRatio: 1.5,
-                                children: List.generate(5, (index) {
-                                  final contents2 = [numberList[0], 'left', numberList[1], 'right', numberList[2]];
-                                  final isSelectable = contents2[index] == 'left' || contents2[index] == 'right';
-                                  final isSelected = selectedIndex == index;
 
-                                  return Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      SizedBox(
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 0,
+                                      ),
+                                      child: Image.asset(
+                                        'assets/images/logo2.png', //화살표 구현하기
+                                        width: screenWidth * 0.3,
+                                        height: screenHeight * 0.06,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      child: Container(
+                                        height: screenHeight * 0.06,
                                         width: screenWidth * 0.15,
-                                        height: screenHeight * 0.1,
-                                        child: ElevatedButton(
-                                          onPressed: isSelectable
-                                              ? () {
-                                            setState(() {
-                                              if(contents2[index] == 'left'){
-                                                selectedButton = 'left';
-                                              } else if (contents2[index] == 'right'){
-                                                selectedButton = 'right';
-                                              }
-                                              selectedIndex = index;
-                                            });
-                                          }
-                                              : null,
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: const Color(0xFFFef1c4),
-                                            foregroundColor: Colors.black,
-                                            elevation: 3,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.zero,
-                                              side: const BorderSide(color: Color(0xFF9c6a17)),
-                                            ),
-                                            padding: const EdgeInsets.all(5.0),
-                                            disabledBackgroundColor: const Color(0xFFFef1c4),
-                                            disabledForegroundColor: Colors.black,
+                                        margin: EdgeInsets.symmetric(
+                                          horizontal: 2,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Color(0xFFFef1c4),
+                                          border: Border.all(
+                                            color: Color(0xFF9c6a17),
                                           ),
-                                          child: contents2[index] != 'left' && contents2[index] != 'right'
-                                              ? Text(
-                                            '${contents2[index]}',
-                                            style: const TextStyle(
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            '$givenNumber',
+                                            style: TextStyle(
                                               fontSize: 24,
                                               fontWeight: FontWeight.bold,
                                             ),
-                                          )
-                                              : const SizedBox.shrink(),
-
-                                        ),
-                                      ),
-
-                                      if (isSelected)
-                                        Positioned(
-                                          child: IgnorePointer(
-                                            child: Container(
-                                              width: 40,
-                                              height: 40,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                border: Border.all(
-                                                  color: Colors.black,
-                                                  width: 2,
-                                                ),
-                                              ),
-                                            ),
                                           ),
                                         ),
-                                    ],
-                                  );
-                                }),
-                              ),
-                            ),
-
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 0),
-                              child: Image.asset(
-                                'assets/images/logo2.png', //화살표 구현하기
-                                width: screenWidth * 0.3,
-                                height: screenHeight * 0.06,
-                              ),
-                            ),
-                            SizedBox(
-                                child: Container(
-                                  height: screenHeight * 0.06,
-                                  width:  screenWidth * 0.15,
-                                  margin: EdgeInsets.symmetric(horizontal: 2),
-                                  decoration: BoxDecoration(
-                                    color: Color(0xFFFef1c4),
-                                    border: Border.all(color: Color(0xFF9c6a17)),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      '$givenNumber',
-                                      style: TextStyle(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                  ),
-                                )
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  Spacer(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      EnProgressBarWidget(
-                        current: current,
-                        total: total,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 30.0,
-                          vertical: screenHeight * 0.02,
-                        ),
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 300),
-                          transitionBuilder: (child, animation) {
-                            return FadeTransition(
-                              opacity: animation,
-                              child: child,
-                            );
-                          },
-                          child: Row(
-                            key: ValueKey<String>(
-                              '${isSubmitted}_$isCorrect',
-                            ),
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              if (!isSubmitted)
-                                ButtonWidget(
-                                  height: screenHeight * 0.035,
-                                  width: screenWidth * 0.18,
-                                  buttonText: "제출하기",
-                                  fontSize: screenWidth * 0.02,
-                                  borderRadius: 10,
-                                  onPressed:
-                                  (isSubmitted)
-                                      ? null
-                                      : () => {
-                                    submitController.forward(),
-                                    showSubmitPopup = true,
-                                    submitActivity(context),
-                                    checkAnswer(),
-                                  },
-                                ),
-
-                              if (isSubmitted &&
-                                  isCorrect == false) ...[
-                                ButtonWidget(
-                                  height: screenHeight * 0.035,
-                                  width: screenWidth * 0.18,
-                                  buttonText: "제출하기",
-                                  fontSize: screenWidth * 0.02,
-                                  borderRadius: 10,
-                                  onPressed:
-                                      () => {
-                                    setState(() {
-                                      checkAnswer();
-                                      showSubmitPopup = true;
-                                    }),
-                                    submitController.forward(),
-                                  },
-                                ),
-                                const SizedBox(width: 20),
-                                ButtonWidget(
-                                  height: screenHeight * 0.035,
-                                  width: screenWidth * 0.18,
-                                  buttonText: isEnd ? "학습종료" : "다음문제",
-                                  fontSize: screenWidth * 0.02,
-                                  borderRadius: 10,
-                                  onPressed: () => onNextPressed(),
+                                  ],
                                 ),
                               ],
-
-                              if (isSubmitted && isCorrect == true)
-                                ButtonWidget(
-                                  height: screenHeight * 0.035,
-                                  width: screenWidth * 0.18,
-                                  buttonText: isEnd ? "학습종료" : "다음문제",
-                                  fontSize: screenWidth * 0.02,
-                                  borderRadius: 10,
-                                  onPressed: () => onNextPressed(),
+                            ),
+                          ),
+                          Spacer(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              EnProgressBarWidget(
+                                current: current,
+                                total: total,
+                              ),
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 30.0,
+                                  vertical: screenHeight * 0.02,
                                 ),
+                                child: AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 300),
+                                  transitionBuilder: (child, animation) {
+                                    return FadeTransition(
+                                      opacity: animation,
+                                      child: child,
+                                    );
+                                  },
+                                  child: Row(
+                                    key: ValueKey<String>(
+                                      '${isSubmitted}_$isCorrect',
+                                    ),
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      if (!isSubmitted)
+                                        ButtonWidget(
+                                          height: screenHeight * 0.035,
+                                          width: screenWidth * 0.18,
+                                          buttonText: "제출하기",
+                                          fontSize: screenWidth * 0.02,
+                                          borderRadius: 10,
+                                          onPressed: () async {
+                                            if (isSubmitted) return;
+
+                                            setState(() {
+                                              showSubmitPopup = true;
+                                            });
+
+                                            submitController.forward();
+
+                                            await submitActivity(context);
+                                            await checkAnswer();
+                                          },
+                                        ),
+                                      if (isSubmitted &&
+                                          isCorrect == false) ...[
+                                        ButtonWidget(
+                                          height: screenHeight * 0.035,
+                                          width: screenWidth * 0.18,
+                                          buttonText: "제출하기",
+                                          fontSize: screenWidth * 0.02,
+                                          borderRadius: 10,
+                                          onPressed: () async {
+                                            await checkAnswer(); // ✅ correctly awaited
+                                            setState(() {
+                                              showSubmitPopup = true;
+                                            });
+                                            submitController
+                                                .forward(); // ✅ called after the popup flag is set
+                                          },
+                                        ),
+                                        const SizedBox(width: 20),
+                                        ButtonWidget(
+                                          height: screenHeight * 0.035,
+                                          width: screenWidth * 0.18,
+                                          buttonText: isEnd ? "학습종료" : "다음문제",
+                                          fontSize: screenWidth * 0.02,
+                                          borderRadius: 10,
+                                          onPressed: () => onNextPressed(),
+                                        ),
+                                      ],
+
+                                      if (isSubmitted && isCorrect == true)
+                                        ButtonWidget(
+                                          height: screenHeight * 0.035,
+                                          width: screenWidth * 0.18,
+                                          buttonText: isEnd ? "학습종료" : "다음문제",
+                                          fontSize: screenWidth * 0.02,
+                                          borderRadius: 10,
+                                          onPressed: () => onNextPressed(),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-          if (showSubmitPopup)
-            Positioned.fill(
-              child: Stack(
-                children: [
-                  Container(color: Colors.black54),
-                  Center(
-                    child: FadeTransition(
-                      opacity: submitAnimation,
-                      child: ScaleTransition(
-                        scale: submitAnimation,
-                        child: Material(
-                          type: MaterialType.transparency,
-                          child: SuccessfulPopup(
-                            scaleAnimation:
-                            const AlwaysStoppedAnimation(1.0),
-                            isCorrect: isCorrect,
-                            customMessage:
-                            isCorrect ? "🎉 정답이에요!" : "틀렸어요...",
-                            isEnd: isEnd,
-                            closePopup: closeSubmit,
-                            onClose:
-                            isCorrect
-                                ? () async => onNextPressed()
-                                : null,
-                          ),
-                        ),
+                        ],
                       ),
                     ),
                   ),
+                  if (showSubmitPopup)
+                    Positioned.fill(
+                      child: Stack(
+                        children: [
+                          Container(color: Colors.black54),
+                          Center(
+                            child: FadeTransition(
+                              opacity: submitAnimation,
+                              child: ScaleTransition(
+                                scale: submitAnimation,
+                                child: Material(
+                                  type: MaterialType.transparency,
+                                  child: SuccessfulPopup(
+                                    scaleAnimation:
+                                        const AlwaysStoppedAnimation(1.0),
+                                    isCorrect: isCorrect,
+                                    customMessage:
+                                        isCorrect ? "🎉 정답이에요!" : "틀렸어요...",
+                                    isEnd: isEnd,
+                                    closePopup: closeSubmit,
+                                    onClose:
+                                        isCorrect
+                                            ? () async => onNextPressed()
+                                            : null,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                 ],
               ),
-            ),
-        ],
-      ),
     );
   }
 }
