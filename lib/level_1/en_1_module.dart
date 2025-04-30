@@ -12,6 +12,7 @@ import 'package:nansan_flutter/level_1/2_2/level_1_2_2_think2.dart';
 import 'package:nansan_flutter/level_1/2_3/level_1_2_3_think1.dart';
 import 'package:nansan_flutter/level_1/2_3/level_1_2_3_think3.dart';
 import 'package:nansan_flutter/level_1/2_3/level_1_2_3_think4.dart';
+import 'package:nansan_flutter/level_1/3-2/screens/level_1_3_2_pro1.dart';
 import 'package:nansan_flutter/modules/drag_drop/controllers/drag_drop_controller.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:provider/provider.dart';
@@ -210,6 +211,14 @@ class En1Module extends Module {
       child: (context) {
         final nextCode = r.args.data as String;
         return LevelOneThreeTwoMain(problemCode: nextCode);
+      },
+    );
+    // 3과 2차시 심화1
+    r.child(
+      '/enlv1s3c2sh1',
+      child: (context) {
+        final nextCode = r.args.data as String;
+        return LevelOneThreeTwoPro1(problemCode: nextCode);
       },
     );
     // 4과 2차시 주요1
