@@ -269,8 +269,8 @@ class TemplateState extends State<Template> with TickerProviderStateMixin {
 
                                           //   submitController.forward();
 
-                                          //   await submitActivity(context);
                                           //   await checkAnswer();
+                                          //   await submitActivity(context);
                                           // },
                                         ),
 
