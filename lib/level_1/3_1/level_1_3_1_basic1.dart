@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:nansan_flutter/level_1/2_3/widgets/apple_container.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
 import 'package:nansan_flutter/shared/controllers/timer_controller.dart';
@@ -17,6 +18,8 @@ import 'package:nansan_flutter/shared/widgets/new_question_text.dart';
 import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:collection/collection.dart';
+
+import '../../shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
 
 class LevelOneThreeOneBasic1 extends StatefulWidget {
   final String problemCode;
@@ -48,6 +51,7 @@ class LevelOneThreeOneBasic1State extends State<LevelOneThreeOneBasic1> with Tic
   Map<String, dynamic> selectedAnswers = {};
   List<List<String>> fixedImageUrls = [];
   List<Map<String, String>> candidates = [];
+  final Map<String, GlobalKey<HandwritingRecognitionZoneState>> zoneKeys = {};
 
   // 페이지 실행 시 작동하는 함수. 수정 필요 x
   @override
@@ -81,6 +85,7 @@ class LevelOneThreeOneBasic1State extends State<LevelOneThreeOneBasic1> with Tic
 
   // 페이지 실행 시, 문제 데이터를 불러오는 함수. 수정 필요 x
   Future<void> _loadQuestionData() async {
+    /* api 생성후 살릴 것
     try {
       final response = await _apiService.loadProblemData(problemCode);
       setState(() {
@@ -94,6 +99,24 @@ class LevelOneThreeOneBasic1State extends State<LevelOneThreeOneBasic1> with Tic
     } catch (e) {
       debugPrint('Error loading question data: $e');
     }
+     */
+    setState(() {
+      nextProblemCode = "enlv1s2c3kc2";
+      problemData  = {
+        "p1": [ 2, 1, 4 ],
+        "p2": [ 3, 1, 2, 4 ]
+      };
+      answerData = {
+        "p1": [ 2, 1, 4 ],
+        "p2": 4
+      };
+      current = 1;
+      total = 2;
+      selectedAnswers = {
+        "p1": [ 0, 0, 0 ],
+        "p2": 0
+      };
+    });
   }
 
   // 문제 제출할때 함수. 수정 필요 x
@@ -209,18 +232,49 @@ class LevelOneThreeOneBasic1State extends State<LevelOneThreeOneBasic1> with Tic
                     child: Column(
                       children: [
                         NewHeaderWidget(
-                          headerText: '주요학습활동',
+                          headerText: '기초학습활동',
                           headerTextSize: screenWidth * 0.028,
                           subTextSize: screenWidth * 0.018,
                         ),
                         SizedBox(height: screenHeight * 0.01),
                         NewQuestionTextWidget(
                           questionText:
-                          '회색 빈칸에 알맞은 1 작은 수를 나타내는 그림은 무엇일까요?',
+                          '1. 사과는 몇 개인가요? <보기>와 같이 네모 안에 알맞은 숫자를 써 봅시다.',
                           questionTextSize: screenWidth * 0.03,
                         ),
                         SizedBox(height: screenHeight * 0.02),
                         // 여기에 문제 푸는 ui 및 삽입
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            AppleContainer(
+                              image: 3,
+                              box: 3,
+                              zoneKey: zoneKeys,
+                            ),
+                            AppleContainer(
+                              image: problemData["p1"][0],
+                              box: 0,
+                              zoneKey: zoneKeys,
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: screenHeight * 0.02),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            AppleContainer(
+                              image: problemData["p1"][1],
+                              box: 0,
+                              zoneKey: zoneKeys,
+                            ),
+                            AppleContainer(
+                              image: problemData["p1"][2],
+                              box: 0,
+                              zoneKey: zoneKeys,
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),

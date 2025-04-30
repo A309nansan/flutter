@@ -147,6 +147,8 @@ class LevelOneTwoThreeThink1State extends State<LevelOneTwoThreeThink1>
       answerData,
       selectedAnswers,
     );
+    debugPrint(answerData.toString());
+    debugPrint(selectedAnswers.toString());
     _submitAnswer();
   }
 
@@ -238,8 +240,8 @@ class LevelOneTwoThreeThink1State extends State<LevelOneTwoThreeThink1>
                                   children: List.generate(9, (index) {
                                     final number = index + 1;
                                     return Container(
-                                      width: 80,
-                                      height: 60,
+                                      width: screenWidth * 0.1,
+                                      height: screenWidth * 0.08,
                                       alignment: Alignment.center,
                                       decoration: BoxDecoration(
                                         color: Colors.yellow[100],
@@ -334,8 +336,8 @@ class LevelOneTwoThreeThink1State extends State<LevelOneTwoThreeThink1>
                                               // Handwriting Zone
                                               HandwritingRecognitionZone(
                                                 key: zoneKey,
-                                                width: 20,
-                                                height: 20,
+                                                width: screenWidth * 0.08,
+                                                height: screenWidth * 0.08,
                                               ),
                                               const SizedBox(width: 6),
                                               const Text(
