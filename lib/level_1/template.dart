@@ -98,6 +98,10 @@ class TemplateState extends State<Template> with TickerProviderStateMixin {
 
   // 문제 제출할때 함수. 수정 필요 x
   Future<void> _submitAnswer() async {
+    final childProfileJson = await SecureStorageService.getChildProfile();
+    final childProfile = jsonDecode(childProfileJson!);
+    final childId = childProfile['id'];
+
     if (isSubmitted) return;
     final submitRequest = SubmitRequest(
       childId: childId,
@@ -262,15 +266,12 @@ class TemplateState extends State<Template> with TickerProviderStateMixin {
                                           onPressed: () => onNextPressed(),
                                           // onPressed: () async {
                                           //   if (isSubmitted) return;
-
+                                          //   await checkAnswer();
+                                          //   await submitActivity(context);
                                           //   setState(() {
                                           //     showSubmitPopup = true;
                                           //   });
-
                                           //   submitController.forward();
-
-                                          //   await checkAnswer();
-                                          //   await submitActivity(context);
                                           // },
                                         ),
 

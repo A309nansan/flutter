@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:nansan_flutter/level_1/2_3/widgets/line_painter.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
 import 'package:nansan_flutter/shared/controllers/timer_controller.dart';
@@ -275,7 +276,7 @@ class _LevelOneTwoThreeThink3State extends State<LevelOneTwoThreeThink3>
                                           children: [
                                             SizedBox(
                                               width: screenWidth * 0.75,
-                                              height: screenHeight * 0.1,
+                                              height: screenHeight * 0.06,
                                               child: Row(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.center,
@@ -335,15 +336,52 @@ class _LevelOneTwoThreeThink3State extends State<LevelOneTwoThreeThink3>
                                                 }),
                                               ),
                                             ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    vertical: 0,
+                                            SizedBox(
+                                              width: screenWidth * 0.75,
+                                              height: screenHeight * 0.1,
+                                              child: Stack(
+                                                children: [
+                                                  CustomPaint(
+                                                    size: Size(
+                                                      screenWidth * 0.75,
+                                                      screenHeight * 0.1,
+                                                    ),
+                                                    painter: LinePainter(
+                                                      start: Offset(
+                                                        screenWidth *
+                                                            0.75 *
+                                                            0.3,
+                                                        0,
+                                                      ),
+                                                      end: Offset(
+                                                        screenWidth *
+                                                            0.75 *
+                                                            0.5,
+                                                        screenHeight * 0.1,
+                                                      ),
+                                                    ),
                                                   ),
-                                              child: Image.asset(
-                                                'assets/images/logo1.png', //화살표 구현
-                                                width: screenWidth * 0.3,
-                                                height: screenHeight * 0.06,
+                                                  CustomPaint(
+                                                    size: Size(
+                                                      screenWidth * 0.75,
+                                                      screenHeight * 0.1,
+                                                    ),
+                                                    painter: LinePainter(
+                                                      start: Offset(
+                                                        screenWidth *
+                                                            0.75 *
+                                                            0.5,
+                                                        screenHeight * 0.1,
+                                                      ),
+                                                      end: Offset(
+                                                        screenWidth *
+                                                            0.75 *
+                                                            0.7,
+                                                        0,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                             SizedBox(
@@ -409,7 +447,7 @@ class _LevelOneTwoThreeThink3State extends State<LevelOneTwoThreeThink3>
                                   children: [
                                     SizedBox(
                                       width: screenWidth * 0.75,
-                                      height: screenHeight * 0.1,
+                                      height: screenHeight * 0.07,
                                       child: GridView.count(
                                         crossAxisCount: 5,
                                         shrinkWrap: true,
@@ -523,14 +561,44 @@ class _LevelOneTwoThreeThink3State extends State<LevelOneTwoThreeThink3>
                                       ),
                                     ),
 
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 0,
-                                      ),
-                                      child: Image.asset(
-                                        'assets/images/logo2.png', //화살표 구현하기
-                                        width: screenWidth * 0.3,
-                                        height: screenHeight * 0.06,
+                                    SizedBox(
+                                      width: screenWidth * 0.75,
+                                      height: screenHeight * 0.1,
+                                      child: Stack(
+                                        children: [
+                                          CustomPaint(
+                                            size: Size(
+                                              screenWidth * 0.75,
+                                              screenHeight * 0.1,
+                                            ),
+                                            painter: LinePainter(
+                                              start: Offset(
+                                                screenWidth * 0.75 * 0.3,
+                                                0,
+                                              ),
+                                              end: Offset(
+                                                screenWidth * 0.75 * 0.5,
+                                                screenHeight * 0.1,
+                                              ),
+                                            ),
+                                          ),
+                                          CustomPaint(
+                                            size: Size(
+                                              screenWidth * 0.75,
+                                              screenHeight * 0.1,
+                                            ),
+                                            painter: LinePainter(
+                                              start: Offset(
+                                                screenWidth * 0.75 * 0.5,
+                                                screenHeight * 0.1,
+                                              ),
+                                              end: Offset(
+                                                screenWidth * 0.75 * 0.7,
+                                                0,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                     SizedBox(
@@ -598,15 +666,13 @@ class _LevelOneTwoThreeThink3State extends State<LevelOneTwoThreeThink3>
                                           borderRadius: 10,
                                           onPressed: () async {
                                             if (isSubmitted) return;
-
+                                            await checkAnswer();
+                                            await submitActivity(context);
                                             setState(() {
                                               showSubmitPopup = true;
                                             });
 
                                             submitController.forward();
-
-                                            await checkAnswer();
-                                            await submitActivity(context);
                                           },
                                         ),
                                       if (isSubmitted &&
