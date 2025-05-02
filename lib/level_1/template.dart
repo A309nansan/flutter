@@ -266,11 +266,11 @@ class TemplateState extends State<Template> with TickerProviderStateMixin {
                                           onPressed: () => onNextPressed(),
                                           // onPressed: () async {
                                           //   if (isSubmitted) return;
-                                          //   await checkAnswer();
-                                          //   await submitActivity(context);
                                           //   setState(() {
                                           //     showSubmitPopup = true;
                                           //   });
+                                          //   await checkAnswer();
+                                          //   await submitActivity(context);
                                           //   submitController.forward();
                                           // },
                                         ),
