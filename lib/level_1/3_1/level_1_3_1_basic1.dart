@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:nansan_flutter/level_1/2_3/widgets/apple_container.dart';
+import 'package:nansan_flutter/level_1/3_1/widgets/apple_container.dart';
+import 'package:nansan_flutter/level_1/3_1/widgets/selection.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
 import 'package:nansan_flutter/shared/controllers/timer_controller.dart';
@@ -275,6 +276,15 @@ class LevelOneThreeOneBasic1State extends State<LevelOneThreeOneBasic1> with Tic
                             ),
                           ],
                         ),
+                        SizedBox(height: screenHeight * 0.02),
+                        NewQuestionTextWidget(
+                          questionText:
+                          '2. 다음 중 알맞은 숫자에 ◯표 하세요.',
+                          questionTextSize: screenWidth * 0.03,
+                        ),
+                        SizedBox(height: screenHeight * 0.02),
+                        // 여기에 문제 푸는 ui 및 삽입
+                        Selection(boxValues: problemData["p2"])
                       ],
                     ),
                   ),
