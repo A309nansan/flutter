@@ -357,7 +357,8 @@ class _LevelOneTwoThreeMain1State extends State<LevelOneTwoThreeMain1>
                                             fontSize: screenWidth * 0.02,
                                             borderRadius: 10,
                                             onPressed: () async {
-                                              await checkAnswer();
+                                              await submitActivity(context);
+                                              checkAnswer();
                                               setState(() {
                                                 showSubmitPopup = true;
                                               });
