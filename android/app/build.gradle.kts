@@ -78,6 +78,20 @@ android {
         resValue("string", "facebook_client_token", facebookClientToken)
     }
 
+    flavorDimensions += "version"
+
+    productFlavors {
+        create("dev") {
+            dimension = "version"
+            resValue("string", "app_name", "수나무(Debug)")
+            applicationIdSuffix = ".dev"
+        }
+        create("prod") {
+            dimension = "version"
+            resValue("string", "app_name", "수나무")
+        }
+    }
+
     signingConfigs {
         create("release") {
             keyAlias = keystoreProperties["keyAlias"] as String?
@@ -88,6 +102,16 @@ android {
     }
 
     buildTypes {
+        getByName("debug") {
+            applicationIdSuffix = ".debug"
+            // 필요에 따라 debug 전용 설정 추가 가능
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
         getByName("release") {
             signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
