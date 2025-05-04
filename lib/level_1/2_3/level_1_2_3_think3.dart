@@ -258,344 +258,119 @@ class _LevelOneTwoThreeThink3State extends ConsumerState<LevelOneTwoThreeThink3>
         ),
       ),
       body:
-          isLoading
-              ? const Center(child: EnProblemSplashScreen())
-              : Stack(
+      isLoading
+          ? const Center(child: EnProblemSplashScreen())
+          : Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Container(
+              color: Colors.white,
+              child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Container(
-                      color: Colors.white,
-                      child: Column(
-                        children: [
-                          Screenshot(
-                            controller: screenshotController,
-                            child: Column(
-                              children: [
-                                NewHeaderWidget(
-                                  headerText: '개념학습활동',
-                                  headerTextSize: screenWidth * 0.028,
-                                  subTextSize: screenWidth * 0.018,
-                                ),
-                                SizedBox(height: screenHeight * 0.01),
-                                NewQuestionTextWidget(
-                                  questionText:
-                                      '숫자가 들어갈 알맞은 위치를 찾아 <보기>와 같이 O표 하세요.',
-                                  questionTextSize: screenWidth * 0.03,
-                                ),
-                                SizedBox(height: screenHeight * 0.02),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 5,
+                  Screenshot(
+                    controller: screenshotController,
+                    child: Column(
+                      children: [
+                        NewHeaderWidget(
+                          headerText: '개념학습활동',
+                          headerTextSize: screenWidth * 0.028,
+                          subTextSize: screenWidth * 0.018,
+                        ),
+                        SizedBox(height: screenHeight * 0.01),
+                        NewQuestionTextWidget(
+                          questionText:
+                          '숫자가 들어갈 알맞은 위치를 찾아 <보기>와 같이 O표 하세요.',
+                          questionTextSize: screenWidth * 0.03,
+                        ),
+                        SizedBox(height: screenHeight * 0.02),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 5,
+                          ),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Container(
+                                height: screenHeight * 0.3,
+                                width: screenWidth * 0.85,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.orangeAccent,
+                                    width: 4,
                                   ),
-                                  child: Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      Container(
-                                        height: screenHeight * 0.3,
-                                        width: screenWidth * 0.85,
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color: Colors.orangeAccent,
-                                            width: 4,
-                                          ),
-                                          borderRadius: BorderRadius.circular(
-                                            10,
-                                          ),
-                                        ),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            SizedBox(
-                                              width: screenWidth * 0.75,
-                                              height: screenHeight * 0.06,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: List.generate(5, (
-                                                  index,
-                                                ) {
-                                                  final contents = [
-                                                    '1',
-                                                    '',
-                                                    '3',
-                                                    '○',
-                                                    '5',
-                                                  ]; //데이터 넣기
-
-                                                  return Container(
-                                                    height: screenHeight * 0.06,
-                                                    width: screenWidth * 0.15,
-                                                    decoration: BoxDecoration(
-                                                      color: Color(0xFFFef1c4),
-                                                      border: Border.all(
-                                                        color: Color(
-                                                          0xFF9c6a17,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    child: Center(
-                                                      child:
-                                                          contents[index] == '○'
-                                                              ? Container(
-                                                                width: 40,
-                                                                height: 40,
-                                                                decoration: BoxDecoration(
-                                                                  shape:
-                                                                      BoxShape
-                                                                          .circle,
-                                                                  border: Border.all(
-                                                                    color:
-                                                                        Colors
-                                                                            .black,
-                                                                    width: 2,
-                                                                  ),
-                                                                ),
-                                                              )
-                                                              : Text(
-                                                                contents[index],
-                                                                style: TextStyle(
-                                                                  fontSize: 24,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                ),
-                                                              ),
-                                                    ),
-                                                  );
-                                                }),
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: screenWidth * 0.75,
-                                              height: screenHeight * 0.1,
-                                              child: Stack(
-                                                children: [
-                                                  CustomPaint(
-                                                    size: Size(
-                                                      screenWidth * 0.75,
-                                                      screenHeight * 0.1,
-                                                    ),
-                                                    painter: LinePainter(
-                                                      start: Offset(
-                                                        screenWidth *
-                                                            0.75 *
-                                                            0.3,
-                                                        0,
-                                                      ),
-                                                      end: Offset(
-                                                        screenWidth *
-                                                            0.75 *
-                                                            0.5,
-                                                        screenHeight * 0.1,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  CustomPaint(
-                                                    size: Size(
-                                                      screenWidth * 0.75,
-                                                      screenHeight * 0.1,
-                                                    ),
-                                                    painter: LinePainter(
-                                                      start: Offset(
-                                                        screenWidth *
-                                                            0.75 *
-                                                            0.5,
-                                                        screenHeight * 0.1,
-                                                      ),
-                                                      end: Offset(
-                                                        screenWidth *
-                                                            0.75 *
-                                                            0.7,
-                                                        0,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              child: Container(
-                                                height: screenHeight * 0.06,
-                                                width: screenWidth * 0.15,
-                                                margin: EdgeInsets.symmetric(
-                                                  horizontal: 2,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  color: Color(0xFFFef1c4),
-                                                  border: Border.all(
-                                                    color: Color(0xFF9c6a17),
-                                                  ),
-                                                ),
-                                                child: Center(
-                                                  child: Text(
-                                                    '4',
-                                                    style: TextStyle(
-                                                      fontSize: 24,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Positioned(
-                                        top: 0,
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 10,
-                                            vertical: 5,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Colors.orangeAccent,
-                                            borderRadius: BorderRadius.circular(
-                                              5,
-                                            ),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.black12,
-                                                blurRadius: 3,
-                                              ),
-                                            ],
-                                          ),
-                                          child: const Text(
-                                            "<보기>",
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                  borderRadius: BorderRadius.circular(
+                                    10,
                                   ),
                                 ),
-                                SizedBox(height: screenHeight * 0.05),
-                                Column(
+                                child: Column(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.center,
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.center,
                                   children: [
                                     SizedBox(
                                       width: screenWidth * 0.75,
-                                      height: screenHeight * 0.07,
-                                      child: GridView.count(
-                                        crossAxisCount: 5,
-                                        shrinkWrap: true,
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        padding: EdgeInsets.zero,
-                                        childAspectRatio: 1.5,
-                                        children: List.generate(5, (index) {
-                                          final contents2 = [
-                                            numberList[0],
-                                            'left',
-                                            numberList[1],
-                                            'right',
-                                            numberList[2],
-                                          ];
-                                          final isSelectable =
-                                              contents2[index] == 'left' ||
-                                              contents2[index] == 'right';
-                                          final isSelected =
-                                              selectedIndex == index;
+                                      height: screenHeight * 0.06,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                        children: List.generate(5, (
+                                            index,
+                                            ) {
+                                          final contents = [
+                                            '1',
+                                            '',
+                                            '3',
+                                            '○',
+                                            '5',
+                                          ]; //데이터 넣기
 
-                                          return Stack(
-                                            alignment: Alignment.center,
-                                            children: [
-                                              SizedBox(
-                                                width: screenWidth * 0.15,
-                                                height: screenHeight * 0.1,
-                                                child: ElevatedButton(
-                                                  onPressed:
-                                                      isSelectable
-                                                          ? () {
-                                                            setState(() {
-                                                              if (contents2[index] ==
-                                                                  'left') {
-                                                                selectedButton =
-                                                                    'left';
-                                                              } else if (contents2[index] ==
-                                                                  'right') {
-                                                                selectedButton =
-                                                                    'right';
-                                                              }
-                                                              selectedIndex =
-                                                                  index;
-                                                            });
-                                                          }
-                                                          : null,
-                                                  style: ElevatedButton.styleFrom(
-                                                    backgroundColor:
-                                                        const Color(0xFFFef1c4),
-                                                    foregroundColor:
-                                                        Colors.black,
-                                                    elevation: 3,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius.zero,
-                                                          side:
-                                                              const BorderSide(
-                                                                color: Color(
-                                                                  0xFF9c6a17,
-                                                                ),
-                                                              ),
-                                                        ),
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                          5.0,
-                                                        ),
-                                                    disabledBackgroundColor:
-                                                        const Color(0xFFFef1c4),
-                                                    disabledForegroundColor:
-                                                        Colors.black,
-                                                  ),
-                                                  child:
-                                                      contents2[index] !=
-                                                                  'left' &&
-                                                              contents2[index] !=
-                                                                  'right'
-                                                          ? Text(
-                                                            '${contents2[index]}',
-                                                            style:
-                                                                const TextStyle(
-                                                                  fontSize: 24,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                ),
-                                                          )
-                                                          : const SizedBox.shrink(),
+                                          return Container(
+                                            height: screenHeight * 0.06,
+                                            width: screenWidth * 0.15,
+                                            decoration: BoxDecoration(
+                                              color: Color(0xFFFef1c4),
+                                              border: Border.all(
+                                                color: Color(
+                                                  0xFF9c6a17,
                                                 ),
                                               ),
-
-                                              if (isSelected)
-                                                Positioned(
-                                                  child: IgnorePointer(
-                                                    child: Container(
-                                                      width: 40,
-                                                      height: 40,
-                                                      decoration: BoxDecoration(
-                                                        shape: BoxShape.circle,
-                                                        border: Border.all(
-                                                          color: Colors.black,
-                                                          width: 2,
-                                                        ),
-                                                      ),
-                                                    ),
+                                            ),
+                                            child: Center(
+                                              child:
+                                              contents[index] == '○'
+                                                  ? Container(
+                                                width: 40,
+                                                height: 40,
+                                                decoration: BoxDecoration(
+                                                  shape:
+                                                  BoxShape
+                                                      .circle,
+                                                  border: Border.all(
+                                                    color:
+                                                    Colors
+                                                        .black,
+                                                    width: 2,
                                                   ),
                                                 ),
-                                            ],
+                                              )
+                                                  : Text(
+                                                contents[index],
+                                                style: TextStyle(
+                                                  fontSize: 24,
+                                                  fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                                ),
+                                              ),
+                                            ),
                                           );
                                         }),
                                       ),
                                     ),
-
                                     SizedBox(
                                       width: screenWidth * 0.75,
                                       height: screenHeight * 0.1,
@@ -608,11 +383,15 @@ class _LevelOneTwoThreeThink3State extends ConsumerState<LevelOneTwoThreeThink3>
                                             ),
                                             painter: LinePainter(
                                               start: Offset(
-                                                screenWidth * 0.75 * 0.3,
+                                                screenWidth *
+                                                    0.75 *
+                                                    0.3,
                                                 0,
                                               ),
                                               end: Offset(
-                                                screenWidth * 0.75 * 0.5,
+                                                screenWidth *
+                                                    0.75 *
+                                                    0.5,
                                                 screenHeight * 0.1,
                                               ),
                                             ),
@@ -624,11 +403,15 @@ class _LevelOneTwoThreeThink3State extends ConsumerState<LevelOneTwoThreeThink3>
                                             ),
                                             painter: LinePainter(
                                               start: Offset(
-                                                screenWidth * 0.75 * 0.5,
+                                                screenWidth *
+                                                    0.75 *
+                                                    0.5,
                                                 screenHeight * 0.1,
                                               ),
                                               end: Offset(
-                                                screenWidth * 0.75 * 0.7,
+                                                screenWidth *
+                                                    0.75 *
+                                                    0.7,
                                                 0,
                                               ),
                                             ),
@@ -651,10 +434,11 @@ class _LevelOneTwoThreeThink3State extends ConsumerState<LevelOneTwoThreeThink3>
                                         ),
                                         child: Center(
                                           child: Text(
-                                            '$givenNumber',
+                                            '4',
                                             style: TextStyle(
                                               fontSize: 24,
-                                              fontWeight: FontWeight.bold,
+                                              fontWeight:
+                                              FontWeight.bold,
                                             ),
                                           ),
                                         ),
@@ -662,134 +446,350 @@ class _LevelOneTwoThreeThink3State extends ConsumerState<LevelOneTwoThreeThink3>
                                     ),
                                   ],
                                 ),
-                              ],
-                            ),
-                          ),
-                          Spacer(),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              EnProgressBarWidget(
-                                current: current,
-                                total: total,
                               ),
-                              Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 30.0,
-                                  vertical: screenHeight * 0.02,
-                                ),
-                                child: AnimatedSwitcher(
-                                  duration: const Duration(milliseconds: 300),
-                                  transitionBuilder: (child, animation) {
-                                    return FadeTransition(
-                                      opacity: animation,
-                                      child: child,
-                                    );
-                                  },
-                                  child: Row(
-                                    key: ValueKey<String>(
-                                      '${isSubmitted}_$isCorrect',
+                              Positioned(
+                                top: 0,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 5,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.orangeAccent,
+                                    borderRadius: BorderRadius.circular(
+                                      5,
                                     ),
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      if (!isSubmitted)
-                                        ButtonWidget(
-                                          height: screenHeight * 0.035,
-                                          width: screenWidth * 0.18,
-                                          buttonText: "제출하기",
-                                          fontSize: screenWidth * 0.02,
-                                          borderRadius: 10,
-                                          onPressed: () async {
-                                            if (isSubmitted) return;
-                                            await checkAnswer();
-                                            setState(() {
-                                              showSubmitPopup = true;
-                                            });
-                                            submitController.forward();
-                                            await submitActivity(context);
-                                          },
-                                        ),
-                                      if (isSubmitted &&
-                                          isCorrect == false) ...[
-                                        ButtonWidget(
-                                          height: screenHeight * 0.035,
-                                          width: screenWidth * 0.18,
-                                          buttonText: "제출하기",
-                                          fontSize: screenWidth * 0.02,
-                                          borderRadius: 10,
-                                          onPressed: () async {
-                                            await checkAnswer(); // ✅ correctly awaited
-                                            setState(() {
-                                              showSubmitPopup = true;
-                                            });
-                                            submitController
-                                                .forward(); // ✅ called after the popup flag is set
-                                          },
-                                        ),
-                                        const SizedBox(width: 20),
-                                        ButtonWidget(
-                                          height: screenHeight * 0.035,
-                                          width: screenWidth * 0.18,
-                                          buttonText: isEnd ? "학습종료" : "다음문제",
-                                          fontSize: screenWidth * 0.02,
-                                          borderRadius: 10,
-                                          onPressed: () => onNextPressed(),
-                                        ),
-                                      ],
-
-                                      if (isSubmitted && isCorrect == true)
-                                        ButtonWidget(
-                                          height: screenHeight * 0.035,
-                                          width: screenWidth * 0.18,
-                                          buttonText: isEnd ? "학습종료" : "다음문제",
-                                          fontSize: screenWidth * 0.02,
-                                          borderRadius: 10,
-                                          onPressed: () => onNextPressed(),
-                                        ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        blurRadius: 3,
+                                      ),
                                     ],
+                                  ),
+                                  child: const Text(
+                                    "<보기>",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  if (showSubmitPopup)
-                    Positioned.fill(
-                      child: Stack(
-                        children: [
-                          Container(color: Colors.black54),
-                          Center(
-                            child: FadeTransition(
-                              opacity: submitAnimation,
-                              child: ScaleTransition(
-                                scale: submitAnimation,
-                                child: Material(
-                                  type: MaterialType.transparency,
-                                  child: SuccessfulPopup(
-                                    scaleAnimation:
-                                        const AlwaysStoppedAnimation(1.0),
-                                    isCorrect: isCorrect,
-                                    customMessage:
-                                        isCorrect ? "🎉 정답이에요!" : "틀렸어요...",
-                                    isEnd: isEnd,
-                                    closePopup: closeSubmit,
-                                    onClose:
-                                        isCorrect
-                                            ? () async => onNextPressed()
-                                            : null,
+                        ),
+                        SizedBox(height: screenHeight * 0.05),
+                        Column(
+                          children: [
+                            SizedBox(
+                              width: screenWidth * 0.75,
+                              height: screenHeight * 0.07,
+                              child: GridView.count(
+                                crossAxisCount: 5,
+                                shrinkWrap: true,
+                                physics:
+                                const NeverScrollableScrollPhysics(),
+                                padding: EdgeInsets.zero,
+                                childAspectRatio: 1.5,
+                                children: List.generate(5, (index) {
+                                  final contents2 = [
+                                    numberList[0],
+                                    'left',
+                                    numberList[1],
+                                    'right',
+                                    numberList[2],
+                                  ];
+                                  final isSelectable =
+                                      contents2[index] == 'left' ||
+                                          contents2[index] == 'right';
+                                  final isSelected =
+                                      selectedIndex == index;
+
+                                  return Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      SizedBox(
+                                        width: screenWidth * 0.15,
+                                        height: screenHeight * 0.1,
+                                        child: ElevatedButton(
+                                          onPressed:
+                                          isSelectable
+                                              ? () {
+                                            setState(() {
+                                              if (contents2[index] ==
+                                                  'left') {
+                                                selectedButton =
+                                                'left';
+                                              } else if (contents2[index] ==
+                                                  'right') {
+                                                selectedButton =
+                                                'right';
+                                              }
+                                              selectedIndex =
+                                                  index;
+                                            });
+                                          }
+                                              : null,
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                            const Color(0xFFFef1c4),
+                                            foregroundColor:
+                                            Colors.black,
+                                            elevation: 3,
+                                            shape:
+                                            RoundedRectangleBorder(
+                                              borderRadius:
+                                              BorderRadius.zero,
+                                              side:
+                                              const BorderSide(
+                                                color: Color(
+                                                  0xFF9c6a17,
+                                                ),
+                                              ),
+                                            ),
+                                            padding:
+                                            const EdgeInsets.all(
+                                              5.0,
+                                            ),
+                                            disabledBackgroundColor:
+                                            const Color(0xFFFef1c4),
+                                            disabledForegroundColor:
+                                            Colors.black,
+                                          ),
+                                          child:
+                                          contents2[index] !=
+                                              'left' &&
+                                              contents2[index] !=
+                                                  'right'
+                                              ? Text(
+                                            '${contents2[index]}',
+                                            style:
+                                            const TextStyle(
+                                              fontSize: 24,
+                                              fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                            ),
+                                          )
+                                              : const SizedBox.shrink(),
+                                        ),
+                                      ),
+
+                                      if (isSelected)
+                                        Positioned(
+                                          child: IgnorePointer(
+                                            child: Container(
+                                              width: 40,
+                                              height: 40,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: Colors.black,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  );
+                                }),
+                              ),
+                            ),
+
+                            SizedBox(
+                              width: screenWidth * 0.75,
+                              height: screenHeight * 0.1,
+                              child: Stack(
+                                children: [
+                                  CustomPaint(
+                                    size: Size(
+                                      screenWidth * 0.75,
+                                      screenHeight * 0.1,
+                                    ),
+                                    painter: LinePainter(
+                                      start: Offset(
+                                        screenWidth * 0.75 * 0.3,
+                                        0,
+                                      ),
+                                      end: Offset(
+                                        screenWidth * 0.75 * 0.5,
+                                        screenHeight * 0.1,
+                                      ),
+                                    ),
+                                  ),
+                                  CustomPaint(
+                                    size: Size(
+                                      screenWidth * 0.75,
+                                      screenHeight * 0.1,
+                                    ),
+                                    painter: LinePainter(
+                                      start: Offset(
+                                        screenWidth * 0.75 * 0.5,
+                                        screenHeight * 0.1,
+                                      ),
+                                      end: Offset(
+                                        screenWidth * 0.75 * 0.7,
+                                        0,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              child: Container(
+                                height: screenHeight * 0.06,
+                                width: screenWidth * 0.15,
+                                margin: EdgeInsets.symmetric(
+                                  horizontal: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Color(0xFFFef1c4),
+                                  border: Border.all(
+                                    color: Color(0xFF9c6a17),
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    '$givenNumber',
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
+                      ],
                     ),
+                  ),
+                  Spacer(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      EnProgressBarWidget(
+                        current: current,
+                        total: total,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 30.0,
+                          vertical: screenHeight * 0.02,
+                        ),
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 300),
+                          transitionBuilder: (child, animation) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            );
+                          },
+                          child: Row(
+                            key: ValueKey<String>(
+                              '${isSubmitted}_$isCorrect',
+                            ),
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              if (!isSubmitted)
+                                ButtonWidget(
+                                  height: screenHeight * 0.035,
+                                  width: screenWidth * 0.18,
+                                  buttonText: "제출하기",
+                                  fontSize: screenWidth * 0.02,
+                                  borderRadius: 10,
+                                  onPressed: () async {
+                                    if (isSubmitted) return;
+                                    await checkAnswer();
+                                    setState(() {
+                                      showSubmitPopup = true;
+                                    });
+                                    submitController.forward();
+                                    await submitActivity(context);
+                                  },
+                                ),
+                              if (isSubmitted &&
+                                  isCorrect == false) ...[
+                                ButtonWidget(
+                                  height: screenHeight * 0.035,
+                                  width: screenWidth * 0.18,
+                                  buttonText: "제출하기",
+                                  fontSize: screenWidth * 0.02,
+                                  borderRadius: 10,
+                                  onPressed: () async {
+                                    await checkAnswer(); // ✅ correctly awaited
+                                    setState(() {
+                                      showSubmitPopup = true;
+                                    });
+                                    submitController
+                                        .forward(); // ✅ called after the popup flag is set
+                                  },
+                                ),
+                                const SizedBox(width: 20),
+                                ButtonWidget(
+                                  height: screenHeight * 0.035,
+                                  width: screenWidth * 0.18,
+                                  buttonText: isEnd ? "학습종료" : "다음문제",
+                                  fontSize: screenWidth * 0.02,
+                                  borderRadius: 10,
+                                  onPressed: () => onNextPressed(),
+                                ),
+                              ],
+
+                              if (isSubmitted && isCorrect == true)
+                                ButtonWidget(
+                                  height: screenHeight * 0.035,
+                                  width: screenWidth * 0.18,
+                                  buttonText: isEnd ? "학습종료" : "다음문제",
+                                  fontSize: screenWidth * 0.02,
+                                  borderRadius: 10,
+                                  onPressed: () => onNextPressed(),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
+            ),
+          ),
+          if (showSubmitPopup)
+            Positioned.fill(
+              child: Stack(
+                children: [
+                  Container(color: Colors.black54),
+                  Center(
+                    child: FadeTransition(
+                      opacity: submitAnimation,
+                      child: ScaleTransition(
+                        scale: submitAnimation,
+                        child: Material(
+                          type: MaterialType.transparency,
+                          child: SuccessfulPopup(
+                            scaleAnimation:
+                            const AlwaysStoppedAnimation(1.0),
+                            isCorrect: isCorrect,
+                            customMessage:
+                            isCorrect ? "🎉 정답이에요!" : "틀렸어요...",
+                            isEnd: isEnd,
+                            closePopup: closeSubmit,
+                            onClose:
+                            isCorrect
+                                ? () async => onNextPressed()
+                                : null,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
