@@ -2,9 +2,12 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
 import 'package:screenshot/screenshot.dart';
 import '../../../shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
+import '../../../shared/provider/EnRiverPodProvider.dart';
+import '../../../shared/services/en_problem_service.dart';
 import '../../../shared/services/image_service.dart';
 import '../../../shared/services/secure_storage_service.dart';
 import '../../../shared/widgets/appbar_widget.dart';
@@ -18,16 +21,16 @@ import '../../../shared/widgets/toase_message.dart';
 import '../controller/level_1_4_2_main_controller.dart';
 import '../widgets/main_sample_popup.dart';
 
-class LevelOneFourTwoMain extends StatefulWidget {
+class LevelOneFourTwoMain extends ConsumerStatefulWidget {
   final String problemCode;
 
   const LevelOneFourTwoMain({super.key, required this.problemCode});
 
   @override
-  State<LevelOneFourTwoMain> createState() => _LevelOneFourTwoMainState();
+  ConsumerState<LevelOneFourTwoMain> createState() => _LevelOneFourTwoMainState();
 }
 
-class _LevelOneFourTwoMainState extends State<LevelOneFourTwoMain> with TickerProviderStateMixin {
+class _LevelOneFourTwoMainState extends ConsumerState<LevelOneFourTwoMain> with TickerProviderStateMixin {
   late final LevelOneFourTwoMainController controller;
   final ScreenshotController screenshotController = ScreenshotController();
   bool isSubmitted = false;
@@ -40,6 +43,7 @@ class _LevelOneFourTwoMainState extends State<LevelOneFourTwoMain> with TickerPr
     controller = LevelOneFourTwoMainController(
       ticker: this,
       onUpdate: () => setState(() {}),
+      ref: ref,
     );
     controller.init(widget.problemCode);
   }
@@ -149,6 +153,17 @@ class _LevelOneFourTwoMainState extends State<LevelOneFourTwoMain> with TickerPr
         );
 
         await ProblemApiService().submitAnswer(result);
+
+        ref.read(problemProgressProvider.notifier).record(
+          controller.problemCode,
+          controller.showCorrect,
+        );
+
+        await EnProblemService.saveProblemResults(
+          ref.read(problemProgressProvider),
+          controller.problemCode,
+          controller.childId,
+        );
 
         setState(() {
           isSubmitted = true;

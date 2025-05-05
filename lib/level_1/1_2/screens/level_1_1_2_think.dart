@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nansan_flutter/modules/drag_drop/controllers/drag_drop_controller.dart';
 import 'package:nansan_flutter/modules/drag_drop/widgets/draggable_card_list.dart';
 import 'package:nansan_flutter/modules/drag_drop/widgets/empty_zone.dart';
@@ -21,7 +22,9 @@ import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:collection/collection.dart';
 
-class LevelOneOneTwoThink extends StatefulWidget {
+import '../../../shared/provider/EnRiverPodProvider.dart';
+
+class LevelOneOneTwoThink extends ConsumerStatefulWidget {
   final String problemCode;
   final DragDropController controller;
   const LevelOneOneTwoThink({
@@ -31,10 +34,10 @@ class LevelOneOneTwoThink extends StatefulWidget {
   });
 
   @override
-  State<LevelOneOneTwoThink> createState() => LevelOneOneTwoThinkState();
+  ConsumerState<LevelOneOneTwoThink> createState() => LevelOneOneTwoThinkState();
 }
 
-class LevelOneOneTwoThinkState extends State<LevelOneOneTwoThink>
+class LevelOneOneTwoThinkState extends ConsumerState<LevelOneOneTwoThink>
     with TickerProviderStateMixin {
   final ProblemApiService _apiService = ProblemApiService();
   final ScreenshotController screenshotController = ScreenshotController();
@@ -123,6 +126,18 @@ class LevelOneOneTwoThinkState extends State<LevelOneOneTwoThink>
 
     try {
       await _apiService.submitAnswer(jsonEncode(submitRequest.toJson()));
+
+      ref.read(problemProgressProvider.notifier).record(
+        problemCode,
+        isCorrect,
+      );
+
+      await EnProblemService.saveProblemResults(
+        ref.read(problemProgressProvider),
+        problemCode,
+        childId,
+      );
+
       setState(() => isSubmitted = true);
     } catch (e) {
       debugPrint('Submit error: $e');
@@ -287,11 +302,18 @@ class LevelOneOneTwoThinkState extends State<LevelOneOneTwoThink>
     }
   }
 
-  void onNextPressed() {
+  void onNextPressed() async {
     final nextCode = nextProblemCode;
     if (nextCode.isEmpty) {
-      debugPrint("📌 다음 문제가 없습니다.");
-      EnProblemService.clearChapterProblem(childId, widget.problemCode);
+      print("📌 다음 문제가 없습니다.");
+      final progress = ref.read(problemProgressProvider);
+      await EnProblemService.saveProblemResults(
+        progress,
+        problemCode,
+        childId,
+      );
+
+      await EnProblemService.clearChapterProblem(childId, problemCode);
       Modular.to.pop();
       return;
     }
@@ -314,6 +336,10 @@ class LevelOneOneTwoThinkState extends State<LevelOneOneTwoThink>
 
   void init() async {
     childId = (await SecureStorageService.getChildId())!;
+
+    final saved = await EnProblemService.loadProblemResults(problemCode, childId);
+    ref.read(problemProgressProvider.notifier).setFromStorage(saved);
+
     EnProblemService.saveContinueProblem(widget.problemCode, childId);
   }
 

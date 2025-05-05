@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
 import 'package:nansan_flutter/level_1/shared/widgets/question_box.dart';
@@ -17,16 +18,17 @@ import 'package:nansan_flutter/shared/widgets/new_header_widget.dart';
 import 'package:nansan_flutter/shared/widgets/new_question_text.dart';
 import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
 import 'package:screenshot/screenshot.dart';
+import '../../../shared/provider/EnRiverPodProvider.dart';
 
-class LevelOneOneFourThink1 extends StatefulWidget {
+class LevelOneOneFourThink1 extends ConsumerStatefulWidget {
   final String problemCode;
   const LevelOneOneFourThink1({super.key, required this.problemCode});
 
   @override
-  State<LevelOneOneFourThink1> createState() => _LevelOneOneFourThink1State();
+  ConsumerState<LevelOneOneFourThink1> createState() => _LevelOneOneFourThink1State();
 }
 
-class _LevelOneOneFourThink1State extends State<LevelOneOneFourThink1>
+class _LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1>
     with TickerProviderStateMixin {
   // 필수코드
   final ScreenshotController screenshotController = ScreenshotController();
@@ -93,7 +95,11 @@ class _LevelOneOneFourThink1State extends State<LevelOneOneFourThink1>
       final childProfileJson = await SecureStorageService.getChildProfile();
       final childProfile = jsonDecode(childProfileJson!);
       childId = childProfile['id'];
-      EnProblemService.saveContinueProblem(widget.problemCode, childId);
+
+      final saved = await EnProblemService.loadProblemResults(problemCode, childId);
+      ref.read(problemProgressProvider.notifier).setFromStorage(saved);
+
+      EnProblemService.saveContinueProblem(problemCode, childId);
 
       setState(() {
         // problem과 answer 데이터 저장
@@ -139,6 +145,18 @@ class _LevelOneOneFourThink1State extends State<LevelOneOneFourThink1>
     try {
       // API 서비스 호출
       await _apiService.submitAnswer(jsonEncode(submitRequest.toJson()));
+
+      ref.read(problemProgressProvider.notifier).record(
+        problemCode,
+        isCorrect,
+      );
+
+      await EnProblemService.saveProblemResults(
+        ref.read(problemProgressProvider),
+        problemCode,
+        childId,
+      );
+
       setState(() {
         isSubmitted = true;
       });
@@ -187,11 +205,18 @@ class _LevelOneOneFourThink1State extends State<LevelOneOneFourThink1>
     }
   }
 
-  void onNextPressed() {
+  void onNextPressed() async {
     final nextCode = nextProblemCode;
     if (nextCode.isEmpty) {
       debugPrint("📌 다음 문제가 없습니다.");
-      EnProblemService.clearChapterProblem(childId, widget.problemCode);
+      final progress = ref.read(problemProgressProvider);
+      await EnProblemService.saveProblemResults(
+        progress,
+        problemCode,
+        childId,
+      );
+
+      await EnProblemService.clearChapterProblem(childId, problemCode);
       Modular.to.pop();
       return;
     }

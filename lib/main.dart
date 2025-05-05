@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
 import 'package:nansan_flutter/app_module.dart';
@@ -8,8 +9,14 @@ import 'package:nansan_flutter/modules/network_check/no_internet_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(ModularApp(module: AppModule(), child: const MyApp()));
+
+  runApp(
+    ProviderScope(
+      child: ModularApp(module: AppModule(), child: const MyApp()),
+    ),
+  );
 }
+
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nansan_flutter/level_1/2_3/widgets/apple_container.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
@@ -21,15 +22,15 @@ import 'package:collection/collection.dart';
 
 import '../../shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
 
-class LevelOneThreeOneBasic1 extends StatefulWidget {
+class LevelOneThreeOneBasic1 extends ConsumerStatefulWidget {
   final String problemCode;
   const LevelOneThreeOneBasic1({super.key, required this.problemCode});
 
   @override
-  State<LevelOneThreeOneBasic1> createState() => LevelOneThreeOneBasic1State();
+  ConsumerState<LevelOneThreeOneBasic1> createState() => LevelOneThreeOneBasic1State();
 }
 
-class LevelOneThreeOneBasic1State extends State<LevelOneThreeOneBasic1> with TickerProviderStateMixin {
+class LevelOneThreeOneBasic1State extends ConsumerState<LevelOneThreeOneBasic1> with TickerProviderStateMixin {
   final ScreenshotController screenshotController = ScreenshotController();
   final TimerController _timerController = TimerController();
   final ProblemApiService _apiService = ProblemApiService();
