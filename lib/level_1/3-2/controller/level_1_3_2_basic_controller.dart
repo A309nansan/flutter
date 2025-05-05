@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../shared/provider/EnRiverPodProvider.dart';
 import '../../../shared/services/en_problem_service.dart';
 import '../../../shared/services/request_service.dart';
 import '../../../shared/services/secure_storage_service.dart';
@@ -7,10 +9,12 @@ import '../../../shared/services/secure_storage_service.dart';
 class LevelOneThreeTwoBasicController {
   final TickerProvider ticker;
   final VoidCallback onUpdate;
+  final WidgetRef ref;
 
   LevelOneThreeTwoBasicController({
     required this.ticker,
     required this.onUpdate,
+    required this.ref,
   });
 
   late DateTime _startTime;
@@ -34,6 +38,17 @@ class LevelOneThreeTwoBasicController {
   Future<void> init(String problemCode) async {
     this.problemCode = problemCode;
     childId = (await SecureStorageService.getChildId())!;
+
+    // 1. SharedPreferences에 저장된 기록 불러오기
+    final saved = await EnProblemService.loadProblemResults(problemCode, childId);
+
+    // 2. provider에 반영
+    ref.read(problemProgressProvider.notifier).setFromStorage(saved);
+    // ✅ 로그 출력
+    final progress = ref.read(problemProgressProvider);
+    debugPrint("📦 불러온 문제 기록: $progress");
+
+    // 3. 진행 중 문제 저장
     EnProblemService.saveContinueProblem(problemCode, childId);
 
     final response = await RequestService.post("/en/problem/make", data: {
@@ -157,11 +172,20 @@ class LevelOneThreeTwoBasicController {
     };
   }
 
-  void onNextPressed() {
+  void onNextPressed() async {
     final nextCode = originalProblem["next_problem_code"] as String?;
     if (nextCode == null || nextCode.isEmpty) {
-      print("📌 다음 문제가 없습니다.");
-      EnProblemService.clearChapterProblem(childId, problemCode);
+      debugPrint("📌 다음 문제가 없습니다.");
+      // 최종 결과 저장 (SharedPreferences에 누적 기록 저장)
+      final progress = ref.read(problemProgressProvider);
+      await EnProblemService.saveProblemResults(
+        progress,
+        problemCode,
+        childId,
+      );
+
+      // 이어풀기 데이터 제거
+      await EnProblemService.clearChapterProblem(childId, problemCode);
       Modular.to.pop();
       return;
     }

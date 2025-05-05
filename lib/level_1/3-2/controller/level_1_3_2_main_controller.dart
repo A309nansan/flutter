@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
+import '../../../shared/provider/EnRiverPodProvider.dart';
 import '../../../shared/services/en_problem_service.dart';
 import '../../../shared/services/request_service.dart';
 import '../../../shared/services/secure_storage_service.dart';
@@ -8,8 +10,9 @@ import '../../../shared/services/secure_storage_service.dart';
 class LevelOneThreeTwoMainController {
   final TickerProvider ticker;
   final VoidCallback onUpdate;
+  final WidgetRef ref;
 
-  LevelOneThreeTwoMainController({required this.ticker, required this.onUpdate});
+  LevelOneThreeTwoMainController({required this.ticker, required this.onUpdate, required this.ref,});
 
   late DateTime _startTime;
   late String problemCode;
@@ -33,6 +36,14 @@ class LevelOneThreeTwoMainController {
   Future<void> init(String code) async {
     problemCode = code;
     childId = (await SecureStorageService.getChildId())!;
+
+    final saved = await EnProblemService.loadProblemResults(problemCode, childId);
+
+    ref.read(problemProgressProvider.notifier).setFromStorage(saved);
+
+    final progress = ref.read(problemProgressProvider);
+    debugPrint("📦 불러온 문제 기록: $progress");
+
     EnProblemService.saveContinueProblem(problemCode, childId);
 
     final response = await RequestService.post("/en/problem/make", data: {
@@ -143,11 +154,18 @@ class LevelOneThreeTwoMainController {
     onUpdate();
   }
 
-  void onNextPressed() {
+  void onNextPressed() async{
     final nextCode = originalProblem["next_problem_code"] as String?;
     if (nextCode == null || nextCode.isEmpty) {
       print("📌 다음 문제가 없습니다.");
-      EnProblemService.clearChapterProblem(childId, problemCode);
+      final progress = ref.read(problemProgressProvider);
+      await EnProblemService.saveProblemResults(
+        progress,
+        problemCode,
+        childId,
+      );
+
+      await EnProblemService.clearChapterProblem(childId, problemCode);
       Modular.to.pop();
       return;
     }

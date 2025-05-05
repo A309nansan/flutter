@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nansan_flutter/level_1/2_2/widgets/dynamic_number_row.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
@@ -20,16 +21,17 @@ import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
 import 'package:screenshot/screenshot.dart';
 
 import '../../shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
+import '../../shared/provider/EnRiverPodProvider.dart';
 
-class LevelOneTwoTwoThink2 extends StatefulWidget {
+class LevelOneTwoTwoThink2 extends ConsumerStatefulWidget {
   final String problemCode;
   const LevelOneTwoTwoThink2({super.key, required this.problemCode});
 
   @override
-  State<LevelOneTwoTwoThink2> createState() => _LevelOneTwoTwoThink2State();
+  ConsumerState<LevelOneTwoTwoThink2> createState() => _LevelOneTwoTwoThink2State();
 }
 
-class _LevelOneTwoTwoThink2State extends State<LevelOneTwoTwoThink2>
+class _LevelOneTwoTwoThink2State extends ConsumerState<LevelOneTwoTwoThink2>
     with TickerProviderStateMixin {
   // 필수코드
   final ScreenshotController screenshotController = ScreenshotController();
@@ -89,7 +91,13 @@ class _LevelOneTwoTwoThink2State extends State<LevelOneTwoTwoThink2>
       final childProfileJson = await SecureStorageService.getChildProfile();
       final childProfile = jsonDecode(childProfileJson!);
       childId = childProfile['id'];
-      EnProblemService.saveContinueProblem(widget.problemCode, childId);
+
+      final saved = await EnProblemService.loadProblemResults(problemCode, childId);
+      ref.read(problemProgressProvider.notifier).setFromStorage(saved);
+      final progress = ref.read(problemProgressProvider);
+      debugPrint("📦 불러온 문제 기록: $progress");
+
+      EnProblemService.saveContinueProblem(problemCode, childId);
 
       setState(() {
         nextProblemCode = response.nextProblemCode;
@@ -131,6 +139,18 @@ class _LevelOneTwoTwoThink2State extends State<LevelOneTwoTwoThink2>
     try {
       // API 서비스 호출
       await _apiService.submitAnswer(jsonEncode(submitRequest.toJson()));
+
+      ref.read(problemProgressProvider.notifier).record(
+        problemCode,
+        isCorrect,
+      );
+
+      await EnProblemService.saveProblemResults(
+        ref.read(problemProgressProvider),
+        problemCode,
+        childId,
+      );
+
       setState(() {
         isSubmitted = true;
       });
@@ -196,11 +216,18 @@ class _LevelOneTwoTwoThink2State extends State<LevelOneTwoTwoThink2>
     }
   }
 
-  void onNextPressed() {
+  void onNextPressed() async {
     final nextCode = nextProblemCode;
     if (nextCode.isEmpty) {
       debugPrint("📌 다음 문제가 없습니다.");
-      EnProblemService.clearChapterProblem(childId, widget.problemCode);
+      final progress = ref.read(problemProgressProvider);
+      await EnProblemService.saveProblemResults(
+        progress,
+        problemCode,
+        childId,
+      );
+
+      await EnProblemService.clearChapterProblem(childId, problemCode);
       Modular.to.pop();
       return;
     }
