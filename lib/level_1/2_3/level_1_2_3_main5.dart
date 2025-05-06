@@ -55,7 +55,7 @@ class _LevelOneTwoThreeMain5State extends State<LevelOneTwoThreeMain5>
     ['9', '8', '7', '6'], // 1번째 문제
     ['1', '2', '3', '4'], // 2번째 문제
     ['6', '5', '4', '3'], // 3번째 문제
-    ['4', '3', '2', '1'], // 4번째 문제
+    ['t', 'e', 's', 't'], // 4번째 문제
   ];
 
   int _selectedAnswer = -1;

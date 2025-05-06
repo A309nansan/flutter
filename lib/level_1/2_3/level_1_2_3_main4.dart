@@ -52,7 +52,7 @@ class _LevelOneTwoThreeMain4State extends State<LevelOneTwoThreeMain4>
   List<Map<String, String>> candidates = [];
 
   //페이지별 변수
-  List<int> numberList = [];
+  List<int> numberList = [9,7,5];
   int givenNumber = 0;
   String? selectedButton = "";
   int? selectedIndex;
