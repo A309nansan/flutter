@@ -99,11 +99,14 @@ class _SuccessfulPopupState extends State<SuccessfulPopup> {
                 switchInCurve: Curves.easeInOut,
                 switchOutCurve: Curves.easeInOut,
                 transitionBuilder: (child, animation) {
+                  final isResult = child.key == const ValueKey('result');
+
                   final offsetAnimation = Tween<Offset>(
-                    begin: const Offset(-1.0, 0.0), // 오른쪽에서 들어오기
+                    begin: isResult ? const Offset(1.0, 0.0) : const Offset(-1.0, 0.0),
                     end: Offset.zero,
                   ).animate(animation);
-                  return ClipRect( // 모달 밖 overflow 방지
+
+                  return ClipRect(
                     child: SlideTransition(
                       position: offsetAnimation,
                       child: child,
