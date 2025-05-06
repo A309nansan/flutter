@@ -52,7 +52,7 @@ class _LevelOneTwoThreeMain3State extends State<LevelOneTwoThreeMain3>
   List<Map<String, String>> candidates = [];
 
   //페이지별 변수
-  List<int> numberList = [];
+  List<int> numberList = [5,3,1];//json데이터 받기전 임시 변수
   int givenNumber = 0;
   String? selectedButton = "";
   int? selectedIndex;
