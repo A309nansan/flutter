@@ -515,6 +515,7 @@ class _LevelOneFourTwoMainState extends ConsumerState<LevelOneFourTwoMain> with 
                             isEnd: isEnd,
                             closePopup: controller.closeSubmit,
                             onClose: controller.showCorrect ? () async => controller.onNextPressed() : null,
+                            end: () async => controller.onNextPressed()
                           ),
                         ),
                       ),
