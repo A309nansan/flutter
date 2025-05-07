@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:nansan_flutter/level_1/3_1/widgets/apple_container.dart';
+import 'package:nansan_flutter/level_1/3_1/widgets/selection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nansan_flutter/level_1/2_3/widgets/apple_container.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
 import 'package:nansan_flutter/shared/controllers/timer_controller.dart';
@@ -52,7 +54,11 @@ class LevelOneThreeOneBasic1State extends ConsumerState<LevelOneThreeOneBasic1> 
   Map<String, dynamic> selectedAnswers = {};
   List<List<String>> fixedImageUrls = [];
   List<Map<String, String>> candidates = [];
-  final Map<String, GlobalKey<HandwritingRecognitionZoneState>> zoneKeys = {};
+  final Map<String, GlobalKey<HandwritingRecognitionZoneState>> zoneKeys = {
+    'first': GlobalKey<HandwritingRecognitionZoneState>(),
+    'second': GlobalKey<HandwritingRecognitionZoneState>(),
+    'third': GlobalKey<HandwritingRecognitionZoneState>(),
+  };
 
   // 페이지 실행 시 작동하는 함수. 수정 필요 x
   @override
@@ -146,15 +152,20 @@ class LevelOneThreeOneBasic1State extends ConsumerState<LevelOneThreeOneBasic1> 
   void _processProblemData(Map problemData) {}
 
   // 문제 푸는 로직 수행할때, seletedAnswers 데이터 넣는 로직
-  void _processInputData() {}
+  Future<void> _processInputData() async {
+    selectedAnswers["p1"][0] = int.tryParse(await zoneKeys["first"]!.currentState!.recognize()) ?? 0;
+    selectedAnswers["p1"][1] = int.tryParse(await zoneKeys["second"]!.currentState!.recognize()) ?? 0;
+    selectedAnswers["p1"][2] = int.tryParse(await zoneKeys["third"]!.currentState!.recognize()) ?? 0;
+  }
 
   // 정답 여부 체크(보통은 이거쓰면됨)
-  void checkAnswer() {
+  void checkAnswer() async {
+    await _processInputData();
     isCorrect = const DeepCollectionEquality().equals(
       answerData,
       selectedAnswers,
     );
-    _submitAnswer();
+    // _submitAnswer();
   }
 
   // 문제푸는 스크린 이미지 서버로 전송. 수정 필요 x
@@ -249,14 +260,11 @@ class LevelOneThreeOneBasic1State extends ConsumerState<LevelOneThreeOneBasic1> 
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             AppleContainer(
-                              image: 3,
-                              box: 3,
-                              zoneKey: zoneKeys,
+                              ans: 3,
                             ),
                             AppleContainer(
-                              image: problemData["p1"][0],
-                              box: 0,
-                              zoneKey: zoneKeys,
+                              ans: problemData["p1"][0],
+                              zoneKey: zoneKeys['first'],
                             ),
                           ],
                         ),
@@ -265,16 +273,29 @@ class LevelOneThreeOneBasic1State extends ConsumerState<LevelOneThreeOneBasic1> 
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             AppleContainer(
-                              image: problemData["p1"][1],
-                              box: 0,
-                              zoneKey: zoneKeys,
+                              ans: problemData["p1"][1],
+                              zoneKey: zoneKeys['second'],
                             ),
                             AppleContainer(
-                              image: problemData["p1"][2],
-                              box: 0,
-                              zoneKey: zoneKeys,
+                              ans: problemData["p1"][2],
+                              zoneKey: zoneKeys['third'],
                             ),
                           ],
+                        ),
+                        SizedBox(height: screenHeight * 0.02),
+                        NewQuestionTextWidget(
+                          questionText:
+                          '2. 다음 중 알맞은 숫자를 선택하세요.',
+                          questionTextSize: screenWidth * 0.03,
+                        ),
+                        SizedBox(height: screenHeight * 0.02),
+                        Selection(
+                          boxValues: problemData["p2"],
+                          onSelectionChanged: (selectedValue) {
+                            setState(() {
+                              selectedAnswers["p2"] = selectedValue;
+                            });
+                          },
                         ),
                       ],
                     ),
@@ -319,7 +340,7 @@ class LevelOneThreeOneBasic1State extends ConsumerState<LevelOneThreeOneBasic1> 
                                       : () => {
                                     submitController.forward(),
                                     showSubmitPopup = true,
-                                    submitActivity(context),
+                                    // submitActivity(context),
                                     checkAnswer(),
                                   },
                                 ),
