@@ -9,67 +9,93 @@ class EnProblemService {
     if (levelMatch == null) {
       throw FormatException('Invalid problem code: $problemCode');
     }
-
-    final levelNumber = levelMatch.group(1); // 예: "1"
+    final levelNumber = levelMatch.group(1);
     return "/level$levelNumber/$problemCode";
   }
 
   static Future<int?> getChildId() async {
     final childId = await SecureStorageService.getChildId();
-
     return childId;
   }
 
-  // 문제 저장
+  // 문제 저장 (진행 중 문제만 저장)
   static Future<void> saveContinueProblem(String problemCode, int childId) async {
     final prefs = await SharedPreferences.getInstance();
-
     final String childIdKey = childId.toString();
     final String chapterCode = problemCode.substring(0, problemCode.length - 3);
 
     final jsonString = prefs.getString('child_problems');
-    Map<dynamic, dynamic> data = jsonString != null ? jsonDecode(jsonString) : {};
+    Map<String, dynamic> data = jsonString != null ? jsonDecode(jsonString) : {};
 
     if (!data.containsKey(childIdKey) || data[childIdKey] == null) {
       data[childIdKey] = <String, dynamic>{};
     }
 
-    (data[childIdKey] as Map<String, dynamic>)[chapterCode] = problemCode;
+    Map<String, dynamic> chapterData = Map<String, dynamic>.from(data[childIdKey]);
 
+    chapterData[chapterCode] = {
+      'last': problemCode,
+    };
+
+    data[childIdKey] = chapterData;
     await prefs.setString('child_problems', jsonEncode(data));
+  }
 
-    final savedJsonString = prefs.getString('child_problems');
-    if (savedJsonString != null) {
-      Map<dynamic, dynamic> savedData = jsonDecode(savedJsonString);
+  // 전체 풀이 기록 저장
+  static Future<void> saveProblemResults(Map<String, bool> results, String problemCode, int childId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final String childIdKey = childId.toString();
+    final String chapterCode = problemCode.substring(0, problemCode.length - 3);
 
-      print("전체: $savedData");
-      var savedProblemCode = savedData[childIdKey]?[chapterCode];
-      if (savedProblemCode != null) {
-        print("🎯 저장된 문제코드 (childId=$childId, chapterCode=$chapterCode): $savedProblemCode");
-      } else {
-        print("❓ 저장된 문제 없음 (childId=$childId, chapterCode=$chapterCode)");
+    final jsonString = prefs.getString('child_problems');
+    Map<String, dynamic> data = jsonString != null ? jsonDecode(jsonString) : {};
+
+    if (!data.containsKey(childIdKey) || data[childIdKey] == null) {
+      data[childIdKey] = <String, dynamic>{};
+    }
+
+    Map<String, dynamic> chapterData = Map<String, dynamic>.from(data[childIdKey]);
+    chapterData[chapterCode] = {
+      'last': results.keys.last,
+      'records': results,
+    };
+
+    data[childIdKey] = chapterData;
+    await prefs.setString('child_problems', jsonEncode(data));
+  }
+
+  static Future<Map<String, bool>> loadProblemResults(String problemCode, int childId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final String childIdKey = childId.toString();
+    final jsonString = prefs.getString('child_problems');
+    final String chapterCode = problemCode.substring(0, problemCode.length - 3);
+
+    if (jsonString != null) {
+      Map<String, dynamic> data = jsonDecode(jsonString);
+      final chapterData = data[childIdKey]?[chapterCode];
+      if (chapterData != null && chapterData['records'] != null) {
+        return Map<String, bool>.from(chapterData['records']);
       }
     }
+    return {};
   }
-  
-  // 진행중인 문제코드 불러오기
+
   static Future<String?> loadContinueProblem(String chapterCode, int childId) async {
     final prefs = await SharedPreferences.getInstance();
     final String childIdKey = childId.toString();
 
     final jsonString = prefs.getString('child_problems');
     if (jsonString != null) {
-      Map<dynamic, dynamic> data = jsonDecode(jsonString);
+      Map<String, dynamic> data = jsonDecode(jsonString);
+      final chapterMap = data[childIdKey]?[chapterCode];
 
-      final chapterData = data[childIdKey];
-      if (chapterData != null && chapterData[chapterCode] != null) {
-        return chapterData[chapterCode] as String;
+      if (chapterMap is Map && chapterMap['last'] is String) {
+        return chapterMap['last'];
       }
     }
     return null;
   }
-  
-  // 해당 챕터 진행 여부
+
   static Future<bool> existsContinueProblem(String chapterCode, int childId) async {
     final prefs = await SharedPreferences.getInstance();
     final String childIdKey = childId.toString();
@@ -87,9 +113,8 @@ class EnProblemService {
 
   static Future<void> clearChapterProblem(int childId, String problemCode) async {
     final prefs = await SharedPreferences.getInstance();
-
     final String childIdKey = childId.toString();
-    final String chapterCode = problemCode.substring(0, problemCode.length - 3);;
+    final String chapterCode = problemCode.substring(0, problemCode.length - 3);
 
     final jsonString = prefs.getString('child_problems');
     Map<dynamic, dynamic> data = jsonString != null ? jsonDecode(jsonString) : {};
@@ -109,5 +134,4 @@ class EnProblemService {
       print('ℹ️ 해당 아이 기록 없음: childId=$childId');
     }
   }
-
 }

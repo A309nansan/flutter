@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nansan_flutter/modules/drag_drop/controllers/drag_drop_controller.dart';
 import 'package:nansan_flutter/modules/drag_drop/widgets/draggable_card_list.dart';
 import 'package:nansan_flutter/modules/drag_drop/widgets/empty_zone.dart';
@@ -20,8 +21,9 @@ import 'package:nansan_flutter/shared/widgets/new_question_text.dart';
 import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:collection/collection.dart';
+import '../../../shared/provider/EnRiverPodProvider.dart';
 
-class LevelOneOneTwoMain extends StatefulWidget {
+class LevelOneOneTwoMain extends ConsumerStatefulWidget {
   final String problemCode;
   final DragDropController controller;
   const LevelOneOneTwoMain({
@@ -31,10 +33,10 @@ class LevelOneOneTwoMain extends StatefulWidget {
   });
 
   @override
-  State<LevelOneOneTwoMain> createState() => LevelOneOneTwoMainState();
+  ConsumerState<LevelOneOneTwoMain> createState() => LevelOneOneTwoMainState();
 }
 
-class LevelOneOneTwoMainState extends State<LevelOneOneTwoMain>
+class LevelOneOneTwoMainState extends ConsumerState<LevelOneOneTwoMain>
     with TickerProviderStateMixin {
   final ScreenshotController screenshotController = ScreenshotController();
   final TimerController _timerController = TimerController();
@@ -119,6 +121,18 @@ class LevelOneOneTwoMainState extends State<LevelOneOneTwoMain>
 
     try {
       await _apiService.submitAnswer(jsonEncode(submitRequest.toJson()));
+
+      ref.read(problemProgressProvider.notifier).record(
+        problemCode,
+        isCorrect,
+      );
+
+      await EnProblemService.saveProblemResults(
+        ref.read(problemProgressProvider),
+        problemCode,
+        childId,
+      );
+
       setState(() => isSubmitted = true);
     } catch (e) {
       debugPrint('Submit error: $e');
@@ -283,11 +297,18 @@ class LevelOneOneTwoMainState extends State<LevelOneOneTwoMain>
     }
   }
 
-  void onNextPressed() {
+  void onNextPressed() async {
     final nextCode = nextProblemCode;
     if (nextCode.isEmpty) {
       debugPrint("📌 다음 문제가 없습니다.");
-      EnProblemService.clearChapterProblem(childId, widget.problemCode);
+      final progress = ref.read(problemProgressProvider);
+      await EnProblemService.saveProblemResults(
+        progress,
+        problemCode,
+        childId,
+      );
+
+      await EnProblemService.clearChapterProblem(childId, problemCode);
       Modular.to.pop();
       return;
     }
@@ -310,6 +331,10 @@ class LevelOneOneTwoMainState extends State<LevelOneOneTwoMain>
 
   void init() async {
     childId = (await SecureStorageService.getChildId())!;
+
+    final saved = await EnProblemService.loadProblemResults(problemCode, childId);
+    ref.read(problemProgressProvider.notifier).setFromStorage(saved);
+
     EnProblemService.saveContinueProblem(widget.problemCode, childId);
   }
 
