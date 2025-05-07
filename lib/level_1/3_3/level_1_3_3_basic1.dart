@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nansan_flutter/level_1/2_3/widgets/clickable_widget_123main2.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
 import 'package:nansan_flutter/shared/controllers/timer_controller.dart';
@@ -22,17 +21,17 @@ import 'package:collection/collection.dart';
 import 'package:nansan_flutter/shared/provider/EnRiverPodProvider.dart';
 
 // ✅ 상태변경 1. StatefulWidget -> ConsumerStatefulWidget
-class LevelOneTwoThreeMain2 extends ConsumerStatefulWidget {
+class LevelOneThreeThreeBasic1 extends ConsumerStatefulWidget {
   final String problemCode;
-  const LevelOneTwoThreeMain2({super.key, required this.problemCode});
+  const LevelOneThreeThreeBasic1({super.key, required this.problemCode});
 
   @override
   // ✅ 상태변경 2. State -> ConsumerState
-  ConsumerState<LevelOneTwoThreeMain2> createState() => _LevelOneTwoThreeMain2State();
+  ConsumerState<LevelOneThreeThreeBasic1> createState() => _LevelOneThreeThreeBasic1State();
 }
 
 // ✅ 상태변경 3. State -> ConsumerState
-class _LevelOneTwoThreeMain2State extends ConsumerState<LevelOneTwoThreeMain2> with TickerProviderStateMixin {
+class _LevelOneThreeThreeBasic1State extends ConsumerState<LevelOneThreeThreeBasic1> with TickerProviderStateMixin {
   final ScreenshotController screenshotController = ScreenshotController();
   final TimerController _timerController = TimerController();
   final ProblemApiService _apiService = ProblemApiService();
@@ -55,38 +54,110 @@ class _LevelOneTwoThreeMain2State extends ConsumerState<LevelOneTwoThreeMain2> w
   List<List<String>> fixedImageUrls = [];
   List<Map<String, String>> candidates = [];
 
-  //페이지별 변수
-  String exampleData = '';
-  List<String> problemTexts = [];//밑에꺼는 임시변수
-  String p1Data = '';
-  String p2Data = '';
-  String p3Data = '';
-  String p4Data = '';
-  String p5Data = '';
-  String p6Data = '';
-  String p7Data = '';
-  String p8Data = '';
-  String p9Data = '';
+  //페이지 변수
+  Set<int> selectedRows = {};
+  List<List<String>> imageUrls = [
+    List.filled(4, ''), // 예시
+    List.filled(4, ''), // 가
+    List.filled(4, ''), // 나
+    List.filled(4, '')  // 다
+  ];
+  List<String> problemNum = ['가', '나', '다'];
 
-  //정렬코드
-  Widget _buildButtonRow(List<String> identifiers, double screenWidth) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: identifiers
-          .mapIndexed((i, id) => Row(
-        children: [
-          ClickableWidget123Main2(
-            identifier: id,
-            problemNum: id.replaceAll(RegExp(r'[^0-9]'), ''), // 숫자만 추출
-            onClickCountChanged:
-            _processInputData,
-          ),
-          if (i != identifiers.length - 1)
-            SizedBox(width: screenWidth * 0.08),
-        ],
-      ))
-          .expand((e) => e.children)
-          .toList(),
+  //가로 문제 위젯
+  Widget buildProblemRow(int rowIndex) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    bool isSelected = selectedRows.contains(rowIndex);
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          if (isSelected) {
+            selectedRows.remove(rowIndex);
+          } else {
+            selectedRows.add(rowIndex);
+          }
+        });
+      },
+      child: Container(
+        // 큰 컨테이너 - 전체 행을 감싸는 외곽 틀 (배경 투명)
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: screenWidth * 0.07,
+              height: screenWidth * 0.07,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+                border: Border.all(color: Colors.black, width: 2.0),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                '${problemNum[rowIndex]}',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: screenWidth * 0.04,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+
+            Container(
+              width: screenWidth * 0.8,
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: isSelected ? Colors.blue.withAlpha(51) : Colors.white,
+                border: Border.all(
+                  color: isSelected ? Colors.lightBlue : Colors.grey,
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: List.generate(4, (index) {
+                  final imageUrl = imageUrls[rowIndex][index];
+
+                  return Container(
+                    width: screenWidth * 0.16,
+                    height: screenHeight * 0.12,
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    padding: const EdgeInsets.all(5.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8.0),
+                      border: Border.all(
+                        color: Colors.blueAccent,
+                        width: 1.0,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: imageUrl.isNotEmpty
+                        ? Image.network(imageUrl, fit: BoxFit.contain)
+                        : const Center(child: Text('No Img')),
+                  );
+                }),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -193,41 +264,42 @@ class _LevelOneTwoThreeMain2State extends ConsumerState<LevelOneTwoThreeMain2> w
   }
 
   // 문제 데이터 받아온 후, 문제에 맞게 데이터 조작
-  //json추가후 확인할것
-  // void _processProblemData(Map problemData) {
-  //   //9문항이므로 9개로 처리
-  //   problemTexts = List.generate(9, (index) {
-  //     final key = 'p${index + 1}';
-  //     return problemData[key] ?? '';
-  //   });
-  //
-  //   debugPrint('문제 텍스트 리스트: $problemTexts');
-  // }
-  void _processProblemData(problemData) {
-    exampleData = problemData['example'];
-    p1Data = problemData['p1'];
-    p2Data = problemData['p2'];
-    p3Data = problemData['p3'];
-    p4Data = problemData['p4'];
-    p5Data = problemData['p5'];
-    p6Data = problemData['p6'];
-    p7Data = problemData['p7'];
-    p8Data = problemData['p8'];
-    p9Data = problemData['p9'];
+  void _processProblemData(Map problemData) {
+    final List<List<String>> loadedImages = [
+      List<String>.from(problemData['images_example'] ?? []).length == 4
+          ? List<String>.from(problemData['images_example'])
+          : List.filled(4, ''),
+      List<String>.from(problemData['images_row1'] ?? []).length == 4
+          ? List<String>.from(problemData['images_row1'])
+          : List.filled(4, ''),
+      List<String>.from(problemData['images_row2'] ?? []).length == 4
+          ? List<String>.from(problemData['images_row2'])
+          : List.filled(4, ''),
+      List<String>.from(problemData['images_row3'] ?? []).length == 4
+          ? List<String>.from(problemData['images_row3'])
+          : List.filled(4, ''),
+    ];
 
-    debugPrint('문제 텍스트 리스트: $p1Data\n$p2Data\n$p3Data\n$p4Data\n$p5Data\n$p6Data\n$p7Data\n$p8Data\n$p9Data\n');
+    setState(() {
+      imageUrls = loadedImages;
+    });
   }
 
   // 문제 푸는 로직 수행할때, seletedAnswers 데이터 넣는 로직
-  void _processInputData(String identifier, int count) {
-    setState(() {
-      selectedAnswers[identifier] = count;
-    });
+  void _processInputData() {
+    final selectedList = selectedRows.toList()..sort();
+
+    selectedAnswers = {
+      'selected_count': selectedList.length,
+      'selected_Ans': selectedList,
+    };
     debugPrint('$selectedAnswers');
   }
 
   // 정답 여부 체크(보통은 이거쓰면됨)
   Future<void> checkAnswer() async {
+    _processInputData();
+
     isCorrect = const DeepCollectionEquality().equals(
       answerData,
       selectedAnswers,
@@ -320,35 +392,89 @@ class _LevelOneTwoThreeMain2State extends ConsumerState<LevelOneTwoThreeMain2> w
                     child: Column(
                       children: [
                         NewHeaderWidget(
-                          headerText: '개념학습활동',
+                          headerText: '기초학습활동',
                           headerTextSize: screenWidth * 0.028,
                           subTextSize: screenWidth * 0.018,
                         ),
                         SizedBox(height: screenHeight * 0.01),
                         NewQuestionTextWidget(
                           questionText:
-                          '숫자가 들어갈 알맞은 위치를 찾아 <보기>와 같이 O표 하세요.',
+                          '<보기>와 같은 규칙으로 수량을 순서대로 나열한 것을 찾아봅시다.',
                           questionTextSize: screenWidth * 0.03,
                         ),
-                        SizedBox(height: screenHeight * 0.02),
-                        SizedBox(
-                          height: screenHeight * 0.65,
-                          child: Scrollbar(
-                            thumbVisibility: true,
-                            child: SingleChildScrollView(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  _buildButtonRow(['p1', 'p2', 'p3'], screenWidth),
-                                  SizedBox(height: screenWidth * 0.02),
-                                  _buildButtonRow(['p4', 'p5', 'p6'], screenWidth),
-                                  SizedBox(height: screenWidth * 0.02),
-                                  _buildButtonRow(['p7', 'p8', 'p9'], screenWidth),
-                                ],
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 20.0),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Container(
+                                height: screenHeight * 0.18,
+                                width: screenWidth * 0.85,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.orangeAccent,
+                                    width: 4,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: List.generate(4, (index) {
+                                    final List<String> exampleImages = imageUrls.isNotEmpty ? imageUrls[0] : List.filled(4, '');
+                                    final imageUrl = exampleImages[index];
+
+                                    return Container(
+                                      width: screenWidth * 0.16,
+                                      height: screenHeight * 0.12,
+                                      padding: const EdgeInsets.all(5.0),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(10.0),
+                                        border: Border.all(
+                                          color: Colors.lightBlue,
+                                          width: 2.0,
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: imageUrl.isNotEmpty
+                                            ? Image.network(imageUrl, fit: BoxFit.contain)
+                                            : const Center(child: Text('No Img')),
+                                      ),
+                                    );
+                                  }),
+                                ),
                               ),
-                            ),
+                              Positioned(
+                                top: 0,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 5,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.orangeAccent,
+                                    borderRadius: BorderRadius.circular(5),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        blurRadius: 3,
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Text(
+                                    "<보기>",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        )
+                        ),
+                        Column(
+                          children: List.generate(3, (index) => buildProblemRow(index)),
+                        ),
                       ],
                     ),
                   ),

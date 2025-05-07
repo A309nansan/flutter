@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nansan_flutter/level_1/2_3/widgets/NumberSelectionWidget.dart';
 import 'package:nansan_flutter/level_1/2_3/widgets/line_painter.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
@@ -19,25 +20,26 @@ import 'package:nansan_flutter/shared/widgets/new_question_text.dart';
 import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:collection/collection.dart';
+import 'package:nansan_flutter/shared/provider/EnRiverPodProvider.dart';
 
-import '../../shared/provider/EnRiverPodProvider.dart';
-
+// ✅ 상태변경 1. StatefulWidget -> ConsumerStatefulWidget
 class LevelOneTwoThreeThink3 extends ConsumerStatefulWidget {
   final String problemCode;
   const LevelOneTwoThreeThink3({super.key, required this.problemCode});
 
   @override
+  // ✅ 상태변경 2. State -> ConsumerState
   ConsumerState<LevelOneTwoThreeThink3> createState() => _LevelOneTwoThreeThink3State();
 }
 
-class _LevelOneTwoThreeThink3State extends ConsumerState<LevelOneTwoThreeThink3>
-    with TickerProviderStateMixin {
+// ✅ 상태변경 3. State -> ConsumerState
+class _LevelOneTwoThreeThink3State extends ConsumerState<LevelOneTwoThreeThink3> with TickerProviderStateMixin {
   final ScreenshotController screenshotController = ScreenshotController();
   final TimerController _timerController = TimerController();
   final ProblemApiService _apiService = ProblemApiService();
   late AnimationController submitController;
   late Animation<double> submitAnimation;
-  late int childId = 1;
+  late int childId;
   late int current;
   late int total;
   late int elapsedSeconds;
@@ -98,12 +100,15 @@ class _LevelOneTwoThreeThink3State extends ConsumerState<LevelOneTwoThreeThink3>
       final childProfileJson = await SecureStorageService.getChildProfile();
       final childProfile = jsonDecode(childProfileJson!);
       childId = childProfile['id'];
-
+      // ✅ 저장된 문제 이어풀기 불러오기
       final saved = await EnProblemService.loadProblemResults(problemCode, childId);
       ref.read(problemProgressProvider.notifier).setFromStorage(saved);
+
+      // ✅ 저장된 이어풀기 기록 확인용(확인 완료 시 지우기)
       final progress = ref.read(problemProgressProvider);
       debugPrint("📦 불러온 문제 기록: $progress");
 
+      // ✅ 문제 이어풀기 기록 저장
       EnProblemService.saveContinueProblem(problemCode, childId);
 
       setState(() {
@@ -121,6 +126,10 @@ class _LevelOneTwoThreeThink3State extends ConsumerState<LevelOneTwoThreeThink3>
 
   // 문제 제출할때 함수. 수정 필요 x
   Future<void> _submitAnswer() async {
+    final childProfileJson = await SecureStorageService.getChildProfile();
+    final childProfile = jsonDecode(childProfileJson!);
+    final childId = childProfile['id'];
+
     if (isSubmitted) return;
     final submitRequest = SubmitRequest(
       childId: childId,
@@ -136,11 +145,13 @@ class _LevelOneTwoThreeThink3State extends ConsumerState<LevelOneTwoThreeThink3>
     try {
       await _apiService.submitAnswer(jsonEncode(submitRequest.toJson()));
 
+      // ✅ 문제 제출 시 제출 결과 Riverpod(Provider)
       ref.read(problemProgressProvider.notifier).record(
         problemCode,
         isCorrect,
       );
 
+      // ✅ 문제 제출 시 제출 결과 storage에 저장
       await EnProblemService.saveProblemResults(
         ref.read(problemProgressProvider),
         problemCode,
@@ -209,6 +220,7 @@ class _LevelOneTwoThreeThink3State extends ConsumerState<LevelOneTwoThreeThink3>
     }
   }
 
+  // ✅ 이어풀기 추가 따른 다음 페이지로 가는 함수 변경
   // 다음페이지로 가는 함수. 수정 필요 x
   void onNextPressed() async {
     final nextCode = nextProblemCode;
@@ -478,189 +490,18 @@ class _LevelOneTwoThreeThink3State extends ConsumerState<LevelOneTwoThreeThink3>
                           ),
                         ),
                         SizedBox(height: screenHeight * 0.05),
-                        Column(
-                          children: [
-                            SizedBox(
-                              width: screenWidth * 0.75,
-                              height: screenHeight * 0.07,
-                              child: GridView.count(
-                                crossAxisCount: 5,
-                                shrinkWrap: true,
-                                physics:
-                                const NeverScrollableScrollPhysics(),
-                                padding: EdgeInsets.zero,
-                                childAspectRatio: 1.5,
-                                children: List.generate(5, (index) {
-                                  final contents2 = [
-                                    numberList[0],
-                                    'left',
-                                    numberList[1],
-                                    'right',
-                                    numberList[2],
-                                  ];
-                                  final isSelectable =
-                                      contents2[index] == 'left' ||
-                                          contents2[index] == 'right';
-                                  final isSelected =
-                                      selectedIndex == index;
-
-                                  return Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      SizedBox(
-                                        width: screenWidth * 0.15,
-                                        height: screenHeight * 0.1,
-                                        child: ElevatedButton(
-                                          onPressed:
-                                          isSelectable
-                                              ? () {
-                                            setState(() {
-                                              if (contents2[index] ==
-                                                  'left') {
-                                                selectedButton =
-                                                'left';
-                                              } else if (contents2[index] ==
-                                                  'right') {
-                                                selectedButton =
-                                                'right';
-                                              }
-                                              selectedIndex =
-                                                  index;
-                                            });
-                                          }
-                                              : null,
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                            const Color(0xFFFef1c4),
-                                            foregroundColor:
-                                            Colors.black,
-                                            elevation: 3,
-                                            shape:
-                                            RoundedRectangleBorder(
-                                              borderRadius:
-                                              BorderRadius.zero,
-                                              side:
-                                              const BorderSide(
-                                                color: Color(
-                                                  0xFF9c6a17,
-                                                ),
-                                              ),
-                                            ),
-                                            padding:
-                                            const EdgeInsets.all(
-                                              5.0,
-                                            ),
-                                            disabledBackgroundColor:
-                                            const Color(0xFFFef1c4),
-                                            disabledForegroundColor:
-                                            Colors.black,
-                                          ),
-                                          child:
-                                          contents2[index] !=
-                                              'left' &&
-                                              contents2[index] !=
-                                                  'right'
-                                              ? Text(
-                                            '${contents2[index]}',
-                                            style:
-                                            const TextStyle(
-                                              fontSize: 24,
-                                              fontWeight:
-                                              FontWeight
-                                                  .bold,
-                                            ),
-                                          )
-                                              : const SizedBox.shrink(),
-                                        ),
-                                      ),
-
-                                      if (isSelected)
-                                        Positioned(
-                                          child: IgnorePointer(
-                                            child: Container(
-                                              width: 40,
-                                              height: 40,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                border: Border.all(
-                                                  color: Colors.black,
-                                                  width: 2,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                    ],
-                                  );
-                                }),
-                              ),
-                            ),
-
-                            SizedBox(
-                              width: screenWidth * 0.75,
-                              height: screenHeight * 0.1,
-                              child: Stack(
-                                children: [
-                                  CustomPaint(
-                                    size: Size(
-                                      screenWidth * 0.75,
-                                      screenHeight * 0.1,
-                                    ),
-                                    painter: LinePainter(
-                                      start: Offset(
-                                        screenWidth * 0.75 * 0.3,
-                                        0,
-                                      ),
-                                      end: Offset(
-                                        screenWidth * 0.75 * 0.5,
-                                        screenHeight * 0.1,
-                                      ),
-                                    ),
-                                  ),
-                                  CustomPaint(
-                                    size: Size(
-                                      screenWidth * 0.75,
-                                      screenHeight * 0.1,
-                                    ),
-                                    painter: LinePainter(
-                                      start: Offset(
-                                        screenWidth * 0.75 * 0.5,
-                                        screenHeight * 0.1,
-                                      ),
-                                      end: Offset(
-                                        screenWidth * 0.75 * 0.7,
-                                        0,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              child: Container(
-                                height: screenHeight * 0.06,
-                                width: screenWidth * 0.15,
-                                margin: EdgeInsets.symmetric(
-                                  horizontal: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Color(0xFFFef1c4),
-                                  border: Border.all(
-                                    color: Color(0xFF9c6a17),
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    '$givenNumber',
-                                    style: TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                        NumberSelectionWidget(
+                          screenWidth: screenWidth,
+                          screenHeight: screenHeight,
+                          numberList: numberList,
+                          givenNumber: givenNumber,
+                          selectedIndex: selectedIndex,
+                          onSelect: (index, btn) {
+                            setState(() {
+                              selectedIndex = index;
+                              selectedButton = btn;
+                            });
+                          },
                         ),
                       ],
                     ),
@@ -701,14 +542,15 @@ class _LevelOneTwoThreeThink3State extends ConsumerState<LevelOneTwoThreeThink3>
                                   borderRadius: 10,
                                   onPressed: () async {
                                     if (isSubmitted) return;
-                                    await checkAnswer();
                                     setState(() {
                                       showSubmitPopup = true;
                                     });
-                                    submitController.forward();
+                                    await checkAnswer();
                                     await submitActivity(context);
+                                    submitController.forward();
                                   },
                                 ),
+
                               if (isSubmitted &&
                                   isCorrect == false) ...[
                                 ButtonWidget(
@@ -718,12 +560,11 @@ class _LevelOneTwoThreeThink3State extends ConsumerState<LevelOneTwoThreeThink3>
                                   fontSize: screenWidth * 0.02,
                                   borderRadius: 10,
                                   onPressed: () async {
-                                    await checkAnswer(); // ✅ correctly awaited
+                                    checkAnswer();
                                     setState(() {
                                       showSubmitPopup = true;
                                     });
-                                    submitController
-                                        .forward(); // ✅ called after the popup flag is set
+                                    submitController.forward();
                                   },
                                 ),
                                 const SizedBox(width: 20),
