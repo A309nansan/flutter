@@ -2,15 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:nansan_flutter/shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
 
 class AppleContainer extends StatelessWidget {
-  final int image;
-  final int box;
-  final Map<String, GlobalKey<HandwritingRecognitionZoneState>> zoneKey;
+  final int ans;
+  final GlobalKey<HandwritingRecognitionZoneState>? zoneKey;
 
   const AppleContainer({
     super.key,
-    required this.image,
-    required this.box,
-    required this.zoneKey,
+    required this.ans,
+    this.zoneKey,
   });
 
   @override
@@ -22,12 +20,12 @@ class AppleContainer extends StatelessWidget {
       width: screenWidth * 0.4 - 166,
       height: screenWidth * 0.4 - 166,
       child: Image.asset(
-        'assets/images/number/apple/$image.png',
+        'assets/images/number/apple/$ans.png',
         fit: BoxFit.scaleDown,
         errorBuilder: (context, error, stackTrace) {
           return Center(
             child: Text(
-              'Image $image',
+              'Image $ans',
               style: TextStyle(color: Colors.white),
             ),
           );
@@ -36,14 +34,12 @@ class AppleContainer extends StatelessWidget {
     );
 
     Widget boxContent;
-    if (box == 0) {
-      final key = '${image.toString()}-$box';
-      final handwritingZoneKey = zoneKey[key];
 
+    if (zoneKey != null) {
       boxContent = Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: HandwritingRecognitionZone(
-          key: handwritingZoneKey,
+          key: zoneKey,
           width: 100,
           height: 100,
         ),
@@ -60,7 +56,7 @@ class AppleContainer extends StatelessWidget {
           width: 100,
           height: 100,
           child: Text(
-            box.toString(),
+            ans.toString(),
             style: const TextStyle(fontSize: 60),
           ),
         ),
@@ -72,7 +68,7 @@ class AppleContainer extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.lightBlue, width: 2),
+        border: Border.all(color: Colors.blue, width: 2),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
