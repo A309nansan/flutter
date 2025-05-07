@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nansan_flutter/level_1/2_3/widgets/NumberSelectionWidget.dart';
 import 'package:nansan_flutter/level_1/2_3/widgets/line_painter.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
@@ -18,23 +20,26 @@ import 'package:nansan_flutter/shared/widgets/new_question_text.dart';
 import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:collection/collection.dart';
+import 'package:nansan_flutter/shared/provider/EnRiverPodProvider.dart';
 
-class LevelOneTwoThreeMain3 extends StatefulWidget {
+// ✅ 상태변경 1. StatefulWidget -> ConsumerStatefulWidget
+class LevelOneTwoThreeMain3 extends ConsumerStatefulWidget {
   final String problemCode;
   const LevelOneTwoThreeMain3({super.key, required this.problemCode});
 
   @override
-  State<LevelOneTwoThreeMain3> createState() => _LevelOneTwoThreeMain3State();
+  // ✅ 상태변경 2. State -> ConsumerState
+  ConsumerState<LevelOneTwoThreeMain3> createState() => _LevelOneTwoThreeMain3State();
 }
 
-class _LevelOneTwoThreeMain3State extends State<LevelOneTwoThreeMain3>
-    with TickerProviderStateMixin {
+// ✅ 상태변경 3. State -> ConsumerState
+class _LevelOneTwoThreeMain3State extends ConsumerState<LevelOneTwoThreeMain3> with TickerProviderStateMixin {
   final ScreenshotController screenshotController = ScreenshotController();
   final TimerController _timerController = TimerController();
   final ProblemApiService _apiService = ProblemApiService();
   late AnimationController submitController;
   late Animation<double> submitAnimation;
-  late int childId = 1;
+  late int childId;
   late int current;
   late int total;
   late int elapsedSeconds;
@@ -91,6 +96,21 @@ class _LevelOneTwoThreeMain3State extends State<LevelOneTwoThreeMain3>
   Future<void> _loadQuestionData() async {
     try {
       final response = await _apiService.loadProblemData(problemCode);
+
+      final childProfileJson = await SecureStorageService.getChildProfile();
+      final childProfile = jsonDecode(childProfileJson!);
+      childId = childProfile['id'];
+      // ✅ 저장된 문제 이어풀기 불러오기
+      final saved = await EnProblemService.loadProblemResults(problemCode, childId);
+      ref.read(problemProgressProvider.notifier).setFromStorage(saved);
+
+      // ✅ 저장된 이어풀기 기록 확인용(확인 완료 시 지우기)
+      final progress = ref.read(problemProgressProvider);
+      debugPrint("📦 불러온 문제 기록: $progress");
+
+      // ✅ 문제 이어풀기 기록 저장
+      EnProblemService.saveContinueProblem(problemCode, childId);
+
       setState(() {
         nextProblemCode = response.nextProblemCode;
         problemData = response.problem;
@@ -106,6 +126,10 @@ class _LevelOneTwoThreeMain3State extends State<LevelOneTwoThreeMain3>
 
   // 문제 제출할때 함수. 수정 필요 x
   Future<void> _submitAnswer() async {
+    final childProfileJson = await SecureStorageService.getChildProfile();
+    final childProfile = jsonDecode(childProfileJson!);
+    final childId = childProfile['id'];
+
     if (isSubmitted) return;
     final submitRequest = SubmitRequest(
       childId: childId,
@@ -120,6 +144,20 @@ class _LevelOneTwoThreeMain3State extends State<LevelOneTwoThreeMain3>
 
     try {
       await _apiService.submitAnswer(jsonEncode(submitRequest.toJson()));
+
+      // ✅ 문제 제출 시 제출 결과 Riverpod(Provider)
+      ref.read(problemProgressProvider.notifier).record(
+        problemCode,
+        isCorrect,
+      );
+
+      // ✅ 문제 제출 시 제출 결과 storage에 저장
+      await EnProblemService.saveProblemResults(
+        ref.read(problemProgressProvider),
+        problemCode,
+        childId,
+      );
+
       setState(() => isSubmitted = true);
     } catch (e) {
       debugPrint('Submit error: $e');
@@ -182,11 +220,20 @@ class _LevelOneTwoThreeMain3State extends State<LevelOneTwoThreeMain3>
     }
   }
 
+  // ✅ 이어풀기 추가 따른 다음 페이지로 가는 함수 변경
   // 다음페이지로 가는 함수. 수정 필요 x
-  void onNextPressed() {
+  void onNextPressed() async {
     final nextCode = nextProblemCode;
     if (nextCode.isEmpty) {
       debugPrint("📌 다음 문제가 없습니다.");
+      final progress = ref.read(problemProgressProvider);
+      await EnProblemService.saveProblemResults(
+        progress,
+        problemCode,
+        childId,
+      );
+
+      await EnProblemService.clearChapterProblem(childId, problemCode);
       Modular.to.pop();
       return;
     }
@@ -223,344 +270,173 @@ class _LevelOneTwoThreeMain3State extends State<LevelOneTwoThreeMain3>
         ),
       ),
       body:
-          isLoading
-              ? const Center(child: EnProblemSplashScreen())
-              : Stack(
+      isLoading
+          ? const Center(child: EnProblemSplashScreen())
+          : Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Container(
+              color: Colors.white,
+              child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Container(
-                      color: Colors.white,
-                      child: Column(
-                        children: [
-                          Screenshot(
-                            controller: screenshotController,
-                            child: Column(
-                              children: [
-                                NewHeaderWidget(
-                                  headerText: '개념학습활동',
-                                  headerTextSize: screenWidth * 0.028,
-                                  subTextSize: screenWidth * 0.018,
+                  Screenshot(
+                    controller: screenshotController,
+                    child: Column(
+                      children: [
+                        NewHeaderWidget(
+                          headerText: '개념학습활동',
+                          headerTextSize: screenWidth * 0.028,
+                          subTextSize: screenWidth * 0.018,
+                        ),
+                        SizedBox(height: screenHeight * 0.01),
+                        NewQuestionTextWidget(
+                          questionText:
+                          '숫자 4가 들어갈 위치를 찾아 O표 하세요.',
+                          questionTextSize: screenWidth * 0.03,
+                        ),
+                        SizedBox(height: screenHeight * 0.25),
+                        NumberSelectionWidget(
+                          screenWidth: screenWidth,
+                          screenHeight: screenHeight,
+                          numberList: numberList,
+                          givenNumber: givenNumber,
+                          selectedIndex: selectedIndex,
+                          onSelect: (index, btn) {
+                            setState(() {
+                              selectedIndex = index;
+                              selectedButton = btn;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  Spacer(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      EnProgressBarWidget(
+                        current: current,
+                        total: total,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 30.0,
+                          vertical: screenHeight * 0.02,
+                        ),
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 300),
+                          transitionBuilder: (child, animation) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            );
+                          },
+                          child: Row(
+                            key: ValueKey<String>(
+                              '${isSubmitted}_$isCorrect',
+                            ),
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              if (!isSubmitted)
+                                ButtonWidget(
+                                  height: screenHeight * 0.035,
+                                  width: screenWidth * 0.18,
+                                  buttonText: "제출하기",
+                                  fontSize: screenWidth * 0.02,
+                                  borderRadius: 10,
+                                  onPressed: () async {
+                                    if (isSubmitted) return;
+                                    setState(() {
+                                      showSubmitPopup = true;
+                                    });
+                                    await checkAnswer();
+                                    await submitActivity(context);
+                                    submitController.forward();
+                                  },
                                 ),
-                                SizedBox(height: screenHeight * 0.01),
-                                NewQuestionTextWidget(
-                                  questionText:
-                                      '숫자 4가 들어갈 위치를 찾아 O표 하세요.',
-                                  questionTextSize: screenWidth * 0.03,
+
+                              if (isSubmitted &&
+                                  isCorrect == false) ...[
+                                ButtonWidget(
+                                  height: screenHeight * 0.035,
+                                  width: screenWidth * 0.18,
+                                  buttonText: "제출하기",
+                                  fontSize: screenWidth * 0.02,
+                                  borderRadius: 10,
+                                  onPressed: () async {
+                                    checkAnswer();
+                                    setState(() {
+                                      showSubmitPopup = true;
+                                    });
+                                    submitController.forward();
+                                  },
                                 ),
-                                SizedBox(height: screenHeight * 0.25),
-                                Column(
-                                  children: [
-                                    SizedBox(
-                                      width: screenWidth * 0.75,
-                                      height: screenHeight * 0.07,
-                                      child: GridView.count(
-                                        crossAxisCount: 5,
-                                        shrinkWrap: true,
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        padding: EdgeInsets.zero,
-                                        childAspectRatio: 1.5,
-                                        children: List.generate(5, (index) {
-                                          final contents2 = [
-                                            numberList[0],
-                                            'left',
-                                            numberList[1],
-                                            'right',
-                                            numberList[2],
-                                          ];
-                                          final isSelectable =
-                                              contents2[index] == 'left' ||
-                                              contents2[index] == 'right';
-                                          final isSelected =
-                                              selectedIndex == index;
-
-                                          return Stack(
-                                            alignment: Alignment.center,
-                                            children: [
-                                              SizedBox(
-                                                width: screenWidth * 0.15,
-                                                height: screenHeight * 0.1,
-                                                child: ElevatedButton(
-                                                  onPressed:
-                                                      isSelectable
-                                                          ? () {
-                                                            setState(() {
-                                                              if (contents2[index] ==
-                                                                  'left') {
-                                                                selectedButton =
-                                                                    'left';
-                                                              } else if (contents2[index] ==
-                                                                  'right') {
-                                                                selectedButton =
-                                                                    'right';
-                                                              }
-                                                              selectedIndex =
-                                                                  index;
-                                                            });
-                                                          }
-                                                          : null,
-                                                  style: ElevatedButton.styleFrom(
-                                                    backgroundColor:
-                                                        const Color(0xFFFef1c4),
-                                                    foregroundColor:
-                                                        Colors.black,
-                                                    elevation: 3,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius.zero,
-                                                          side:
-                                                              const BorderSide(
-                                                                color: Color(
-                                                                  0xFF9c6a17,
-                                                                ),
-                                                              ),
-                                                        ),
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                          5.0,
-                                                        ),
-                                                    disabledBackgroundColor:
-                                                        const Color(0xFFFef1c4),
-                                                    disabledForegroundColor:
-                                                        Colors.black,
-                                                  ),
-                                                  child:
-                                                      contents2[index] !=
-                                                                  'left' &&
-                                                              contents2[index] !=
-                                                                  'right'
-                                                          ? Text(
-                                                            '${contents2[index]}',
-                                                            style:
-                                                                const TextStyle(
-                                                                  fontSize: 24,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                ),
-                                                          )
-                                                          : const SizedBox.shrink(),
-                                                ),
-                                              ),
-
-                                              if (isSelected)
-                                                Positioned(
-                                                  child: IgnorePointer(
-                                                    child: Container(
-                                                      width: 40,
-                                                      height: 40,
-                                                      decoration: BoxDecoration(
-                                                        shape: BoxShape.circle,
-                                                        border: Border.all(
-                                                          color: Colors.black,
-                                                          width: 2,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                            ],
-                                          );
-                                        }),
-                                      ),
-                                    ),
-
-                                    SizedBox(
-                                      width: screenWidth * 0.75,
-                                      height: screenHeight * 0.1,
-                                      child: Stack(
-                                        children: [
-                                          CustomPaint(
-                                            size: Size(
-                                              screenWidth * 0.75,
-                                              screenHeight * 0.1,
-                                            ),
-                                            painter: LinePainter(
-                                              start: Offset(
-                                                screenWidth * 0.75 * 0.3,
-                                                0,
-                                              ),
-                                              end: Offset(
-                                                screenWidth * 0.75 * 0.5,
-                                                screenHeight * 0.1,
-                                              ),
-                                            ),
-                                          ),
-                                          CustomPaint(
-                                            size: Size(
-                                              screenWidth * 0.75,
-                                              screenHeight * 0.1,
-                                            ),
-                                            painter: LinePainter(
-                                              start: Offset(
-                                                screenWidth * 0.75 * 0.5,
-                                                screenHeight * 0.1,
-                                              ),
-                                              end: Offset(
-                                                screenWidth * 0.75 * 0.7,
-                                                0,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      child: Container(
-                                        height: screenHeight * 0.06,
-                                        width: screenWidth * 0.15,
-                                        margin: EdgeInsets.symmetric(
-                                          horizontal: 2,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Color(0xFFFef1c4),
-                                          border: Border.all(
-                                            color: Color(0xFF9c6a17),
-                                          ),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            '$givenNumber',
-                                            style: TextStyle(
-                                              fontSize: 24,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                const SizedBox(width: 20),
+                                ButtonWidget(
+                                  height: screenHeight * 0.035,
+                                  width: screenWidth * 0.18,
+                                  buttonText: isEnd ? "학습종료" : "다음문제",
+                                  fontSize: screenWidth * 0.02,
+                                  borderRadius: 10,
+                                  onPressed: () => onNextPressed(),
                                 ),
                               ],
-                            ),
-                          ),
-                          Spacer(),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              EnProgressBarWidget(
-                                current: current,
-                                total: total,
-                              ),
-                              Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 30.0,
-                                  vertical: screenHeight * 0.02,
-                                ),
-                                child: AnimatedSwitcher(
-                                  duration: const Duration(milliseconds: 300),
-                                  transitionBuilder: (child, animation) {
-                                    return FadeTransition(
-                                      opacity: animation,
-                                      child: child,
-                                    );
-                                  },
-                                  child: Row(
-                                    key: ValueKey<String>(
-                                      '${isSubmitted}_$isCorrect',
-                                    ),
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      if (!isSubmitted)
-                                        ButtonWidget(
-                                          height: screenHeight * 0.035,
-                                          width: screenWidth * 0.18,
-                                          buttonText: "제출하기",
-                                          fontSize: screenWidth * 0.02,
-                                          borderRadius: 10,
-                                          onPressed: () async {
-                                            if (isSubmitted) return;
-                                            await checkAnswer();
-                                            setState(() {
-                                              showSubmitPopup = true;
-                                            });
-                                            submitController.forward();
-                                            await submitActivity(context);
-                                          },
-                                        ),
-                                      if (isSubmitted &&
-                                          isCorrect == false) ...[
-                                        ButtonWidget(
-                                          height: screenHeight * 0.035,
-                                          width: screenWidth * 0.18,
-                                          buttonText: "제출하기",
-                                          fontSize: screenWidth * 0.02,
-                                          borderRadius: 10,
-                                          onPressed: () async {
-                                            await checkAnswer(); // ✅ correctly awaited
-                                            setState(() {
-                                              showSubmitPopup = true;
-                                            });
-                                            submitController
-                                                .forward(); // ✅ called after the popup flag is set
-                                          },
-                                        ),
-                                        const SizedBox(width: 20),
-                                        ButtonWidget(
-                                          height: screenHeight * 0.035,
-                                          width: screenWidth * 0.18,
-                                          buttonText: isEnd ? "학습종료" : "다음문제",
-                                          fontSize: screenWidth * 0.02,
-                                          borderRadius: 10,
-                                          onPressed: () => onNextPressed(),
-                                        ),
-                                      ],
 
-                                      if (isSubmitted && isCorrect == true)
-                                        ButtonWidget(
-                                          height: screenHeight * 0.035,
-                                          width: screenWidth * 0.18,
-                                          buttonText: isEnd ? "학습종료" : "다음문제",
-                                          fontSize: screenWidth * 0.02,
-                                          borderRadius: 10,
-                                          onPressed: () => onNextPressed(),
-                                        ),
-                                    ],
-                                  ),
+                              if (isSubmitted && isCorrect == true)
+                                ButtonWidget(
+                                  height: screenHeight * 0.035,
+                                  width: screenWidth * 0.18,
+                                  buttonText: isEnd ? "학습종료" : "다음문제",
+                                  fontSize: screenWidth * 0.02,
+                                  borderRadius: 10,
+                                  onPressed: () => onNextPressed(),
                                 ),
-                              ),
                             ],
                           ),
-                        ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (showSubmitPopup)
+            Positioned.fill(
+              child: Stack(
+                children: [
+                  Container(color: Colors.black54),
+                  Center(
+                    child: FadeTransition(
+                      opacity: submitAnimation,
+                      child: ScaleTransition(
+                        scale: submitAnimation,
+                        child: Material(
+                          type: MaterialType.transparency,
+                          child: SuccessfulPopup(
+                            scaleAnimation:
+                            const AlwaysStoppedAnimation(1.0),
+                            isCorrect: isCorrect,
+                            customMessage:
+                            isCorrect ? "🎉 정답이에요!" : "틀렸어요...",
+                            isEnd: isEnd,
+                            closePopup: closeSubmit,
+                            onClose:
+                            isCorrect
+                                ? () async => onNextPressed()
+                                : null,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                  if (showSubmitPopup)
-                    Positioned.fill(
-                      child: Stack(
-                        children: [
-                          Container(color: Colors.black54),
-                          Center(
-                            child: FadeTransition(
-                              opacity: submitAnimation,
-                              child: ScaleTransition(
-                                scale: submitAnimation,
-                                child: Material(
-                                  type: MaterialType.transparency,
-                                  child: SuccessfulPopup(
-                                    scaleAnimation:
-                                        const AlwaysStoppedAnimation(1.0),
-                                    isCorrect: isCorrect,
-                                    customMessage:
-                                        isCorrect ? "🎉 정답이에요!" : "틀렸어요...",
-                                    isEnd: isEnd,
-                                    closePopup: closeSubmit,
-                                    onClose:
-                                        isCorrect
-                                            ? () async => onNextPressed()
-                                            : null,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                 ],
               ),
+            ),
+        ],
+      ),
     );
   }
 }

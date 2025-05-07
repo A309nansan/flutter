@@ -19,6 +19,8 @@ import 'package:nansan_flutter/level_1/2_3/level_1_2_3_main4.dart';
 import 'package:nansan_flutter/level_1/2_3/level_1_2_3_main5.dart';
 import 'package:nansan_flutter/level_1/3_1/level_1_3_1_basic1.dart';
 import 'package:nansan_flutter/level_1/3-2/screens/level_1_3_2_pro1.dart';
+import 'package:nansan_flutter/level_1/3_3/level_1_3_3_basic1.dart';
+import 'package:nansan_flutter/level_1/3_3/level_1_3_3_basic2.dart';
 import 'package:nansan_flutter/modules/drag_drop/controllers/drag_drop_controller.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:provider/provider.dart';
@@ -283,6 +285,22 @@ class En1Module extends Module {
         return LevelOneThreeTwoPro1(problemCode: nextCode);
       },
     );
+    // 3과 3차시 기초1
+    // r.child(
+    //   '/enlv1s3c3kc1',
+    //   child: (context) {
+    //     final nextCode = r.args.data as String;
+    //     return LevelOneThreeThreeBasic1(problemCode: nextCode);
+    //   },
+    // );
+    // // 3과 3차시 기초2
+    // r.child(
+    //   '/enlv1s3c3kc2',
+    //   child: (context) {
+    //     final nextCode = r.args.data as String;
+    //     return LevelOneThreeThreeBasic2(problemCode: nextCode);
+    //   },
+    // );
     // 4과 2차시 주요1
     r.child(
       '/enlv1s4c2jy1',
