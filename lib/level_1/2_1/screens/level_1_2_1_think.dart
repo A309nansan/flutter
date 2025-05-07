@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nansan_flutter/modules/drag_drop/controllers/drag_drop_controller.dart';
 import 'package:nansan_flutter/modules/drag_drop/widgets/draggable_card_list.dart';
 import 'package:nansan_flutter/modules/drag_drop/widgets/empty_zone.dart';
@@ -21,8 +22,13 @@ import 'package:nansan_flutter/shared/widgets/new_question_text.dart';
 import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
+import '../../../modules/drag_drop/controllers/drag_drop_controller_riverpod.dart';
+import '../../../modules/drag_drop/models/card_data.dart';
+import '../../../modules/drag_drop/widgets/draggable_card_list_riverpod.dart';
+import '../../../modules/drag_drop/widgets/empty_zone_riverpod.dart';
+import '../../../shared/provider/EnRiverPodProvider.dart';
 
-class LevelOneTwoOneThink extends StatefulWidget {
+class LevelOneTwoOneThink extends ConsumerStatefulWidget {
   final String problemCode;
   final DragDropController controller;
 
@@ -33,10 +39,10 @@ class LevelOneTwoOneThink extends StatefulWidget {
   });
 
   @override
-  State<LevelOneTwoOneThink> createState() => _LevelOneTwoOneThinkState();
+  ConsumerState<LevelOneTwoOneThink> createState() => _LevelOneTwoOneThinkState();
 }
 
-class _LevelOneTwoOneThinkState extends State<LevelOneTwoOneThink>
+class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
     with TickerProviderStateMixin {
   // 필수코드
   final ScreenshotController screenshotController = ScreenshotController();
@@ -101,10 +107,15 @@ class _LevelOneTwoOneThinkState extends State<LevelOneTwoOneThink>
   Future<void> _loadQuestionData() async {
     try {
       final response = await _apiService.loadProblemData(problemCode);
+
       final childProfileJson = await SecureStorageService.getChildProfile();
       final childProfile = jsonDecode(childProfileJson!);
       childId = childProfile['id'];
-      EnProblemService.saveContinueProblem(widget.problemCode, childId);
+
+      final saved = await EnProblemService.loadProblemResults(problemCode, childId);
+      ref.read(problemProgressProvider.notifier).setFromStorage(saved);
+
+      EnProblemService.saveContinueProblem(problemCode, childId);
 
       setState(() {
         nextProblemCode = response.nextProblemCode;
@@ -141,6 +152,18 @@ class _LevelOneTwoOneThinkState extends State<LevelOneTwoOneThink>
     try {
       // API 서비스 호출
       await _apiService.submitAnswer(jsonEncode(submitRequest.toJson()));
+
+      ref.read(problemProgressProvider.notifier).record(
+        problemCode,
+        isCorrect,
+      );
+
+      await EnProblemService.saveProblemResults(
+        ref.read(problemProgressProvider),
+        problemCode,
+        childId,
+      );
+
       setState(() {
         isSubmitted = true;
       });
@@ -173,15 +196,46 @@ class _LevelOneTwoOneThinkState extends State<LevelOneTwoOneThink>
 
       candidates.add({'image_name': name3, 'image_url': ''});
     }
+
+    Future.microtask(() {
+      ref.read(dragDropControllerProvider.notifier).resetAll(); // zone 초기화
+      ref.read(dragDropControllerProvider.notifier).initializeCards(
+        candidates
+            .map((c) => CardData(
+          id: c['image_name']!,
+          imageName: c['image_name']!,
+          imageUrl: c['image_url']!,
+        ))
+            .toList(),
+      );
+    });
   }
 
   void _processInputData() {
-    final controller = Provider.of<DragDropController>(context, listen: false);
-
+    // final controller = Provider.of<DragDropController>(context, listen: false);
+    // final controller = ref.read(dragDropControllerProvider.notifier);
+    final state = ref.read(dragDropControllerProvider);
     selectedAnswers = {"problem1": "", "problem2": "", "problem3": ""};
 
+    // for (int zoneKey = 1; zoneKey <= 3; zoneKey++) {
+    //   final card = controller.zoneCards[zoneKey];
+    //   if (card != null) {
+    //     switch (zoneKey) {
+    //       case 1:
+    //         selectedAnswers["problem1"] = card.imageName;
+    //         break;
+    //       case 2:
+    //         selectedAnswers["problem2"] = card.imageName;
+    //         break;
+    //       case 3:
+    //         selectedAnswers["problem3"] = card.imageName;
+    //         break;
+    //     }
+    //   }
+    // }
+
     for (int zoneKey = 1; zoneKey <= 3; zoneKey++) {
-      final card = controller.zoneCards[zoneKey];
+      final card = state.zoneCards[zoneKey];
       if (card != null) {
         switch (zoneKey) {
           case 1:
@@ -225,11 +279,18 @@ class _LevelOneTwoOneThinkState extends State<LevelOneTwoOneThink>
     }
   }
 
-  void onNextPressed() {
+  void onNextPressed() async {
     final nextCode = nextProblemCode;
     if (nextCode.isEmpty) {
       debugPrint("📌 다음 문제가 없습니다.");
-      EnProblemService.clearChapterProblem(childId, widget.problemCode);
+      final progress = ref.read(problemProgressProvider);
+      await EnProblemService.saveProblemResults(
+        progress,
+        problemCode,
+        childId,
+      );
+
+      await EnProblemService.clearChapterProblem(childId, problemCode);
       Modular.to.pop();
       return;
     }
@@ -362,7 +423,7 @@ class _LevelOneTwoOneThinkState extends State<LevelOneTwoOneThink>
                                   ),
                                 ),
                                 SizedBox(width: screenWidth * 0.01),
-                                EmptyZone(
+                                EmptyZoneRiverpod(
                                   zoneKey: 1,
                                   width: screenWidth * 0.15,
                                   height: screenHeight * 0.055,
@@ -388,7 +449,7 @@ class _LevelOneTwoOneThinkState extends State<LevelOneTwoOneThink>
                                   ),
                                 ),
                                 SizedBox(width: screenWidth * 0.01),
-                                EmptyZone(
+                                EmptyZoneRiverpod(
                                   zoneKey: 2,
                                   width: screenWidth * 0.15,
                                   height: screenHeight * 0.055,
@@ -414,7 +475,7 @@ class _LevelOneTwoOneThinkState extends State<LevelOneTwoOneThink>
                                   ),
                                 ),
                                 SizedBox(width: screenWidth * 0.01),
-                                EmptyZone(
+                                EmptyZoneRiverpod(
                                   zoneKey: 3,
                                   width: screenWidth * 0.15,
                                   height: screenHeight * 0.055,
@@ -429,14 +490,14 @@ class _LevelOneTwoOneThinkState extends State<LevelOneTwoOneThink>
                               ],
                             ),
                             SizedBox(height: screenHeight * 0.03),
-                            DraggableCardList(
+                            DraggableCardListRiverpod(
                               showRemoveButton: false,
                               candidates: candidates,
                               boxWidth: 400,
                               boxHeight: 80,
                               cardWidth: 80,
                               cardHeight: 50,
-                              controller: widget.controller,
+                              // controller: widget.controller,
                             ),
                             Spacer(),
                             Row(

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
 import 'package:nansan_flutter/shared/controllers/timer_controller.dart';
@@ -18,15 +19,17 @@ import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:collection/collection.dart';
 
-class LevelOneTwoThreeThink4 extends StatefulWidget {
+import '../../shared/provider/EnRiverPodProvider.dart';
+
+class LevelOneTwoThreeThink4 extends ConsumerStatefulWidget {
   final String problemCode;
   const LevelOneTwoThreeThink4({super.key, required this.problemCode});
 
   @override
-  State<LevelOneTwoThreeThink4> createState() => LevelOneTwoThreeThink4State();
+  ConsumerState<LevelOneTwoThreeThink4> createState() => LevelOneTwoThreeThink4State();
 }
 
-class LevelOneTwoThreeThink4State extends State<LevelOneTwoThreeThink4>
+class LevelOneTwoThreeThink4State extends ConsumerState<LevelOneTwoThreeThink4>
     with TickerProviderStateMixin {
   final ScreenshotController screenshotController = ScreenshotController();
   final TimerController _timerController = TimerController();
@@ -90,6 +93,18 @@ class LevelOneTwoThreeThink4State extends State<LevelOneTwoThreeThink4>
   Future<void> _loadQuestionData() async {
     try {
       final response = await _apiService.loadProblemData(problemCode);
+
+      final childProfileJson = await SecureStorageService.getChildProfile();
+      final childProfile = jsonDecode(childProfileJson!);
+      childId = childProfile['id'];
+
+      final saved = await EnProblemService.loadProblemResults(problemCode, childId);
+      ref.read(problemProgressProvider.notifier).setFromStorage(saved);
+      final progress = ref.read(problemProgressProvider);
+      debugPrint("📦 불러온 문제 기록: $progress");
+
+      EnProblemService.saveContinueProblem(problemCode, childId);
+
       setState(() {
         nextProblemCode = response.nextProblemCode;
         problemData = response.problem;
@@ -123,6 +138,18 @@ class LevelOneTwoThreeThink4State extends State<LevelOneTwoThreeThink4>
 
     try {
       await _apiService.submitAnswer(jsonEncode(submitRequest.toJson()));
+
+      ref.read(problemProgressProvider.notifier).record(
+        problemCode,
+        isCorrect,
+      );
+
+      await EnProblemService.saveProblemResults(
+        ref.read(problemProgressProvider),
+        problemCode,
+        childId,
+      );
+
       setState(() => isSubmitted = true);
     } catch (e) {
       debugPrint('Submit error: $e');
@@ -192,10 +219,18 @@ class LevelOneTwoThreeThink4State extends State<LevelOneTwoThreeThink4>
   }
 
   // 다음페이지로 가는 함수. 수정 필요 x
-  void onNextPressed() {
+  void onNextPressed() async {
     final nextCode = nextProblemCode;
     if (nextCode.isEmpty) {
       debugPrint("📌 다음 문제가 없습니다.");
+      final progress = ref.read(problemProgressProvider);
+      await EnProblemService.saveProblemResults(
+        progress,
+        problemCode,
+        childId,
+      );
+
+      await EnProblemService.clearChapterProblem(childId, problemCode);
       Modular.to.pop();
       return;
     }

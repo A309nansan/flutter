@@ -276,13 +276,13 @@ class En1Module extends Module {
       },
     );
     // 3과 2차시 심화1
-    // r.child(
-    //   '/enlv1s3c2sh1',
-    //   child: (context) {
-    //     final nextCode = r.args.data as String;
-    //     return LevelOneThreeTwoPro1(problemCode: nextCode);
-    //   },
-    // );
+    r.child(
+      '/enlv1s3c2sh1',
+      child: (context) {
+        final nextCode = r.args.data as String;
+        return LevelOneThreeTwoPro1(problemCode: nextCode);
+      },
+    );
     // 4과 2차시 주요1
     r.child(
       '/enlv1s4c2jy1',

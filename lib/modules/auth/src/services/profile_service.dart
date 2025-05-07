@@ -44,12 +44,12 @@ class ProfileService {
   String getRandomProfileImageUrl() {
     final random = Random();
     final randomImage = _imageList[random.nextInt(_imageList.length)];
-    return "https://s3.nansan.site/nansan/character/$randomImage";
+    return "https://minio.nansan.site/nansan/character/$randomImage";
   }
 
   String getRandomProfileImageUrlNonBg() {
     final random = Random();
     final randomImage = _nonBgImageList[random.nextInt(_nonBgImageList.length)];
-    return "https://s3.nansan.site/nansan/character/$randomImage";
+    return "https://minio.nansan.site/nansan/character/$randomImage";
   }
 }

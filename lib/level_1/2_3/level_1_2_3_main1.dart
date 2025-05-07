@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nansan_flutter/level_1/2_2/widgets/dynamic_number_row.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
@@ -18,18 +19,18 @@ import 'package:nansan_flutter/shared/widgets/new_header_widget.dart';
 import 'package:nansan_flutter/shared/widgets/new_question_text.dart';
 import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
 import 'package:screenshot/screenshot.dart';
-
 import '../../shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
+import '../../shared/provider/EnRiverPodProvider.dart';
 
-class LevelOneTwoThreeMain1 extends StatefulWidget {
+class LevelOneTwoThreeMain1 extends ConsumerStatefulWidget {
   final String problemCode;
   const LevelOneTwoThreeMain1({super.key, required this.problemCode});
 
   @override
-  State<LevelOneTwoThreeMain1> createState() => _LevelOneTwoThreeMain1State();
+  ConsumerState<LevelOneTwoThreeMain1> createState() => _LevelOneTwoThreeMain1State();
 }
 
-class _LevelOneTwoThreeMain1State extends State<LevelOneTwoThreeMain1>
+class _LevelOneTwoThreeMain1State extends ConsumerState<LevelOneTwoThreeMain1>
     with TickerProviderStateMixin {
   // 필수코드
   final ScreenshotController screenshotController = ScreenshotController();
@@ -39,7 +40,7 @@ class _LevelOneTwoThreeMain1State extends State<LevelOneTwoThreeMain1>
   int? elapsedSeconds;
   int current = 1;
   int total = 1;
-  String nextProblemCode = '';
+  late String nextProblemCode;
   String problemCode = 'enlv1s2c3jy1';
   bool isSubmitted = false;
   bool isCorrect = false;
@@ -89,7 +90,13 @@ class _LevelOneTwoThreeMain1State extends State<LevelOneTwoThreeMain1>
       final childProfileJson = await SecureStorageService.getChildProfile();
       final childProfile = jsonDecode(childProfileJson!);
       childId = childProfile['id'];
-      EnProblemService.saveContinueProblem(widget.problemCode, childId);
+
+      final saved = await EnProblemService.loadProblemResults(problemCode, childId);
+      ref.read(problemProgressProvider.notifier).setFromStorage(saved);
+      final progress = ref.read(problemProgressProvider);
+      debugPrint("📦 불러온 문제 기록: $progress");
+
+      EnProblemService.saveContinueProblem(problemCode, childId);
 
       setState(() {
         nextProblemCode = response.nextProblemCode;
@@ -131,6 +138,18 @@ class _LevelOneTwoThreeMain1State extends State<LevelOneTwoThreeMain1>
     try {
       // API 서비스 호출
       await _apiService.submitAnswer(jsonEncode(submitRequest.toJson()));
+
+      ref.read(problemProgressProvider.notifier).record(
+        problemCode,
+        isCorrect,
+      );
+
+      await EnProblemService.saveProblemResults(
+        ref.read(problemProgressProvider),
+        problemCode,
+        childId,
+      );
+
       setState(() {
         isSubmitted = true;
       });
@@ -197,11 +216,18 @@ class _LevelOneTwoThreeMain1State extends State<LevelOneTwoThreeMain1>
     }
   }
 
-  void onNextPressed() {
+  void onNextPressed() async {
     final nextCode = nextProblemCode;
     if (nextCode.isEmpty) {
       debugPrint("📌 다음 문제가 없습니다.");
-      EnProblemService.clearChapterProblem(childId, widget.problemCode);
+      final progress = ref.read(problemProgressProvider);
+      await EnProblemService.saveProblemResults(
+        progress,
+        problemCode,
+        childId,
+      );
+
+      await EnProblemService.clearChapterProblem(childId, problemCode);
       Modular.to.pop();
       return;
     }
