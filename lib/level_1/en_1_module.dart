@@ -286,21 +286,21 @@ class En1Module extends Module {
       },
     );
     // 3과 3차시 기초1
-    // r.child(
-    //   '/enlv1s3c3kc1',
-    //   child: (context) {
-    //     final nextCode = r.args.data as String;
-    //     return LevelOneThreeThreeBasic1(problemCode: nextCode);
-    //   },
-    // );
-    // // 3과 3차시 기초2
-    // r.child(
-    //   '/enlv1s3c3kc2',
-    //   child: (context) {
-    //     final nextCode = r.args.data as String;
-    //     return LevelOneThreeThreeBasic2(problemCode: nextCode);
-    //   },
-    // );
+    r.child(
+      '/enlv1s3c3kc1',
+      child: (context) {
+        final nextCode = r.args.data as String;
+        return LevelOneThreeThreeBasic1(problemCode: nextCode);
+      },
+    );
+    // 3과 3차시 기초2
+    r.child(
+      '/enlv1s3c3kc2',
+      child: (context) {
+        final nextCode = r.args.data as String;
+        return LevelOneThreeThreeBasic2(problemCode: nextCode);
+      },
+    );
     // 4과 2차시 주요1
     r.child(
       '/enlv1s4c2jy1',
