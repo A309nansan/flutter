@@ -24,15 +24,15 @@ import 'package:collection/collection.dart';
 
 import '../../shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
 
-class LevelOneThreeOneBasic1 extends ConsumerStatefulWidget {
+class LevelOneThreeOneBasic2 extends ConsumerStatefulWidget {
   final String problemCode;
-  const LevelOneThreeOneBasic1({super.key, required this.problemCode});
+  const LevelOneThreeOneBasic2({super.key, required this.problemCode});
 
   @override
-  ConsumerState<LevelOneThreeOneBasic1> createState() => LevelOneThreeOneBasic1State();
+  ConsumerState<LevelOneThreeOneBasic2> createState() => LevelOneThreeOneBasic1State();
 }
 
-class LevelOneThreeOneBasic1State extends ConsumerState<LevelOneThreeOneBasic1> with TickerProviderStateMixin {
+class LevelOneThreeOneBasic1State extends ConsumerState<LevelOneThreeOneBasic2> with TickerProviderStateMixin {
   final ScreenshotController screenshotController = ScreenshotController();
   final TimerController _timerController = TimerController();
   final ProblemApiService _apiService = ProblemApiService();
@@ -108,16 +108,16 @@ class LevelOneThreeOneBasic1State extends ConsumerState<LevelOneThreeOneBasic1> 
     }
      */
     setState(() {
-      nextProblemCode = "enlv1s3c1kc2";
+      nextProblemCode = "enlv1s3c1jy1";
       problemData  = {
-        "p1": [ 2, 1, 4 ],
-        "p2": [ 3, 1, 2, 4 ]
+        "p1": [ 3, 6, 4 ],
+        "p2": [ 5, 3, 6, 4 ]
       };
       answerData = {
-        "p1": [ 2, 1, 4 ],
-        "p2": 4
+        "p1": [ 3, 6, 4 ],
+        "p2": 6
       };
-      current = 1;
+      current = 2;
       total = 2;
       selectedAnswers = {
         "p1": [ 0, 0, 0 ],
@@ -260,7 +260,7 @@ class LevelOneThreeOneBasic1State extends ConsumerState<LevelOneThreeOneBasic1> 
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             GrapeContainer(
-                              ans: 3,
+                              ans: 5,
                             ),
                             GrapeContainer(
                               ans: problemData["p1"][0],
