@@ -1,10 +1,10 @@
-import 'package:practice3/models/draggable2_drop_zone.dart';
-import 'package:practice3/models/draggable2_image_card.dart';
+import 'package:nansan_flutter/modules/drag_drop2/models/draggable2_drop_zone.dart';
+import 'package:nansan_flutter/modules/drag_drop2/models/draggable2_image_card.dart';
 
 class DragDrop2Controller {
   final Draggable2ImageCard sourceCard;
 
-  DragDrop2Controller({String imageUrl = 'https://picsum.photos/seed/1/100'})
+  DragDrop2Controller({String imageUrl = '/assets/images/number/apple/1'})
     : sourceCard = Draggable2ImageCard(id: 'source_card', imageUrl: imageUrl);
 
   final List<Draggable2DropZone> dropZones = [];

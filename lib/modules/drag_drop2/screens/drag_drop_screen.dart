@@ -1,11 +1,10 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:practice3/controllers/draggable2_controller.dart';
-import 'package:practice3/models/draggable2_drop_zone.dart';
-import 'package:practice3/models/draggable2_image_card.dart';
-import 'package:practice3/widgets/draggable2_card.dart';
-import 'package:practice3/widgets/draggable2_drop_zone_widget.dart';
+import 'package:nansan_flutter/modules/drag_drop2/controllers/draggable2_controller.dart';
+import 'package:nansan_flutter/modules/drag_drop2/models/draggable2_drop_zone.dart';
+import 'package:nansan_flutter/modules/drag_drop2/models/draggable2_image_card.dart';
+import 'package:nansan_flutter/modules/drag_drop2/widgets/draggable2_card.dart';
+import 'package:nansan_flutter/modules/drag_drop2/widgets/draggable2_drop_zone_widget.dart';
 
 class DragDrop2DemoScreen extends StatefulWidget {
   const DragDrop2DemoScreen({super.key});
