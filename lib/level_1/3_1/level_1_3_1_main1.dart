@@ -3,8 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:nansan_flutter/level_1/3_1/widgets/apple_container.dart';
-import 'package:nansan_flutter/level_1/3_1/widgets/selection.dart';
+import 'package:nansan_flutter/level_1/3_1/widgets/grape_container.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
@@ -24,15 +23,15 @@ import 'package:collection/collection.dart';
 
 import '../../shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
 
-class LevelOneThreeOneBasic2 extends ConsumerStatefulWidget {
+class LevelOneThreeOneMain1 extends ConsumerStatefulWidget {
   final String problemCode;
-  const LevelOneThreeOneBasic2({super.key, required this.problemCode});
+  const LevelOneThreeOneMain1({super.key, required this.problemCode});
 
   @override
-  ConsumerState<LevelOneThreeOneBasic2> createState() => LevelOneThreeOneBasic1State();
+  ConsumerState<LevelOneThreeOneMain1> createState() => LevelOneThreeOneBasic1State();
 }
 
-class LevelOneThreeOneBasic1State extends ConsumerState<LevelOneThreeOneBasic2> with TickerProviderStateMixin {
+class LevelOneThreeOneBasic1State extends ConsumerState<LevelOneThreeOneMain1> with TickerProviderStateMixin {
   final ScreenshotController screenshotController = ScreenshotController();
   final TimerController _timerController = TimerController();
   final ProblemApiService _apiService = ProblemApiService();
@@ -57,7 +56,6 @@ class LevelOneThreeOneBasic1State extends ConsumerState<LevelOneThreeOneBasic2> 
   final Map<String, GlobalKey<HandwritingRecognitionZoneState>> zoneKeys = {
     'first': GlobalKey<HandwritingRecognitionZoneState>(),
     'second': GlobalKey<HandwritingRecognitionZoneState>(),
-    'third': GlobalKey<HandwritingRecognitionZoneState>(),
   };
 
   // 페이지 실행 시 작동하는 함수. 수정 필요 x
@@ -108,20 +106,17 @@ class LevelOneThreeOneBasic1State extends ConsumerState<LevelOneThreeOneBasic2> 
     }
      */
     setState(() {
-      nextProblemCode = "enlv1s3c1jy1";
+      nextProblemCode = "enlv1s2c3jy2";
       problemData  = {
-        "p1": [ 3, 6, 4 ],
-        "p2": [ 5, 3, 6, 4 ]
+        "p1": [ 2, 3, 4 ],
       };
       answerData = {
-        "p1": [ 3, 6, 4 ],
-        "p2": 6
+        "p1": [ 2, 4 ],
       };
       current = 2;
       total = 2;
       selectedAnswers = {
-        "p1": [ 0, 0, 0 ],
-        "p2": 0
+        "p1": [ 0, 0 ],
       };
     });
   }
@@ -155,7 +150,6 @@ class LevelOneThreeOneBasic1State extends ConsumerState<LevelOneThreeOneBasic2> 
   Future<void> _processInputData() async {
     selectedAnswers["p1"][0] = int.tryParse(await zoneKeys["first"]!.currentState!.recognize()) ?? 0;
     selectedAnswers["p1"][1] = int.tryParse(await zoneKeys["second"]!.currentState!.recognize()) ?? 0;
-    selectedAnswers["p1"][2] = int.tryParse(await zoneKeys["third"]!.currentState!.recognize()) ?? 0;
   }
 
   // 정답 여부 체크(보통은 이거쓰면됨)
@@ -244,14 +238,14 @@ class LevelOneThreeOneBasic1State extends ConsumerState<LevelOneThreeOneBasic2> 
                     child: Column(
                       children: [
                         NewHeaderWidget(
-                          headerText: '기초학습활동',
+                          headerText: '주요학습활동',
                           headerTextSize: screenWidth * 0.028,
                           subTextSize: screenWidth * 0.018,
                         ),
                         SizedBox(height: screenHeight * 0.01),
                         NewQuestionTextWidget(
                           questionText:
-                          '1. 사과는 몇 개인가요? <보기>와 같이 네모 안에 알맞은 숫자를 써 봅시다.',
+                          '1. 포도는 몇 개인가요? 네모 안에 알맞은 숫자를 써 봅시다.',
                           questionTextSize: screenWidth * 0.03,
                         ),
                         SizedBox(height: screenHeight * 0.02),
@@ -281,21 +275,6 @@ class LevelOneThreeOneBasic1State extends ConsumerState<LevelOneThreeOneBasic2> 
                               zoneKey: zoneKeys['third'],
                             ),
                           ],
-                        ),
-                        SizedBox(height: screenHeight * 0.02),
-                        NewQuestionTextWidget(
-                          questionText:
-                          '2. 다음 중 알맞은 숫자를 선택하세요.',
-                          questionTextSize: screenWidth * 0.03,
-                        ),
-                        SizedBox(height: screenHeight * 0.02),
-                        Selection(
-                          boxValues: problemData["p2"],
-                          onSelectionChanged: (selectedValue) {
-                            setState(() {
-                              selectedAnswers["p2"] = selectedValue;
-                            });
-                          },
                         ),
                       ],
                     ),

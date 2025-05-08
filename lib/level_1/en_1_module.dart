@@ -27,6 +27,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:provider/provider.dart';
 import '3-2/screens/level_1_3_2_basic.dart';
 import '3-2/screens/level_1_3_2_main.dart';
+import '3_1/level_1_3_1_main1.dart';
 import '4-2/screens/level_1_4_2_main.dart';
 import 'package:nansan_flutter/level_1/1_1/screens/level_1_1_1_main.dart';
 import 'package:nansan_flutter/level_1/1_2/screens/level_1_1_2_think.dart';
@@ -268,6 +269,14 @@ class En1Module extends Module {
       child: (context) {
         final nextCode = r.args.data as String;
         return LevelOneThreeOneBasic2(problemCode: nextCode);
+      },
+    );
+    // 3과 1차시 주요1
+    r.child(
+      '/enlv1s3c1jy1',
+      child: (context) {
+        final nextCode = r.args.data as String;
+        return LevelOneThreeOneMain1(problemCode: nextCode);
       },
     );
     // 3과 2차시 기초1
