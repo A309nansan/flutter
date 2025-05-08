@@ -1,4 +1,4 @@
-import 'package:practice3/models/draggable2_image_card.dart';
+import 'package:nansan_flutter/modules/drag_drop2/models/draggable2_image_card.dart';
 
 class Draggable2DropZone {
   final int id;

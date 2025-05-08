@@ -35,7 +35,7 @@ class Draggable2Card extends StatelessWidget {
             ),
           ],
           image: DecorationImage(
-            image: NetworkImage(imageUrl),
+            image: AssetImage(imageUrl),
             fit: BoxFit.cover,
           ),
         ),
