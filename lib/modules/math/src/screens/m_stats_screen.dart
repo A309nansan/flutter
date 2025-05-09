@@ -22,6 +22,7 @@ class MResultScreen extends StatefulWidget {
   final String categoryDescription;
   final String imageURL;
   final bool doublePopOnBack;
+  final int childId;
   const MResultScreen({
     super.key,
     required this.categoryIndex,
@@ -29,6 +30,7 @@ class MResultScreen extends StatefulWidget {
     required this.categoryDescription,
     required this.imageURL,
     required this.doublePopOnBack,
+    required this.childId
   });
 
   @override
@@ -43,7 +45,6 @@ class _MResultScreenState extends State<MResultScreen> {
   late final List<DateTime> _DateList;
   Future<List<Map<String, dynamic>>>? _reportFuture;
   late final List<Map<String, dynamic>> _report;
-
   final _bmDecode = BasaMathDecoder();
   final _bmEncode = BasaMathEncoder();
   late final MProblemManager _PM;
@@ -51,7 +52,7 @@ class _MResultScreenState extends State<MResultScreen> {
   @override
   void initState() {
     super.initState();
-    _PM = MProblemManager(_bmDecode, _bmEncode);
+    _PM = MProblemManager(_bmDecode, _bmEncode, true);
     _loadReports();
   }
   bool isLatestDay(){
@@ -64,7 +65,7 @@ class _MResultScreenState extends State<MResultScreen> {
 
     if (_reportFuture != null) return;
     _reportFuture = BasaMathReporter()
-        .fetchAPIData(widget.categoryIndex ~/ 100, widget.categoryIndex % 10)
+        .fetchAPIData(widget.childId, widget.categoryIndex ~/ 100, widget.categoryIndex % 10)
         .then((data) {
       if (data.isNotEmpty) {
         _lastDate = DateTime.parse(data.first["solvedDate"]);

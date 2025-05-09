@@ -1,6 +1,7 @@
 import '../services/m_response.dart';
 import '../screens/m_problem_display.dart';
 import '../services/basa_math_encoder.dart';
+import 'm_problem_checkresponse.dart';
 import 'm_problem_metadata.dart';
 import 'package:flutter/material.dart';
 
@@ -43,7 +44,7 @@ class MProblemBundle {
     finishRawJsonForRequest(encoder);
     Map<String, dynamic> data = requestToSend;
 
-    encoder.sendAPIData(parentCategory, childCategory, data).catchError((
+    encoder.checkBasaMResponse(parentCategory, childCategory, data).catchError((
       e,
       stackTrace,
     ) {
@@ -51,12 +52,39 @@ class MProblemBundle {
     });
   }
 
-  Future<void> sendResultOnceIfNeeded(BasaMathEncoder encoder) async {
+  Future<MProblemCheckResponse?> checkResult(BasaMathEncoder encoder) async {
+    debugPrint("❗IS CHECK DATA SENT? $_isSent");
+    if (!_isSent) {
+      _isSent = true;
+    }
+    debugPrint("	✅ sending data now");
+    finishRawJsonForRequest(encoder);
+
+    final response = await encoder.checkBasaMResponse(
+      parentCategory,
+      childCategory,
+      requestToSend,
+    );
+    print("RESPONSE CHECK");
+    print(response);
+    print("RESPONSE CHECK");
+    return response;
+  }
+
+  Future<void> submitResultOnceIfNeeded(
+    BasaMathEncoder encoder,
+    childID,
+  ) async {
     debugPrint("❗IS DATA SENT? $_isSent");
     if (!_isSent) {
       debugPrint("	✅ sending data now");
       finishRawJsonForRequest(encoder);
-      await encoder.sendAPIData(parentCategory, childCategory, requestToSend);
+      await encoder.submitBasaMResponse(
+        childID,
+        parentCategory,
+        childCategory,
+        requestToSend,
+      );
       _isSent = true;
     } else {
       debugPrint("❌The Data is already sent");

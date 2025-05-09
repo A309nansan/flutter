@@ -58,7 +58,7 @@ class _MRandomDefenceScreenState extends State<MRandomDefenceScreen>
   double iconSize = MathUIConstant.iconSize;
 
   int get categoryRaw => 201;
-
+  int childId = 0;
   //인덱스
   int idx = 0;
   bool _minLoadingTimePassed = false;
@@ -76,7 +76,7 @@ class _MRandomDefenceScreenState extends State<MRandomDefenceScreen>
   @override
   void initState() {
     super.initState();
-    _PM = MProblemManager(_bmDecode, _bmEncode);
+    _PM = MProblemManager(_bmDecode, _bmEncode, false);
     _PSM = MProblemStateManager();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _prepareFirstProblem(); // async 초기화 따로 호출
@@ -120,7 +120,7 @@ class _MRandomDefenceScreenState extends State<MRandomDefenceScreen>
     try {
       print("❗❗PM LOAD ");
       int categoryIndex = parentCategory*100 + childCategory;
-      await _PM.load(parentCategory, childCategory, idx, categoryIndex);
+      await _PM.loadPracticeMode(parentCategory, childCategory, idx, categoryIndex, childId);
       _PSM.addState();
       evaluationResults.add(EvaluationStatus.unSolved);
 
@@ -159,6 +159,7 @@ class _MRandomDefenceScreenState extends State<MRandomDefenceScreen>
         widget.imageURL,
         widget.categoryDescription,
         widget.isTeachingMode,
+        0,
         context,
       );
       if (!shouldContinue) {
@@ -360,7 +361,7 @@ class _MRandomDefenceScreenState extends State<MRandomDefenceScreen>
                           handleAfterEvaluation(idx, newStatus);
 
                           if (!widget.isTeachingMode) {
-                            currentPM.sendResultOnceIfNeeded(_bmEncode);
+                            currentPM.checkResult(_bmEncode);
                           }
                         },
                         stateModel: _PSM.get(idx),

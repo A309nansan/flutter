@@ -7,11 +7,11 @@ import '../models/m_problem_metadata.dart';
 
 class BasaMathDecoder {
   /// 예: JSON을 읽어오는 메서드
-  Future<Map<String, dynamic>> fetchAPIData(int parent, int child) async {
-    debugPrint("❗PARENT: $parent, CHILD: $child");
+  Future<Map<String, dynamic>> fetchBasaMProblemDataTeachingMode(int parentCategory, int childCategory) async {
+    debugPrint("❗FetchBasaMProblemDataTeachingMode: PARENT: $parentCategory, CHILD: $childCategory");
     try {
       debugPrint("sendResponse start");
-      final response = await RequestService.get('/m/$parent/$child');
+      final response = await RequestService.get('/m/parent/$parentCategory/$childCategory');
       debugPrint("sendResponse finish");
       //printPrettify(response);
       // 응답이 Map 형태가 아니면 예외 처리
@@ -25,7 +25,24 @@ class BasaMathDecoder {
       rethrow;
     }
   }
-
+  Future<Map<String, dynamic>> fetchBasaMProblemDataPracticeMode(int parentCategory, int childCategory, int childId) async {
+    debugPrint("❗FetchBasaMProblemDataPracticeMode PARENT: $parentCategory, CHILD: $childCategory, childId: $childId");
+    try {
+      debugPrint("sendResponse start");
+      final response = await RequestService.get('/m/self/$childId/$parentCategory/$childCategory');
+      debugPrint("sendResponse finish");
+      //printPrettify(response);
+      // 응답이 Map 형태가 아니면 예외 처리
+      if (response is Map<String, dynamic>) {
+        return response;
+      } else {
+        throw Exception('Invalid response format');
+      }
+    } catch (e) {
+      debugPrint('❗ Error fetching API data: $e');
+      rethrow;
+    }
+  }
   /// JSON의 "problem" 파트를 읽어와서 MathData 객체를 만드는 메서드
   MProblemMetadata getMathDataFromResponse(
     Map<String, dynamic> json,

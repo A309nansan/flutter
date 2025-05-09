@@ -1,11 +1,14 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import '../../../../shared/services/secure_storage_service.dart';
 import '../../../../shared/widgets/appbar_widget.dart';
 import '../../../../shared/widgets/new_header_widget.dart';
 import '../../../../shared/widgets/new_question_text.dart';
 import '../../../../shared/widgets/successful_popup.dart';
 import '../models/evaluation_status.dart';
+import '../models/m_problem_checkresponse.dart';
 import '../services/basa_math_decoder.dart';
 import '../services/basa_math_encoder.dart';
 import '../services/feedback_animator_service.dart';
@@ -13,6 +16,8 @@ import '../services/m_problem_manager.dart';
 import '../services/m_problem_state_manager.dart';
 import '../utils/math_ui_constant.dart';
 import '../widgets/m_animator/m_feedback_lottie_widget.dart';
+import '../widgets/m_display_statistics/m_dailystats_subwidget.dart';
+import '../widgets/m_display_statistics/m_dailystats_subwidget_teachingmode.dart';
 import '../widgets/m_index_presenter.dart';
 import '../widgets/m_index_presenter_new.dart';
 import '../widgets/m_lecture_loading_screen.dart';
@@ -30,6 +35,7 @@ class MLectureScreen extends StatefulWidget {
   final String imageURL;
   final bool isTeachingMode;
   final int problemCount;
+  final int childId;
 
   const MLectureScreen({
     super.key,
@@ -38,6 +44,7 @@ class MLectureScreen extends StatefulWidget {
     required this.categoryDescription,
     required this.imageURL,
     required this.isTeachingMode,
+    required this.childId,
     this.problemCount = 5,
   });
 
@@ -50,7 +57,12 @@ class _MLectureScreenState extends State<MLectureScreen>
   late final MProblemManager _PM;
   late final MProblemStateManager _PSM;
   List<EvaluationStatus> evaluationResults = [];
-
+  MProblemCheckResponse checkState = MProblemCheckResponse(
+    isCorrect: false,
+    basaTotalScore: 0,
+    basaMyScore: 0,
+    errorCodes: [],
+  );
   //0:아직 안품,
 
   //자료 구조
@@ -77,7 +89,7 @@ class _MLectureScreenState extends State<MLectureScreen>
   @override
   void initState() {
     super.initState();
-    _PM = MProblemManager(_bmDecode, _bmEncode);
+    _PM = MProblemManager(_bmDecode, _bmEncode, widget.isTeachingMode);
     _PSM = MProblemStateManager();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _prepareFirstProblem(); // async 초기화 따로 호출
@@ -91,6 +103,7 @@ class _MLectureScreenState extends State<MLectureScreen>
       curve: Curves.easeOutBack,
     );
   }
+
 
   Future<void> _prepareFirstProblem() async {
     setState(() {
@@ -115,7 +128,13 @@ class _MLectureScreenState extends State<MLectureScreen>
     if (_isPreparingNextProblem) return; // 중복 호출 방지
     _isPreparingNextProblem = true;
     try {
-      await _PM.load(parentCategory, childCategory, idx, widget.categoryIndex);
+      if (widget.isTeachingMode){
+        await _PM.loadTeachingMode(parentCategory, childCategory, idx, widget.categoryIndex);
+      }
+      else{
+        await _PM.loadPracticeMode(parentCategory, childCategory, idx, widget.categoryIndex, widget.childId);
+      }
+
       _PSM.addState();
       evaluationResults.add(EvaluationStatus.unSolved);
       setState(() {}); // 새 문제 반영
@@ -152,6 +171,7 @@ class _MLectureScreenState extends State<MLectureScreen>
         widget.imageURL,
         widget.categoryDescription,
         widget.isTeachingMode,
+        widget.childId,
         context,
       );
       if (!shouldContinue) {
@@ -326,7 +346,7 @@ class _MLectureScreenState extends State<MLectureScreen>
                                 correctResponse3DList:
                                     _PM.get(idx).correctResponse3DList,
                                 userResponse: _PM.get(idx).userResponse,
-                                onCheckCorrect: (bool isCorrect) {
+                                onCheckCorrect: (bool isCorrect) async {
                                   final currentPM = _PM.get(idx);
                                   final currentUserResponse =
                                       currentPM.userResponse;
@@ -351,12 +371,16 @@ class _MLectureScreenState extends State<MLectureScreen>
                                   evaluationResults[idx] = newStatus;
 
 
-                                  // 👉 후처리: 애니메이션, 전송 등
-                                  handleAfterEvaluation(idx, newStatus);
+
 
                                   if (!widget.isTeachingMode) {
-                                    currentPM.sendResultOnceIfNeeded(_bmEncode);
+                                    currentPM.submitResultOnceIfNeeded(_bmEncode, widget.childId);
                                   }
+                                  if (widget.isTeachingMode){
+                                    checkState = (await currentPM.checkResult(_bmEncode))!;
+                                  };
+                                  // 👉 후처리: 애니메이션, 전송 등
+                                  handleAfterEvaluation(idx, newStatus);
                                 },
                                 stateModel: _PSM.get(idx),
                               ),
@@ -436,6 +460,26 @@ class _MLectureScreenState extends State<MLectureScreen>
                       },
                       child: Container(color: Colors.black54),
                     ),
+                    if (widget.isTeachingMode)
+                      Center(
+                          child: MProblemStatTileTeachingMode(
+                            index: idx,
+                            mapKey: '',
+                            problem: {
+                              "problemNumber": idx + 1,
+                              "solvedTime": 0,
+                              "correct": checkState.isCorrect,
+                              "basaTotalScore": checkState.basaTotalScore,
+                              "basaUserScore": checkState.basaMyScore,
+                              "errorCodes": checkState.errorCodes,
+                            },
+                            problemBundle: _PM.history[idx],
+                            categoryIndex: widget.categoryIndex,
+
+                          )
+
+                      ),
+                    if (!widget.isTeachingMode)
                     Center(
                       child: FadeTransition(
                         opacity: submitAnimation,
@@ -458,6 +502,7 @@ class _MLectureScreenState extends State<MLectureScreen>
                               closePopup: () async{
                                 if (mounted) {
                                   setState(() => showSubmitPopup = false);
+
                                   //if (submitPopupIsCorrect) _getNextProblem();
                                 }
                               }

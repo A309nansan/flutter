@@ -5,11 +5,11 @@ import '../../../../shared/services/request_service.dart';
 import '../utils/math_data_utils.dart';
 
 class BasaMathReporter {
-  Future<List<Map<String, dynamic>>> fetchAPIData(int parent, int child) async {
+  Future<List<Map<String, dynamic>>> fetchAPIData(int childId, int parentCategory, int childCategory) async {
     //debugPrint("❗PARENT: $parent, CHILD: $child");
     try {
       //debugPrint("sendResponse for Report start");
-      final response = await RequestService.get('/m/problems/$parent/$child');
+      final response = await RequestService.get('/m/$childId/problems/$parentCategory/$childCategory');
       //debugPrint("sendResponse for Report finish");
       //debugPrintPrettify(response);
 
@@ -33,12 +33,12 @@ class BasaMathReporter {
     }
   }
 
-  Future<Map<String, dynamic>> fetchHuge(int parent) async {
+  Future<Map<String, dynamic>> fetchHuge(int childId, int parentCategory) async {
     try {
       final List<List<Map<String, dynamic>>> results = [];
 
-      for (int child = 1; child <= 4; child++) {
-        final data = await fetchAPIData(parent, child);
+      for (int childCategory = 1; childCategory <= 4; childCategory++) {
+        final data = await fetchAPIData(childId, parentCategory, childCategory);
         results.add(data);
         await Future.delayed(const Duration(milliseconds: 300)); // 💡 100ms 딜레이
       }
