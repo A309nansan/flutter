@@ -28,10 +28,10 @@ class LevelOneThreeOneMain1 extends ConsumerStatefulWidget {
   const LevelOneThreeOneMain1({super.key, required this.problemCode});
 
   @override
-  ConsumerState<LevelOneThreeOneMain1> createState() => LevelOneThreeOneBasic1State();
+  ConsumerState<LevelOneThreeOneMain1> createState() => LevelOneThreeOneMain1State();
 }
 
-class LevelOneThreeOneBasic1State extends ConsumerState<LevelOneThreeOneMain1> with TickerProviderStateMixin {
+class LevelOneThreeOneMain1State extends ConsumerState<LevelOneThreeOneMain1> with TickerProviderStateMixin {
   final ScreenshotController screenshotController = ScreenshotController();
   final TimerController _timerController = TimerController();
   final ProblemApiService _apiService = ProblemApiService();

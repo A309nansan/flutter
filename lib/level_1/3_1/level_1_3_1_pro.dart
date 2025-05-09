@@ -30,11 +30,11 @@ class LevelOneThreeOnePro extends ConsumerStatefulWidget {
 
   @override
   // ✅ 상태변경 2. State -> ConsumerState
-  ConsumerState<LevelOneThreeOnePro> createState() => TemplateState();
+  ConsumerState<LevelOneThreeOnePro> createState() => LevelOneThreeOneProState();
 }
 
 // ✅ 상태변경 3. State -> ConsumerState
-class TemplateState extends ConsumerState<LevelOneThreeOnePro> with TickerProviderStateMixin {
+class LevelOneThreeOneProState extends ConsumerState<LevelOneThreeOnePro> with TickerProviderStateMixin {
   final ScreenshotController screenshotController = ScreenshotController();
   final TimerController _timerController = TimerController();
   final ProblemApiService _apiService = ProblemApiService();

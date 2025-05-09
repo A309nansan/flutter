@@ -35,6 +35,8 @@ import 'package:nansan_flutter/level_1/1_2/screens/level_1_1_2_think.dart';
 import 'package:nansan_flutter/level_1/1_2/screens/level_1_1_2_main.dart';
 import 'package:nansan_flutter/level_1/1_3/screens/level_1_1_3_main1.dart';
 
+import '4_3/level_1_4_3_main.dart';
+
 class En1Module extends Module {
   @override
   void binds(Injector i) {
@@ -334,6 +336,14 @@ class En1Module extends Module {
       child: (context) {
         final nextCode = r.args.data as String;
         return LevelOneFourTwoMain(problemCode: nextCode);
+      },
+    );
+    // 4과 3차시 주요1
+    r.child(
+      '/enlv1s4c3jy1',
+      child: (context) {
+        final nextCode = r.args.data as String;
+        return LevelOneFourThreeMain(problemCode: nextCode);
       },
     );
   }
