@@ -40,7 +40,6 @@ class _DragDrop2DemoScreenState extends State {
     setState(() {
       dd2controller.addCardToZone(zone);
     });
-    log('드롭존 ${zone.id}의 카드 개수 = ${zone.cards.length}');
   }
 
   @override

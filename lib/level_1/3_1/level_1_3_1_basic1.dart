@@ -337,15 +337,16 @@ class LevelOneThreeOneBasic1State extends ConsumerState<LevelOneThreeOneBasic1>
                                           buttonText: "제출하기",
                                           fontSize: screenWidth * 0.02,
                                           borderRadius: 10,
-                                          onPressed:
-                                              (isSubmitted)
-                                                  ? null
-                                                  : () => {
-                                                    submitController.forward(),
-                                                    showSubmitPopup = true,
-                                                    // submitActivity(context),
-                                                    checkAnswer(),
-                                                  },
+                                          onPressed: () => onNextPressed(),
+                                          // onPressed:
+                                          //     (isSubmitted)
+                                          //         ? null
+                                          //         : () => {
+                                          //           submitController.forward(),
+                                          //           showSubmitPopup = true,
+                                          //           submitActivity(context),
+                                          //           checkAnswer(),
+                                          //         },
                                         ),
 
                                       if (isSubmitted &&
