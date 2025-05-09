@@ -5,14 +5,18 @@ class AppleContainer extends StatelessWidget {
   final int ans;
   final GlobalKey<HandwritingRecognitionZoneState>? zoneKey;
 
-  const AppleContainer({super.key, required this.ans, this.zoneKey});
+  const AppleContainer({
+    super.key,
+    required this.ans,
+    this.zoneKey,
+  });
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double containerWidth = screenWidth * 0.4;
 
-    Widget topImage = SizedBox(
+    Widget topImage = Container(
       width: screenWidth * 0.4 - 166,
       height: screenWidth * 0.4 - 166,
       child: Image.asset(
@@ -20,7 +24,10 @@ class AppleContainer extends StatelessWidget {
         fit: BoxFit.scaleDown,
         errorBuilder: (context, error, stackTrace) {
           return Center(
-            child: Text('Image $ans', style: TextStyle(color: Colors.white)),
+            child: Text(
+              'Image $ans',
+              style: TextStyle(color: Colors.white),
+            ),
           );
         },
       ),
@@ -48,7 +55,10 @@ class AppleContainer extends StatelessWidget {
           ),
           width: 100,
           height: 100,
-          child: Text(ans.toString(), style: const TextStyle(fontSize: 60)),
+          child: Text(
+            ans.toString(),
+            style: const TextStyle(fontSize: 60),
+          ),
         ),
       );
     }
@@ -63,7 +73,11 @@ class AppleContainer extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [topImage, SizedBox(width: 10), boxContent],
+        children: [
+          topImage,
+          SizedBox(width: 10),
+          boxContent,
+        ],
       ),
     );
   }

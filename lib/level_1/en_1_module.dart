@@ -21,6 +21,7 @@ import 'package:nansan_flutter/level_1/3_1/level_1_3_1_basic1.dart';
 import 'package:nansan_flutter/level_1/3-2/screens/level_1_3_2_pro1.dart';
 import 'package:nansan_flutter/level_1/3_1/level_1_3_1_basic2.dart';
 import 'package:nansan_flutter/level_1/3_1/level_1_3_1_main2.dart';
+import 'package:nansan_flutter/level_1/3_1/level_1_3_1_pro.dart';
 import 'package:nansan_flutter/level_1/3_3/level_1_3_3_basic1.dart';
 import 'package:nansan_flutter/level_1/3_3/level_1_3_3_basic2.dart';
 import 'package:nansan_flutter/modules/drag_drop/controllers/drag_drop_controller.dart';
@@ -34,6 +35,8 @@ import 'package:nansan_flutter/level_1/1_1/screens/level_1_1_1_main.dart';
 import 'package:nansan_flutter/level_1/1_2/screens/level_1_1_2_think.dart';
 import 'package:nansan_flutter/level_1/1_2/screens/level_1_1_2_main.dart';
 import 'package:nansan_flutter/level_1/1_3/screens/level_1_1_3_main1.dart';
+
+import '4_3/level_1_4_3_main.dart';
 
 class En1Module extends Module {
   @override
@@ -288,6 +291,14 @@ class En1Module extends Module {
         return Level131main2(problemCode: nextCode);
       },
     );
+    // 3과 1차시 심화1
+    r.child(
+      '/enlv1s3c1sh1',
+      child: (context) {
+        final nextCode = r.args.data as String;
+        return LevelOneThreeOnePro(problemCode: nextCode);
+      },
+    );
     // 3과 2차시 기초1
     r.child(
       '/enlv1s3c2kc1',
@@ -334,6 +345,14 @@ class En1Module extends Module {
       child: (context) {
         final nextCode = r.args.data as String;
         return LevelOneFourTwoMain(problemCode: nextCode);
+      },
+    );
+    // 4과 3차시 주요1
+    r.child(
+      '/enlv1s4c3jy1',
+      child: (context) {
+        final nextCode = r.args.data as String;
+        return LevelOneFourThreeMain(problemCode: nextCode);
       },
     );
   }
