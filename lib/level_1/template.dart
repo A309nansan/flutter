@@ -31,7 +31,8 @@ class Template extends ConsumerStatefulWidget {
 }
 
 // ✅ 상태변경 3. State -> ConsumerState
-class TemplateState extends ConsumerState<Template> with TickerProviderStateMixin {
+class TemplateState extends ConsumerState<Template>
+    with TickerProviderStateMixin {
   final ScreenshotController screenshotController = ScreenshotController();
   final TimerController _timerController = TimerController();
   final ProblemApiService _apiService = ProblemApiService();
@@ -93,7 +94,10 @@ class TemplateState extends ConsumerState<Template> with TickerProviderStateMixi
       final childProfile = jsonDecode(childProfileJson!);
       childId = childProfile['id'];
       // ✅ 저장된 문제 이어풀기 불러오기
-      final saved = await EnProblemService.loadProblemResults(problemCode, childId);
+      final saved = await EnProblemService.loadProblemResults(
+        problemCode,
+        childId,
+      );
       ref.read(problemProgressProvider.notifier).setFromStorage(saved);
 
       // ✅ 저장된 이어풀기 기록 확인용(확인 완료 시 지우기)
@@ -138,10 +142,7 @@ class TemplateState extends ConsumerState<Template> with TickerProviderStateMixi
       await _apiService.submitAnswer(jsonEncode(submitRequest.toJson()));
 
       // ✅ 문제 제출 시 제출 결과 Riverpod(Provider)
-      ref.read(problemProgressProvider.notifier).record(
-        problemCode,
-        isCorrect,
-      );
+      ref.read(problemProgressProvider.notifier).record(problemCode, isCorrect);
 
       // ✅ 문제 제출 시 제출 결과 storage에 저장
       await EnProblemService.saveProblemResults(
@@ -198,11 +199,7 @@ class TemplateState extends ConsumerState<Template> with TickerProviderStateMixi
     if (nextCode.isEmpty) {
       debugPrint("📌 다음 문제가 없습니다.");
       final progress = ref.read(problemProgressProvider);
-      await EnProblemService.saveProblemResults(
-        progress,
-        problemCode,
-        childId,
-      );
+      await EnProblemService.saveProblemResults(progress, problemCode, childId);
 
       await EnProblemService.clearChapterProblem(childId, problemCode);
       Modular.to.pop();
@@ -241,163 +238,159 @@ class TemplateState extends ConsumerState<Template> with TickerProviderStateMixi
         ),
       ),
       body:
-      isLoading
-          ? const Center(child: EnProblemSplashScreen())
-          : Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Container(
-              color: Colors.white,
-              child: Column(
+          isLoading
+              ? const Center(child: EnProblemSplashScreen())
+              : Stack(
                 children: [
-                  Screenshot(
-                    controller: screenshotController,
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
                     child: Column(
                       children: [
-                        NewHeaderWidget(
-                          headerText: '주요학습활동',
-                          headerTextSize: screenWidth * 0.028,
-                          subTextSize: screenWidth * 0.018,
+                        Screenshot(
+                          controller: screenshotController,
+                          child: Container(
+                            color: Colors.white,
+                            child: Column(
+                              children: [
+                                NewHeaderWidget(
+                                  headerText: '주요학습활동',
+                                  headerTextSize: screenWidth * 0.028,
+                                  subTextSize: screenWidth * 0.018,
+                                ),
+                                SizedBox(height: screenHeight * 0.01),
+                                NewQuestionTextWidget(
+                                  questionText:
+                                      '회색 빈칸에 알맞은 1 작은 수를 나타내는 그림은 무엇일까요?',
+                                  questionTextSize: screenWidth * 0.03,
+                                ),
+                                SizedBox(height: screenHeight * 0.02),
+                                // 여기에 문제 푸는 ui 및 삽입
+                              ],
+                            ),
+                          ),
                         ),
-                        SizedBox(height: screenHeight * 0.01),
-                        NewQuestionTextWidget(
-                          questionText:
-                          '회색 빈칸에 알맞은 1 작은 수를 나타내는 그림은 무엇일까요?',
-                          questionTextSize: screenWidth * 0.03,
+                        Spacer(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            EnProgressBarWidget(current: current, total: total),
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 30.0,
+                                vertical: screenHeight * 0.02,
+                              ),
+                              child: AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 300),
+                                transitionBuilder: (child, animation) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: child,
+                                  );
+                                },
+                                child: Row(
+                                  key: ValueKey<String>(
+                                    '${isSubmitted}_$isCorrect',
+                                  ),
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    if (!isSubmitted)
+                                      ButtonWidget(
+                                        height: screenHeight * 0.035,
+                                        width: screenWidth * 0.18,
+                                        buttonText: "제출하기",
+                                        fontSize: screenWidth * 0.02,
+                                        borderRadius: 10,
+                                        // TODO : 정답 체크 로직 구현 시 해당 부분 지우고 주석 활성화
+                                        onPressed: () => onNextPressed(),
+                                        // onPressed: () async {
+                                        //   if (isSubmitted) return;
+                                        //   await checkAnswer();
+                                        //   setState(() {
+                                        //     showSubmitPopup = true;
+                                        //   });
+                                        //   submitController.forward();
+                                        //   await submitActivity(context);
+                                        // },
+                                      ),
+
+                                    if (isSubmitted && isCorrect == false) ...[
+                                      ButtonWidget(
+                                        height: screenHeight * 0.035,
+                                        width: screenWidth * 0.18,
+                                        buttonText: "제출하기",
+                                        fontSize: screenWidth * 0.02,
+                                        borderRadius: 10,
+                                        onPressed: () async {
+                                          checkAnswer();
+                                          setState(() {
+                                            showSubmitPopup = true;
+                                          });
+                                          submitController.forward();
+                                        },
+                                      ),
+                                      const SizedBox(width: 20),
+                                      ButtonWidget(
+                                        height: screenHeight * 0.035,
+                                        width: screenWidth * 0.18,
+                                        buttonText: isEnd ? "학습종료" : "다음문제",
+                                        fontSize: screenWidth * 0.02,
+                                        borderRadius: 10,
+                                        onPressed: () => onNextPressed(),
+                                      ),
+                                    ],
+
+                                    if (isSubmitted && isCorrect == true)
+                                      ButtonWidget(
+                                        height: screenHeight * 0.035,
+                                        width: screenWidth * 0.18,
+                                        buttonText: isEnd ? "학습종료" : "다음문제",
+                                        fontSize: screenWidth * 0.02,
+                                        borderRadius: 10,
+                                        onPressed: () => onNextPressed(),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: screenHeight * 0.02),
-                        // 여기에 문제 푸는 ui 및 삽입
                       ],
                     ),
                   ),
-                  Spacer(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      EnProgressBarWidget(
-                        current: current,
-                        total: total,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 30.0,
-                          vertical: screenHeight * 0.02,
-                        ),
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 300),
-                          transitionBuilder: (child, animation) {
-                            return FadeTransition(
-                              opacity: animation,
-                              child: child,
-                            );
-                          },
-                          child: Row(
-                            key: ValueKey<String>(
-                              '${isSubmitted}_$isCorrect',
+                  if (showSubmitPopup)
+                    Positioned.fill(
+                      child: Stack(
+                        children: [
+                          Container(color: Colors.black54),
+                          Center(
+                            child: FadeTransition(
+                              opacity: submitAnimation,
+                              child: ScaleTransition(
+                                scale: submitAnimation,
+                                child: Material(
+                                  type: MaterialType.transparency,
+                                  child: SuccessfulPopup(
+                                    scaleAnimation:
+                                        const AlwaysStoppedAnimation(1.0),
+                                    isCorrect: isCorrect,
+                                    customMessage:
+                                        isCorrect ? "🎉 정답이에요!" : "틀렸어요...",
+                                    isEnd: isEnd,
+                                    closePopup: closeSubmit,
+                                    onClose:
+                                        isCorrect
+                                            ? () async => onNextPressed()
+                                            : null,
+                                  ),
+                                ),
+                              ),
                             ),
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              if (!isSubmitted)
-                                ButtonWidget(
-                                  height: screenHeight * 0.035,
-                                  width: screenWidth * 0.18,
-                                  buttonText: "제출하기",
-                                  fontSize: screenWidth * 0.02,
-                                  borderRadius: 10,
-                                  // TODO : 정답 체크 로직 구현 시 해당 부분 지우고 주석 활성화
-                                  onPressed: () => onNextPressed(),
-                                  // onPressed: () async {
-                                  //   if (isSubmitted) return;
-                                  //   setState(() {
-                                  //     showSubmitPopup = true;
-                                  //   });
-                                  //   await checkAnswer();
-                                  //   await submitActivity(context);
-                                  //   submitController.forward();
-                                  // },
-                                ),
-
-                              if (isSubmitted &&
-                                  isCorrect == false) ...[
-                                ButtonWidget(
-                                  height: screenHeight * 0.035,
-                                  width: screenWidth * 0.18,
-                                  buttonText: "제출하기",
-                                  fontSize: screenWidth * 0.02,
-                                  borderRadius: 10,
-                                  onPressed: () async {
-                                    checkAnswer();
-                                    setState(() {
-                                      showSubmitPopup = true;
-                                    });
-                                    submitController.forward();
-                                  },
-                                ),
-                                const SizedBox(width: 20),
-                                ButtonWidget(
-                                  height: screenHeight * 0.035,
-                                  width: screenWidth * 0.18,
-                                  buttonText: isEnd ? "학습종료" : "다음문제",
-                                  fontSize: screenWidth * 0.02,
-                                  borderRadius: 10,
-                                  onPressed: () => onNextPressed(),
-                                ),
-                              ],
-
-                              if (isSubmitted && isCorrect == true)
-                                ButtonWidget(
-                                  height: screenHeight * 0.035,
-                                  width: screenWidth * 0.18,
-                                  buttonText: isEnd ? "학습종료" : "다음문제",
-                                  fontSize: screenWidth * 0.02,
-                                  borderRadius: 10,
-                                  onPressed: () => onNextPressed(),
-                                ),
-                            ],
                           ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-          if (showSubmitPopup)
-            Positioned.fill(
-              child: Stack(
-                children: [
-                  Container(color: Colors.black54),
-                  Center(
-                    child: FadeTransition(
-                      opacity: submitAnimation,
-                      child: ScaleTransition(
-                        scale: submitAnimation,
-                        child: Material(
-                          type: MaterialType.transparency,
-                          child: SuccessfulPopup(
-                            scaleAnimation:
-                            const AlwaysStoppedAnimation(1.0),
-                            isCorrect: isCorrect,
-                            customMessage:
-                            isCorrect ? "🎉 정답이에요!" : "틀렸어요...",
-                            isEnd: isEnd,
-                            closePopup: closeSubmit,
-                            onClose:
-                            isCorrect
-                                ? () async => onNextPressed()
-                                : null,
-                          ),
-                        ),
+                        ],
                       ),
                     ),
-                  ),
                 ],
               ),
-            ),
-        ],
-      ),
     );
   }
 }

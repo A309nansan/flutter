@@ -4,7 +4,7 @@ import 'package:nansan_flutter/modules/drag_drop2/models/draggable2_image_card.d
 class DragDrop2Controller {
   final Draggable2ImageCard sourceCard;
 
-  DragDrop2Controller({String imageUrl = '/assets/images/number/apple/1'})
+  DragDrop2Controller({String imageUrl = 'assets/images/number/apple/1.png'})
     : sourceCard = Draggable2ImageCard(id: 'source_card', imageUrl: imageUrl);
 
   final List<Draggable2DropZone> dropZones = [];

@@ -28,27 +28,7 @@ class Draggable2DropzoneWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.refresh),
-                onPressed: () => onReset(zone),
-                tooltip: '이 영역만 초기화',
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          _buildDragTarget(),
-        ],
-      ),
-    );
+    return _buildDragTarget();
   }
 
   Widget _buildDragTarget() {
@@ -80,14 +60,30 @@ class Draggable2DropzoneWidget extends StatelessWidget {
               zone.cards.isEmpty
                   ? Center(
                     child: Text(
-                      isFull ? '최대 개수 도달 (더 이상 추가 불가)' : '여기에 카드 놓기 (최대 10개)',
+                      isFull ? '최대 개수 도달 (더 이상 추가 불가)' : '여기에 카드 놓기',
                       style: TextStyle(
                         color: isFull ? Colors.red : Colors.black54,
                         fontSize: 16,
                       ),
                     ),
                   )
-                  : _buildCardList(),
+                  : Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text('모두 없애기'),
+                          IconButton(
+                            icon: const Icon(Icons.refresh),
+                            onPressed: () => onReset(zone),
+                            tooltip: '이 영역만 초기화',
+                          ),
+                        ],
+                      ),
+                      _buildCardList(),
+                    ],
+                  ),
         );
       },
       onWillAcceptWithDetails: (data) {
