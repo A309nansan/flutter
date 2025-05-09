@@ -28,10 +28,12 @@ class LevelOneThreeOneMain1 extends ConsumerStatefulWidget {
   const LevelOneThreeOneMain1({super.key, required this.problemCode});
 
   @override
-  ConsumerState<LevelOneThreeOneMain1> createState() => LevelOneThreeOneBasic1State();
+  ConsumerState<LevelOneThreeOneMain1> createState() =>
+      LevelOneThreeOneBasic1State();
 }
 
-class LevelOneThreeOneBasic1State extends ConsumerState<LevelOneThreeOneMain1> with TickerProviderStateMixin {
+class LevelOneThreeOneBasic1State extends ConsumerState<LevelOneThreeOneMain1>
+    with TickerProviderStateMixin {
   final ScreenshotController screenshotController = ScreenshotController();
   final TimerController _timerController = TimerController();
   final ProblemApiService _apiService = ProblemApiService();
@@ -106,17 +108,17 @@ class LevelOneThreeOneBasic1State extends ConsumerState<LevelOneThreeOneMain1> w
     }
      */
     setState(() {
-      nextProblemCode = "enlv1s2c3jy2";
-      problemData  = {
-        "p1": [ 2, 3, 4 ],
+      nextProblemCode = "enlv1s3c1jy2";
+      problemData = {
+        "p1": [2, 3, 4],
       };
       answerData = {
-        "p1": [ 2, 4 ],
+        "p1": [2, 4],
       };
       current = 2;
       total = 2;
       selectedAnswers = {
-        "p1": [ 0, 0 ],
+        "p1": [0, 0],
       };
     });
   }
@@ -148,8 +150,10 @@ class LevelOneThreeOneBasic1State extends ConsumerState<LevelOneThreeOneMain1> w
 
   // 문제 푸는 로직 수행할때, seletedAnswers 데이터 넣는 로직
   Future<void> _processInputData() async {
-    selectedAnswers["p1"][0] = int.tryParse(await zoneKeys["first"]!.currentState!.recognize()) ?? 0;
-    selectedAnswers["p1"][1] = int.tryParse(await zoneKeys["second"]!.currentState!.recognize()) ?? 0;
+    selectedAnswers["p1"][0] =
+        int.tryParse(await zoneKeys["first"]!.currentState!.recognize()) ?? 0;
+    selectedAnswers["p1"][1] =
+        int.tryParse(await zoneKeys["second"]!.currentState!.recognize()) ?? 0;
   }
 
   // 정답 여부 체크(보통은 이거쓰면됨)
@@ -223,188 +227,189 @@ class LevelOneThreeOneBasic1State extends ConsumerState<LevelOneThreeOneMain1> w
         ),
       ),
       body:
-      isLoading
-          ? const Center(child: EnProblemSplashScreen())
-          : Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Container(
-              color: Colors.white,
-              child: Column(
+          isLoading
+              ? const Center(child: EnProblemSplashScreen())
+              : Stack(
                 children: [
-                  Screenshot(
-                    controller: screenshotController,
-                    child: Column(
-                      children: [
-                        NewHeaderWidget(
-                          headerText: '주요학습활동',
-                          headerTextSize: screenWidth * 0.028,
-                          subTextSize: screenWidth * 0.018,
-                        ),
-                        SizedBox(height: screenHeight * 0.01),
-                        NewQuestionTextWidget(
-                          questionText:
-                          '1. 포도는 몇 개인가요? 네모 안에 알맞은 숫자를 써 봅시다.',
-                          questionTextSize: screenWidth * 0.03,
-                        ),
-                        SizedBox(height: screenHeight * 0.02),
-                        // 여기에 문제 푸는 ui 및 삽입
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            GrapeContainer(
-                              ans: 5,
-                            ),
-                            GrapeContainer(
-                              ans: problemData["p1"][0],
-                              zoneKey: zoneKeys['first'],
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: screenHeight * 0.02),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            GrapeContainer(
-                              ans: problemData["p1"][1],
-                              zoneKey: zoneKeys['second'],
-                            ),
-                            GrapeContainer(
-                              ans: problemData["p1"][2],
-                              zoneKey: zoneKeys['third'],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  Spacer(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      EnProgressBarWidget(
-                        current: current,
-                        total: total,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 30.0,
-                          vertical: screenHeight * 0.02,
-                        ),
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 300),
-                          transitionBuilder: (child, animation) {
-                            return FadeTransition(
-                              opacity: animation,
-                              child: child,
-                            );
-                          },
-                          child: Row(
-                            key: ValueKey<String>(
-                              '${isSubmitted}_$isCorrect',
-                            ),
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              if (!isSubmitted)
-                                ButtonWidget(
-                                  height: screenHeight * 0.035,
-                                  width: screenWidth * 0.18,
-                                  buttonText: "제출하기",
-                                  fontSize: screenWidth * 0.02,
-                                  borderRadius: 10,
-                                  onPressed:
-                                  (isSubmitted)
-                                      ? null
-                                      : () => {
-                                    submitController.forward(),
-                                    showSubmitPopup = true,
-                                    // submitActivity(context),
-                                    checkAnswer(),
-                                  },
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Container(
+                      color: Colors.white,
+                      child: Column(
+                        children: [
+                          Screenshot(
+                            controller: screenshotController,
+                            child: Column(
+                              children: [
+                                NewHeaderWidget(
+                                  headerText: '주요학습활동',
+                                  headerTextSize: screenWidth * 0.028,
+                                  subTextSize: screenWidth * 0.018,
                                 ),
-
-                              if (isSubmitted &&
-                                  isCorrect == false) ...[
-                                ButtonWidget(
-                                  height: screenHeight * 0.035,
-                                  width: screenWidth * 0.18,
-                                  buttonText: "제출하기",
-                                  fontSize: screenWidth * 0.02,
-                                  borderRadius: 10,
-                                  onPressed:
-                                      () => {
-                                    setState(() {
-                                      checkAnswer();
-                                      showSubmitPopup = true;
-                                    }),
-                                    submitController.forward(),
-                                  },
+                                SizedBox(height: screenHeight * 0.01),
+                                NewQuestionTextWidget(
+                                  questionText:
+                                      '1. 포도는 몇 개인가요? 네모 안에 알맞은 숫자를 써 봅시다.',
+                                  questionTextSize: screenWidth * 0.03,
                                 ),
-                                const SizedBox(width: 20),
-                                ButtonWidget(
-                                  height: screenHeight * 0.035,
-                                  width: screenWidth * 0.18,
-                                  buttonText: isEnd ? "학습종료" : "다음문제",
-                                  fontSize: screenWidth * 0.02,
-                                  borderRadius: 10,
-                                  onPressed: () => onNextPressed(),
+                                SizedBox(height: screenHeight * 0.02),
+                                // 여기에 문제 푸는 ui 및 삽입
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    GrapeContainer(ans: 5),
+                                    GrapeContainer(
+                                      ans: problemData["p1"][0],
+                                      zoneKey: zoneKeys['first'],
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: screenHeight * 0.02),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    GrapeContainer(
+                                      ans: problemData["p1"][1],
+                                      zoneKey: zoneKeys['second'],
+                                    ),
+                                    GrapeContainer(
+                                      ans: problemData["p1"][2],
+                                      zoneKey: zoneKeys['third'],
+                                    ),
+                                  ],
                                 ),
                               ],
-
-                              if (isSubmitted && isCorrect == true)
-                                ButtonWidget(
-                                  height: screenHeight * 0.035,
-                                  width: screenWidth * 0.18,
-                                  buttonText: isEnd ? "학습종료" : "다음문제",
-                                  fontSize: screenWidth * 0.02,
-                                  borderRadius: 10,
-                                  onPressed: () => onNextPressed(),
+                            ),
+                          ),
+                          Spacer(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              EnProgressBarWidget(
+                                current: current,
+                                total: total,
+                              ),
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 30.0,
+                                  vertical: screenHeight * 0.02,
                                 ),
+                                child: AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 300),
+                                  transitionBuilder: (child, animation) {
+                                    return FadeTransition(
+                                      opacity: animation,
+                                      child: child,
+                                    );
+                                  },
+                                  child: Row(
+                                    key: ValueKey<String>(
+                                      '${isSubmitted}_$isCorrect',
+                                    ),
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      if (!isSubmitted)
+                                        ButtonWidget(
+                                          height: screenHeight * 0.035,
+                                          width: screenWidth * 0.18,
+                                          buttonText: "제출하기",
+                                          fontSize: screenWidth * 0.02,
+                                          borderRadius: 10,
+                                          onPressed: () => onNextPressed(),
+                                          // onPressed:
+                                          // (isSubmitted)
+                                          //     ? null
+                                          //     : () => {
+                                          //   submitController.forward(),
+                                          //   showSubmitPopup = true,
+                                          //   // submitActivity(context),
+                                          //   checkAnswer(),
+                                          // },
+                                        ),
+
+                                      if (isSubmitted &&
+                                          isCorrect == false) ...[
+                                        ButtonWidget(
+                                          height: screenHeight * 0.035,
+                                          width: screenWidth * 0.18,
+                                          buttonText: "제출하기",
+                                          fontSize: screenWidth * 0.02,
+                                          borderRadius: 10,
+                                          onPressed:
+                                              () => {
+                                                setState(() {
+                                                  checkAnswer();
+                                                  showSubmitPopup = true;
+                                                }),
+                                                submitController.forward(),
+                                              },
+                                        ),
+                                        const SizedBox(width: 20),
+                                        ButtonWidget(
+                                          height: screenHeight * 0.035,
+                                          width: screenWidth * 0.18,
+                                          buttonText: isEnd ? "학습종료" : "다음문제",
+                                          fontSize: screenWidth * 0.02,
+                                          borderRadius: 10,
+                                          onPressed: () => onNextPressed(),
+                                        ),
+                                      ],
+
+                                      if (isSubmitted && isCorrect == true)
+                                        ButtonWidget(
+                                          height: screenHeight * 0.035,
+                                          width: screenWidth * 0.18,
+                                          buttonText: isEnd ? "학습종료" : "다음문제",
+                                          fontSize: screenWidth * 0.02,
+                                          borderRadius: 10,
+                                          onPressed: () => onNextPressed(),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-          if (showSubmitPopup)
-            Positioned.fill(
-              child: Stack(
-                children: [
-                  Container(color: Colors.black54),
-                  Center(
-                    child: FadeTransition(
-                      opacity: submitAnimation,
-                      child: ScaleTransition(
-                        scale: submitAnimation,
-                        child: Material(
-                          type: MaterialType.transparency,
-                          child: SuccessfulPopup(
-                            scaleAnimation:
-                            const AlwaysStoppedAnimation(1.0),
-                            isCorrect: isCorrect,
-                            customMessage:
-                            isCorrect ? "🎉 정답이에요!" : "틀렸어요...",
-                            isEnd: isEnd,
-                            closePopup: closeSubmit,
-                            onClose:
-                            isCorrect
-                                ? () async => onNextPressed()
-                                : null,
-                          ),
-                        ),
+                        ],
                       ),
                     ),
                   ),
+                  if (showSubmitPopup)
+                    Positioned.fill(
+                      child: Stack(
+                        children: [
+                          Container(color: Colors.black54),
+                          Center(
+                            child: FadeTransition(
+                              opacity: submitAnimation,
+                              child: ScaleTransition(
+                                scale: submitAnimation,
+                                child: Material(
+                                  type: MaterialType.transparency,
+                                  child: SuccessfulPopup(
+                                    scaleAnimation:
+                                        const AlwaysStoppedAnimation(1.0),
+                                    isCorrect: isCorrect,
+                                    customMessage:
+                                        isCorrect ? "🎉 정답이에요!" : "틀렸어요...",
+                                    isEnd: isEnd,
+                                    closePopup: closeSubmit,
+                                    onClose:
+                                        isCorrect
+                                            ? () async => onNextPressed()
+                                            : null,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                 ],
               ),
-            ),
-        ],
-      ),
     );
   }
 }
