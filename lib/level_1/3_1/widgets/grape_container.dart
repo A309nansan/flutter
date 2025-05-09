@@ -14,11 +14,12 @@ class GrapeContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double containerWidth = screenWidth * 0.3;
+    double screenHeight = MediaQuery.of(context).size.height;
+    double containerWidth = screenWidth * 0.8;
 
     Widget topImage = Container(
-      width: screenWidth * 0.3 - 166,
-      height: screenWidth * 0.3 - 166,
+      width: screenHeight * 0.17 - 16,
+      height: screenHeight * 0.17 - 16,
       child: Image.asset(
         'assets/images/number/grape/$ans.png',
         fit: BoxFit.scaleDown,
@@ -65,13 +66,13 @@ class GrapeContainer extends StatelessWidget {
 
     return Container(
       width: containerWidth,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.blue, width: 2),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           topImage,

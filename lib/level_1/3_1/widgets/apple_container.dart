@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:nansan_flutter/shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
 
-class GrapeContainer extends StatelessWidget {
+class AppleContainer extends StatelessWidget {
   final int ans;
   final GlobalKey<HandwritingRecognitionZoneState>? zoneKey;
 
-  const GrapeContainer({
+  const AppleContainer({
     super.key,
     required this.ans,
     this.zoneKey,

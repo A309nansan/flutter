@@ -250,29 +250,21 @@ class LevelOneThreeOneBasic1State extends ConsumerState<LevelOneThreeOneMain1> w
                         ),
                         SizedBox(height: screenHeight * 0.02),
                         // 여기에 문제 푸는 ui 및 삽입
-                        Row(
+                        Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            GrapeContainer(
-                              ans: 5,
-                            ),
                             GrapeContainer(
                               ans: problemData["p1"][0],
                               zoneKey: zoneKeys['first'],
                             ),
-                          ],
-                        ),
-                        SizedBox(height: screenHeight * 0.02),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
+                            SizedBox(height: screenHeight * 0.02),
                             GrapeContainer(
-                              ans: problemData["p1"][1],
-                              zoneKey: zoneKeys['second'],
+                              ans: problemData["p1"][1]
                             ),
+                            SizedBox(height: screenHeight * 0.02),
                             GrapeContainer(
                               ans: problemData["p1"][2],
-                              zoneKey: zoneKeys['third'],
+                              zoneKey: zoneKeys['second'],
                             ),
                           ],
                         ),
