@@ -4,16 +4,18 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '../../../../shared/services/request_service.dart';
+import '../models/m_problem_checkresponse.dart';
 import '../utils/math_basic.dart';
 import '../utils/math_data_utils.dart';
 
 class BasaMathEncoder {
-  Future<int> sendAPIData(
-    int group,
-    int child,
+  Future<void> submitBasaMResponse(
+      int childID,
+    int parentCategory,
+    int childCategory,
     Map<String, dynamic> data,
   ) async {
-    debugPrint("❗PARENT: $group, CHILD: $child");
+    debugPrint("❗submitBasaMReponse: CHILDID: $childID , PARENT: $parentCategory, CHILD: $childCategory");
 
     try {
       // 요청 시작 로그
@@ -22,7 +24,7 @@ class BasaMathEncoder {
 
       // POST 요청 전송 (body 없이 전송)
       final response = await RequestService.post(
-        '/m/submit/$group/$child',
+        '/m/$childID/submit/$parentCategory/$childCategory',
         data: data,
       );
 
@@ -32,13 +34,6 @@ class BasaMathEncoder {
       debugPrint(response.toString());
       debugPrint("RESPONSE: ");
       // 응답 형식 검증
-      if (response is int) {
-        return response;
-      } else {
-        throw Exception(
-          'Invalid response format: Expected int, got ${response.runtimeType}',
-        );
-      }
     } catch (e, stackTrace) {
       debugPrint('❗ Error fetching API data: $e');
       debugPrint('📌 Stack trace: $stackTrace');
@@ -46,6 +41,38 @@ class BasaMathEncoder {
     }
   }
 
+  Future<MProblemCheckResponse> checkBasaMResponse(
+      int parentCategory,
+      int childCategory,
+      Map<String, dynamic> data,
+      ) async {
+    debugPrint("❗checkBasaMResponse PARENT: $parentCategory, CHILD: $childCategory");
+
+    try {
+      debugPrint("🚀 sendResponse start 🚀🚀🚀🚀🚀");
+      debugPrintPrettify(data);
+
+      final response = await RequestService.post(
+        '/m/check/$parentCategory/$childCategory',
+        data: data,
+      );
+
+      debugPrint("✅ sendResponse finish");
+      debugPrint("RESPONSE: $response");
+
+      if (response is Map<String, dynamic>) {
+        return MProblemCheckResponse.fromJson(response);
+      } else {
+        throw Exception(
+          'Invalid response format: Expected Map<String, dynamic>, got ${response.runtimeType}',
+        );
+      }
+    } catch (e, stackTrace) {
+      debugPrint('❗ Error fetching API data: $e');
+      debugPrint('📌 Stack trace: $stackTrace');
+      rethrow;
+    }
+  }
   Map<String, dynamic> responseToAnswerMap(
     List<List<List<String>>> ans,
     List<int> MV,
@@ -101,7 +128,10 @@ class BasaMathEncoder {
     debugPrint("🔥THE FINAL STAGE🔥");
     request["userAnswer"] = userData;
     final DateTime now = DateTime.now();
-    final int secondsTaken = now.difference(request["_startTime"]).inSeconds;
+    final dynamic startTimeRaw = request["_startTime"];
+    final int secondsTaken = (startTimeRaw is DateTime)
+        ? now.difference(startTimeRaw).inSeconds
+        : 1;
     request["solvedTime"] = secondsTaken.toString();
     request.remove("_startTime");
 
@@ -111,102 +141,102 @@ class BasaMathEncoder {
   }
 }
 
-Future<void> main() async {
-  BasaMathEncoder bme = BasaMathEncoder();
-  Map<String, dynamic> json1 = {
-    "problemNumber": 1,
-    "problem": {"first": 78, "second": 26, "operator": "MULT"},
-    "answer": {
-      "result": {"one": 8, "two": 2, "three": 0, "four": 2},
-      "carry2": {"three": 1, "four": 1},
-      "carry1": {"two": 4, "three": 4},
-      "calculate1": {"one": 8, "two": 6, "three": 4},
-      "calculate2": {"two": 6, "three": 5, "four": 1},
-    },
-  };
-  Map<String, dynamic> json2 = {
-    "problemNumber": 1,
-    "problem": {"first": 1575, "second": 1108, "operator": "MIN"},
-    "answer": {
-      "result": {"one": 7, "two": 6, "three": 4},
-      "carry1": {"two": 6},
-    },
-  };
-  Map<String, dynamic> json3 = {
-    "problemNumber": 1,
-    "problem": {"first": 78, "second": 7, "operator": "DIV"},
-    "answer": {
-      "result": {"one": 1, "two": 1},
-      "calculate1": {"two": 7},
-      "calculate2": {"one": 8},
-      "calculate3": {"one": 7},
-      "remainder": 1,
-    },
-  };
-  Map<String, dynamic> json4 = {
-    "problemNumber": 1,
-    "problem": {"first": 60, "second": 4, "operator": "DIV"},
-    "answer": {
-      "result": {"one": 5, "two": 1},
-      "calculate1": {"two": 4},
-      "calculate2": {"one": 0, "two": 2},
-      "calculate3": {"one": 0, "two": 2},
-      "remainder": 0,
-    },
-  };
-  Map<String, dynamic> json5 = {
-    "problemNumber": 1,
-    "problem": {"first": 3, "second": 5, "operator": "PLUS"},
-    "answer": {
-      "result": {"one": 8},
-    },
-  };
-  Map<String, dynamic> json6 = {
-    "problemNumber": 1,
-    "problem": {"first": 7043, "second": 9449, "operator": "PLUS"},
-    "answer": {
-      "result": {"one": 2, "two": 9, "three": 4, "four": 6, "five": 1},
-      "carry1": {"two": 1, "five": 1},
-    },
-  };
-  var jsonSet = [json1, json2, json3, json4, json5, json6];
-  List<int> size1 = [2, 4, 2, 4, 1, 4];
-  List<int> size2 = [1, 4, 0, 0, 1, 4];
-  List<int> size3 = [1, 1, 4, 2, 1, 2];
-  List<int> size4 = [0, 0, 3, 2, 1, 2];
-  List<int> size5 = [0, 0, 0, 0, 1, 1];
-  List<int> size6 = [1, 5, 0, 0, 1, 5];
-  List sizes = [size1, size2, size3, size4, size5, size6];
-  BasaMathEncoder encoder = BasaMathEncoder();
-  var outputRaw = [];
-  outputRaw.add(generateOutput(size1));
-  outputRaw.add(generateOutput(size2));
-  outputRaw.add(generateOutput(size3));
-  outputRaw.add(generateOutput(size4));
-  outputRaw.add(generateOutput(size5));
-  outputRaw.add(generateOutput(size6));
-  for (int TC = 0; TC < 1; TC++) {
-    for (int test = 0; test < 3; test++) {
-      final Random rand = Random();
-      Map<String, dynamic> req = bme.initiateRequest(jsonSet[test]);
-      debugPrint("💡INITIAL STAGE💡");
-      debugPrintPrettify(toJsonCompatible(req));
-      debugPrint("🟨check🟨");
-      var output = outputRaw[test];
-      Map<String, dynamic> ans = bme.responseToAnswerMap(
-        outputRaw[test],
-        sizes[test],
-      );
-      int delaySeconds = rand.nextInt(100) + 1;
-      await Future.delayed(Duration(milliseconds: delaySeconds));
-      bme.addUserDataToRequest(req, ans);
-      debugPrint("🔥THE FINAL STAGE🔥");
-      debugPrintPrettify(toJsonCompatible(req));
-      debugPrint("✅check✅");
-      debugPrint("");
-    }
-  }
-}
+// Future<void> main() async {
+//   BasaMathEncoder bme = BasaMathEncoder();
+//   Map<String, dynamic> json1 = {
+//     "problemNumber": 1,
+//     "problem": {"first": 78, "second": 26, "operator": "MULT"},
+//     "answer": {
+//       "result": {"one": 8, "two": 2, "three": 0, "four": 2},
+//       "carry2": {"three": 1, "four": 1},
+//       "carry1": {"two": 4, "three": 4},
+//       "calculate1": {"one": 8, "two": 6, "three": 4},
+//       "calculate2": {"two": 6, "three": 5, "four": 1},
+//     },
+//   };
+//   Map<String, dynamic> json2 = {
+//     "problemNumber": 1,
+//     "problem": {"first": 1575, "second": 1108, "operator": "MIN"},
+//     "answer": {
+//       "result": {"one": 7, "two": 6, "three": 4},
+//       "carry1": {"two": 6},
+//     },
+//   };
+//   Map<String, dynamic> json3 = {
+//     "problemNumber": 1,
+//     "problem": {"first": 78, "second": 7, "operator": "DIV"},
+//     "answer": {
+//       "result": {"one": 1, "two": 1},
+//       "calculate1": {"two": 7},
+//       "calculate2": {"one": 8},
+//       "calculate3": {"one": 7},
+//       "remainder": 1,
+//     },
+//   };
+//   Map<String, dynamic> json4 = {
+//     "problemNumber": 1,
+//     "problem": {"first": 60, "second": 4, "operator": "DIV"},
+//     "answer": {
+//       "result": {"one": 5, "two": 1},
+//       "calculate1": {"two": 4},
+//       "calculate2": {"one": 0, "two": 2},
+//       "calculate3": {"one": 0, "two": 2},
+//       "remainder": 0,
+//     },
+//   };
+//   Map<String, dynamic> json5 = {
+//     "problemNumber": 1,
+//     "problem": {"first": 3, "second": 5, "operator": "PLUS"},
+//     "answer": {
+//       "result": {"one": 8},
+//     },
+//   };
+//   Map<String, dynamic> json6 = {
+//     "problemNumber": 1,
+//     "problem": {"first": 7043, "second": 9449, "operator": "PLUS"},
+//     "answer": {
+//       "result": {"one": 2, "two": 9, "three": 4, "four": 6, "five": 1},
+//       "carry1": {"two": 1, "five": 1},
+//     },
+//   };
+//   var jsonSet = [json1, json2, json3, json4, json5, json6];
+//   List<int> size1 = [2, 4, 2, 4, 1, 4];
+//   List<int> size2 = [1, 4, 0, 0, 1, 4];
+//   List<int> size3 = [1, 1, 4, 2, 1, 2];
+//   List<int> size4 = [0, 0, 3, 2, 1, 2];
+//   List<int> size5 = [0, 0, 0, 0, 1, 1];
+//   List<int> size6 = [1, 5, 0, 0, 1, 5];
+//   List sizes = [size1, size2, size3, size4, size5, size6];
+//   BasaMathEncoder encoder = BasaMathEncoder();
+//   var outputRaw = [];
+//   outputRaw.add(generateOutput(size1));
+//   outputRaw.add(generateOutput(size2));
+//   outputRaw.add(generateOutput(size3));
+//   outputRaw.add(generateOutput(size4));
+//   outputRaw.add(generateOutput(size5));
+//   outputRaw.add(generateOutput(size6));
+//   for (int TC = 0; TC < 1; TC++) {
+//     for (int test = 0; test < 3; test++) {
+//       final Random rand = Random();
+//       Map<String, dynamic> req = bme.initiateRequest(jsonSet[test]);
+//       debugPrint("💡INITIAL STAGE💡");
+//       debugPrintPrettify(toJsonCompatible(req));
+//       debugPrint("🟨check🟨");
+//       var output = outputRaw[test];
+//       Map<String, dynamic> ans = bme.responseToAnswerMap(
+//         outputRaw[test],
+//         sizes[test],
+//       );
+//       int delaySeconds = rand.nextInt(100) + 1;
+//       await Future.delayed(Duration(milliseconds: delaySeconds));
+//       bme.addUserDataToRequest(req, ans);
+//       debugPrint("🔥THE FINAL STAGE🔥");
+//       debugPrintPrettify(toJsonCompatible(req));
+//       debugPrint("✅check✅");
+//       debugPrint("");
+//     }
+//   }
+// }
 
 ///문제를 풀 때 사용했던 list 형식을 key-value로 변환합니다.
 

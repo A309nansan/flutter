@@ -252,15 +252,15 @@ class _MProblemStatTileState extends State<MProblemStatTile> {
                                           color: correct ? Colors.green : Colors.redAccent,
                                         ),
                                       ),
-                                      if (!correct)
+                                      //if (!correct)
                                         Padding(
                                           padding: const EdgeInsets.only(top: 5),
                                           child: Text(
                                             "점수: $basaUserScore / $basaTotalScore",
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontSize: 15,
                                               fontWeight: FontWeight.w600,
-                                              color: Colors.redAccent,
+                                              color: correct? Colors.green: Colors.redAccent,
                                             ),
                                           ),
                                         ),

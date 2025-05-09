@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import '../../../../shared/services/secure_storage_service.dart';
 import '../../../../shared/widgets/appbar_widget.dart';
 import '../../../../shared/widgets/en_list_splash_screen.dart';
 import '../../../../shared/widgets/m_list_splash_screen.dart';
@@ -26,12 +29,19 @@ class MChapterListScreen extends StatefulWidget {
 class _MChapterListScreenState extends State<MChapterListScreen> {
   List<EnCategoryModel> chapterList = [];
   bool isLoading = false;
-
+  int childId = 0;
+  Future<void> _prepareChildID() async{
+    final childProfileJson = await SecureStorageService.getChildProfile();
+    final childProfile = jsonDecode(childProfileJson!);
+    childId = childProfile['id'];
+  }
   @override
   void initState() {
     super.initState();
     setState(() => isLoading = true);
     _loadChapters();
+    _prepareChildID();
+    print(childId);
   }
 
   Future<void> _loadChapters() async {
@@ -101,6 +111,7 @@ class _MChapterListScreenState extends State<MChapterListScreen> {
                                     });
                                     final stats = await BasaMathReporter()
                                         .fetchHuge(
+                                      childId,
                                       int.parse(widget.categoryName[0]),
                                     );
                                     setState((){
@@ -147,7 +158,7 @@ class _MChapterListScreenState extends State<MChapterListScreen> {
                         physics: NeverScrollableScrollPhysics(),
                         itemCount: chapterList.length,
                         itemBuilder: (context, index) {
-                          return MChapterListItem(listItem: chapterList[index]);
+                          return MChapterListItem(listItem: chapterList[index], childId: childId);
                         },
                       ),
                     ),

@@ -29,23 +29,14 @@ class MProblemDisplay extends StatefulWidget {
 
 class MProblemDisplayState extends State<MProblemDisplay> {
   int get number1 => widget.problemMetaData.num1;
-
   int get number2 => widget.problemMetaData.num2;
-
   bool get isOneDigit => widget.problemMetaData.type == "SingleLine";
-
   bool get isAddSub => widget.problemMetaData.type == "AddSub";
-
   bool get isMultiplication => widget.problemMetaData.type == "Multiplication";
-
   bool get isDivision => widget.problemMetaData.type == "Division";
-
   bool get isDivisionRemainder =>
       widget.problemMetaData.type == "DivisionRemainder";
-
   List<List<List<String>>> recognitionTotalResults = [];
-
-  BuildContext? _dialogContext;
 
   ///인식된 결과를 바탕으로 userResponse 상태를 업데이트함.
   void _updateUserResponseResults(List<List<List<String>>> newResults) {
@@ -66,10 +57,8 @@ class MProblemDisplayState extends State<MProblemDisplay> {
   ///responseBlock들을 지움(초기화)함.
   Future<void> clearResponseBlocks() async {
     if (!widget.stateModel.isShowingUserInput) {
-      debugPrint("IsShowingUserInput = false: clearResponse 거부됨.");
       return;
     }
-
     widget.userResponse.clearAll();
     widget.stateModel.setHasAnswer(false);
   }
@@ -110,34 +99,6 @@ class MProblemDisplayState extends State<MProblemDisplay> {
     return true;
   }
 
-  void showRecognitionDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      barrierColor: Colors.black.withOpacity(0.2),
-      builder: (_) {
-        return Dialog(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: const [
-                CircularProgressIndicator(),
-                SizedBox(width: 8),
-                Text("로딩 중..."),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void hideRecognitionDialog() {
-    if (mounted && Navigator.of(context).canPop()) {
-      Navigator.of(context).pop();
-    }
-  }
 
   Future<void> purgeColor() async {
     widget.userResponse.purgeBgColor();
@@ -184,6 +145,34 @@ class MProblemDisplayState extends State<MProblemDisplay> {
     }
   }
 
+  void showRecognitionDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.black.withOpacity(0.2),
+      builder: (_) {
+        return Dialog(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                CircularProgressIndicator(),
+                SizedBox(width: 8),
+                Text("로딩 중..."),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void hideRecognitionDialog() {
+    if (mounted && Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    }
+  }
   @override
   void initState() {
     super.initState();

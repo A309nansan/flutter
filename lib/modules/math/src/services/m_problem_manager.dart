@@ -9,18 +9,19 @@ import '../screens/m_problem_display.dart'; // MProblemState가 여기 있다고
 class MProblemManager {
   final BasaMathDecoder decoder;
   final BasaMathEncoder encoder;
+  final bool isTeachingMode;
 
   final List<MProblemBundle> _history = [];
 
-  MProblemManager(this.decoder, this.encoder);
+  MProblemManager(this.decoder, this.encoder, this.isTeachingMode);
 
-  Future<MProblemBundle> load(
+  Future<MProblemBundle> loadTeachingMode(
     int parentCategory,
     int childCategory,
     int problemIndex,
     int categoryIndex,
   ) async {
-    final raw = await decoder.fetchAPIData(parentCategory, childCategory);
+    final raw = await decoder.fetchBasaMProblemDataTeachingMode(parentCategory, childCategory);
     final problemMetaData = decoder.getMathDataFromResponse(raw, categoryIndex);
     final answer = decoder.getAnswerFromResponse(
       raw,
@@ -32,6 +33,38 @@ class MProblemManager {
     // ✅ GlobalKey 생성
     final GlobalKey<MProblemDisplayState> key =
         GlobalKey<MProblemDisplayState>();
+    final bundle = MProblemBundle(
+      problemMetaData: problemMetaData,
+      correctResponse3DList: answer,
+      userResponse: userResponse,
+      requestToSend: request,
+      problemDisplayKey: key,
+      parentCategory: parentCategory,
+      childCategory: childCategory,
+      categoryIndex: categoryIndex, // ✅ 키 포함
+    );
+    _history.add(bundle);
+    return bundle;
+  }
+  Future<MProblemBundle> loadPracticeMode(
+      int parentCategory,
+      int childCategory,
+      int problemIndex,
+      int categoryIndex,
+      int childId
+      ) async {
+    final raw = await decoder.fetchBasaMProblemDataPracticeMode(parentCategory, childCategory, childId);
+    final problemMetaData = decoder.getMathDataFromResponse(raw, categoryIndex);
+    final answer = decoder.getAnswerFromResponse(
+      raw,
+      problemIndex,
+      categoryIndex,
+    );
+    final userResponse = MResponse.init([], problemMetaData.matrixVolume);
+    final request = encoder.initiateRequest(raw);
+    // ✅ GlobalKey 생성
+    final GlobalKey<MProblemDisplayState> key =
+    GlobalKey<MProblemDisplayState>();
     final bundle = MProblemBundle(
       problemMetaData: problemMetaData,
       correctResponse3DList: answer,
@@ -109,13 +142,13 @@ class MProblemManager {
     _history.clear();
   }
 
-  Future<Map<String, dynamic>> fetchRawJsonFromResponse(
-    parentCategory,
-    childCategory,
-  ) async {
-    debugPrint("I AM CALLING API HERE");
-    return await decoder.fetchAPIData(parentCategory, childCategory);
-  }
+  // Future<Map<String, dynamic>> fetchRawJsonFromResponse(
+  //   parentCategory,
+  //   childCategory,
+  // ) async {
+  //   debugPrint("I AM CALLING API HERE");
+  //   return await decoder.fetchAPIData(parentCategory, childCategory);
+  // }
 
   MProblemMetadata fetchMathDataFromResponse(
     Map<String, dynamic> response,

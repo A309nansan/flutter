@@ -5,8 +5,8 @@ import '../models/en_category_model.dart';
 
 class MChapterListItem extends StatelessWidget {
   final EnCategoryModel listItem;
-
-  const MChapterListItem({super.key, required this.listItem});
+  final int childId;
+  const MChapterListItem({super.key, required this.listItem, required this.childId});
 
   @override
   Widget build(BuildContext context) {
@@ -96,6 +96,7 @@ class MChapterListItem extends StatelessWidget {
                                     "categoryName": listItem.name,
                                     "imageURL": listItem.imagePath,
                                     "categoryDescription": listItem.description,
+                                    "childId": childId
                                   },
                                 );
                               },
@@ -139,6 +140,7 @@ class MChapterListItem extends StatelessWidget {
                                         "categoryName": listItem.name,
                                         "imageURL": listItem.imagePath,
                                         "categoryDescription": listItem.description,
+                                        "childId": childId
                                       }
                                   );
                                 },
@@ -173,6 +175,7 @@ class MChapterListItem extends StatelessWidget {
                                         "categoryName": listItem.name,
                                         "imageURL": listItem.imagePath,
                                         "categoryDescription": listItem.description,
+                                        "childId": childId,
                                       }
                                   );
                                 },

@@ -12,6 +12,7 @@ Future<bool> showContinueDialog(
     String imageURL,
     String categoryDescription,
     bool isTeachingMode,
+    int childId,
     BuildContext context,
     ) async {
   return await showDialog<bool>(
@@ -93,6 +94,7 @@ Future<bool> showContinueDialog(
                       "imageURL": imageURL,
                       "categoryDescription": categoryDescription,
                       "doublePopOnBack": true,
+                      "childId": childId
                     },
                   );
                 },

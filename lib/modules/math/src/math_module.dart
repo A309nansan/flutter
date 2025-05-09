@@ -22,12 +22,14 @@ class MathModule extends Module {
         final categoryDescription =
             args["categoryDescription"] as String? ?? "Unknown";
         final imageURL = args["imageURL"] as String? ?? "";
+        final childId = args["childId"] as int? ?? 0;
         return MLectureScreen(
           categoryIndex: categoryIndex,
           categoryName: categoryName,
           categoryDescription: categoryDescription,
           imageURL: imageURL,
           isTeachingMode: true,
+          childId: childId
         );
       },
     );
@@ -40,12 +42,14 @@ class MathModule extends Module {
         final categoryDescription =
             args["categoryDescription"] as String? ?? "Unknown";
         final imageURL = args["imageURL"] as String? ?? "";
+        final childId = args["childId"] as int? ?? 0;
         return MLectureScreen(
           categoryIndex: categoryIndex,
           categoryName: categoryName,
           categoryDescription: categoryDescription,
           imageURL: imageURL,
           isTeachingMode: false,
+          childId: childId
         );
       },
     );
@@ -60,12 +64,14 @@ class MathModule extends Module {
         final imageURL = args["imageURL"] as String? ?? "";
         final doublePopOnBack =
             args["doublePopOnBack"] as bool? ?? false; // ✅ default false
+        final childId = args["childId"] as int? ?? 0;
         return MResultScreen(
           categoryIndex: categoryIndex,
           categoryName: categoryName,
           categoryDescription: categoryDescription,
           imageURL: imageURL,
           doublePopOnBack: doublePopOnBack,
+          childId: childId
         );
       },
     );

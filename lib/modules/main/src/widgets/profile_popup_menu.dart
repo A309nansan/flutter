@@ -38,7 +38,27 @@ class ProfilePopupMenu extends StatelessWidget {
         } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
           // 데이터 있음: 프로필 이미지
           avatarChild = CircleAvatar(
-            backgroundImage: NetworkImage(snapshot.data!),
+            backgroundColor: Colors.transparent,
+            child: ClipOval(
+              child: Image.network(
+                snapshot.data!,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
+                errorBuilder: (context, error, stackTrace) {
+                  // 실패 시 기본 아이콘으로 대체
+                  return const Center(
+                    child: Icon(Icons.person, color: Colors.white),
+                  );
+                },
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return const Center(
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  );
+                },
+              ),
+            ),
           );
         } else {
           // 데이터 없음: 기본 아이콘이나 빈 원
