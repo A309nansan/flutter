@@ -11,6 +11,7 @@ import '../../../shared/services/image_service.dart';
 import '../../../shared/widgets/appbar_widget.dart';
 import '../../../shared/widgets/button_widget.dart';
 import '../../../shared/widgets/en_progress_bar_widget.dart';
+import '../../../shared/widgets/en_result_popup.dart';
 import '../../../shared/widgets/successful_popup.dart';
 import '../../../shared/widgets/toase_message.dart';
 import '../controller/level_1_3_2_basic_controller.dart';
@@ -387,7 +388,8 @@ class _LevelOneThreeTwoBasicState extends ConsumerState<LevelOneThreeTwoBasic>
                                 buttonText: isEnd ? "학습종료" : "다음문제",
                                 fontSize: screenWidth * 0.02,
                                 borderRadius: 10,
-                                onPressed: () => controller.onNextPressed(),
+                                onPressed: isEnd ?
+                                    () => controller.showResult() : () => controller.onNextPressed(),
                               ),
                             ],
 
@@ -398,7 +400,8 @@ class _LevelOneThreeTwoBasicState extends ConsumerState<LevelOneThreeTwoBasic>
                                 buttonText: isEnd ? "학습종료" : "다음문제",
                                 fontSize: screenWidth * 0.02,
                                 borderRadius: 10,
-                                onPressed: () => controller.onNextPressed(),
+                                onPressed: isEnd ?
+                                    () => controller.showResult() : () => controller.onNextPressed(),
                               ),
                           ],
                         ),
@@ -457,11 +460,38 @@ class _LevelOneThreeTwoBasicState extends ConsumerState<LevelOneThreeTwoBasic>
                                   controller.showCorrect
                                       ? () async => controller.onNextPressed()
                                       : null,
+                              result: controller.getResult(),
+                              end: () async => controller.onNextPressed()
                             ),
                           ),
                         ),
                       ),
                     ),
+                  ],
+                ),
+              ),
+
+            if(controller.isShowResult)
+              Positioned.fill(
+                child: Stack(
+                  children: [
+                    Container(color: Colors.black54),
+                    Center(
+                      child: FadeTransition(
+                        opacity: controller.resultAnimation,
+                        child: ScaleTransition(
+                          scale: controller.resultAnimation,
+                          child: Material(
+                            type: MaterialType.transparency,
+                            child: EnResultPopup(
+                                scaleAnimation: const AlwaysStoppedAnimation(1.0),
+                                result: controller.getResult(),
+                                end: () async => controller.end()
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
                   ],
                 ),
               ),

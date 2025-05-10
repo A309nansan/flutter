@@ -27,6 +27,7 @@ import '../../../modules/drag_drop/models/card_data.dart';
 import '../../../modules/drag_drop/widgets/draggable_card_list_riverpod.dart';
 import '../../../modules/drag_drop/widgets/empty_zone_riverpod.dart';
 import '../../../shared/provider/EnRiverPodProvider.dart';
+import '../../../shared/widgets/en_result_popup.dart';
 
 class LevelOneTwoOneThink extends ConsumerStatefulWidget {
   final String problemCode;
@@ -59,12 +60,15 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
   bool showSubmitPopup = false;
   bool isLoading = true;
   bool isEnd = false;
+  bool isShowResult = false;
   Map problemData = {};
   Map answerData = {};
   // selectedAnswers는 문제유형에 따라 변경 필요
   Map<String, dynamic> selectedAnswers = {};
   late AnimationController submitController;
+  late AnimationController resultController;
   late Animation<double> submitAnimation;
+  late Animation<double> resultAnimation;
 
   //문제별 변수
   String imageUrl1 = '';
@@ -82,9 +86,16 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
       vsync: this,
       duration: const Duration(milliseconds: 400),
     );
+    resultController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
 
     submitAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: submitController, curve: Curves.elasticOut),
+    );
+    resultAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: resultController, curve: Curves.elasticOut),
     );
 
     // 비동기 로직 실행 후 UI 업데이트
@@ -98,9 +109,11 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
 
   @override
   void dispose() {
-    super.dispose();
     _timerController.dispose();
+    submitController.dispose();
+    resultController.dispose();
     isSubmitted = false;
+    super.dispose();
   }
 
   // problemcode에 따라 데이터 호출하는 함수
@@ -291,6 +304,7 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
       );
 
       await EnProblemService.clearChapterProblem(childId, problemCode);
+      showResult();
       Modular.to.pop();
       return;
     }
@@ -303,12 +317,41 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
     }
   }
 
+  Future<Map<String, dynamic>> getResult() async {
+    final saved = await EnProblemService.loadProblemResults(
+      problemCode,
+      childId,
+    );
+
+    final correctCount = saved.values.where((v) => v == true).length;
+    final totalCount = saved.length;
+
+    final result = {
+      "correct": correctCount,
+      "wrong": totalCount - correctCount,
+    };
+
+    return result;
+  }
+
   void closeSubmit() {
     submitController.reverse().then((_) {
       setState(() {
         showSubmitPopup = false;
       });
     });
+  }
+
+  void showResult() async {
+    setState(() {
+      isShowResult = true;
+    });
+    resultController.forward(from: 0);
+  }
+
+  void end() async {
+    await EnProblemService.clearChapterProblem(childId, problemCode);
+    Modular.to.pop();
   }
 
   @override
@@ -569,7 +612,8 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
                                             buttonText: isEnd ? "학습종료" : "다음문제",
                                             fontSize: screenWidth * 0.02,
                                             borderRadius: 10,
-                                            onPressed: () => onNextPressed(),
+                                            onPressed: isEnd ?
+                                                () => showResult() : () => onNextPressed(),
                                           ),
                                         ],
 
@@ -580,7 +624,8 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
                                             buttonText: isEnd ? "학습종료" : "다음문제",
                                             fontSize: screenWidth * 0.02,
                                             borderRadius: 10,
-                                            onPressed: () => onNextPressed(),
+                                            onPressed: isEnd ?
+                                                () => showResult() : () => onNextPressed(),
                                           ),
                                       ],
                                     ),
@@ -617,11 +662,38 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
                                         isCorrect
                                             ? () async => onNextPressed()
                                             : null,
+                                    result: getResult(),
+                                    end: () async => onNextPressed()
                                   ),
                                 ),
                               ),
                             ),
                           ),
+                        ],
+                      ),
+                    ),
+
+                  if(isShowResult)
+                    Positioned.fill(
+                      child: Stack(
+                        children: [
+                          Container(color: Colors.black54),
+                          Center(
+                            child: FadeTransition(
+                              opacity: resultAnimation,
+                              child: ScaleTransition(
+                                scale: resultAnimation,
+                                child: Material(
+                                  type: MaterialType.transparency,
+                                  child: EnResultPopup(
+                                      scaleAnimation: const AlwaysStoppedAnimation(1.0),
+                                      result: getResult(),
+                                      end: () async => end()
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
                         ],
                       ),
                     ),
