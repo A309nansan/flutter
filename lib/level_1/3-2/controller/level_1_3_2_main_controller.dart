@@ -21,13 +21,16 @@ class LevelOneThreeTwoMainController {
 
   late AnimationController popController;
   late AnimationController submitController;
+  late AnimationController resultController;
   late Animation<double> popAnimation;
   late Animation<double> submitAnimation;
+  late Animation<double> resultAnimation;
 
   bool isInitialized = false;
   bool isShowSample = false;
   bool showSubmitPopup = false;
   bool isCorrect = false;
+  bool isShowResult = false;
   DateTime? submissionTime;
   late int currentProblemNumber;
   late int totalProblemCount;
@@ -73,9 +76,11 @@ class LevelOneThreeTwoMainController {
 
     popController = AnimationController(vsync: ticker, duration: const Duration(milliseconds: 400));
     submitController = AnimationController(vsync: ticker, duration: const Duration(milliseconds: 400));
+    resultController = AnimationController(vsync: ticker, duration: const Duration(milliseconds: 400));
 
     popAnimation = CurvedAnimation(parent: popController, curve: Curves.elasticOut);
     submitAnimation = CurvedAnimation(parent: submitController, curve: Curves.elasticOut);
+    resultAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: resultController, curve: Curves.elasticOut),);
 
     isInitialized = true;
     onUpdate();
@@ -142,6 +147,12 @@ class LevelOneThreeTwoMainController {
     });
   }
 
+  void showResult() async {
+    isShowResult = true;
+    resultController.forward(from: 0);
+    onUpdate();
+  }
+
   void clearSingleField(int index) {
     final key = problemData["keys"][index] as GlobalKey<HandwritingRecognitionZoneState>;
     key.currentState?.clear();
@@ -152,6 +163,23 @@ class LevelOneThreeTwoMainController {
 
     isCorrect = false;
     onUpdate();
+  }
+
+  Future<Map<String, dynamic>> getResult() async {
+    final saved = await EnProblemService.loadProblemResults(
+      problemCode,
+      childId,
+    );
+
+    final correctCount = saved.values.where((v) => v == true).length;
+    final totalCount = saved.length;
+
+    final result = {
+      "correct": correctCount,
+      "wrong": totalCount - correctCount,
+    };
+
+    return result;
   }
 
   void onNextPressed() async{
@@ -166,6 +194,8 @@ class LevelOneThreeTwoMainController {
       );
 
       await EnProblemService.clearChapterProblem(childId, problemCode);
+
+      showResult();
       Modular.to.pop();
       return;
     }
@@ -176,6 +206,11 @@ class LevelOneThreeTwoMainController {
     } catch (e) {
       print("⚠️ 경로 생성 중 오류: $e");
     }
+  }
+
+  void end() async {
+    await EnProblemService.clearChapterProblem(childId, problemCode);
+    Modular.to.pop();
   }
 
   void dispose() {

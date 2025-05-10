@@ -22,14 +22,17 @@ class LevelOneFourTwoMainController {
   late AnimationController submitController;
   late AnimationController correctController;
   late AnimationController wrongController;
+  late AnimationController resultController;
   late Animation<double> popAnimation;
   late Animation<double> submitAnimation;
+  late Animation<double> resultAnimation;
 
   bool isInitialized = false;
   bool isChecked = false;
   bool showCorrect = false;
   bool showSubmitPopup = false;
   bool isShowSample = false;
+  bool isShowResult = false;
   DateTime? submissionTime;
   late int currentProblemNumber;
   late int totalProblemCount;
@@ -91,6 +94,10 @@ class LevelOneFourTwoMainController {
       vsync: ticker,
       duration: const Duration(milliseconds: 400),
     );
+    resultController = AnimationController(
+      vsync: ticker,
+      duration: const Duration(milliseconds: 400),
+    );
 
     popAnimation = Tween<double>(
       begin: 0.0,
@@ -98,6 +105,9 @@ class LevelOneFourTwoMainController {
     ).animate(CurvedAnimation(parent: popController, curve: Curves.elasticOut));
     submitAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: submitController, curve: Curves.elasticOut),
+    );
+    resultAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: resultController, curve: Curves.elasticOut),
     );
 
     popController.addStatusListener((status) {
@@ -171,6 +181,12 @@ class LevelOneFourTwoMainController {
     });
   }
 
+  void showResult() async {
+    isShowResult = true;
+    resultController.forward(from: 0);
+    onUpdate();
+  }
+
   Map<String, dynamic> buildResultJson({
     required DateTime dateTime,
     required dynamic childId,
@@ -192,6 +208,23 @@ class LevelOneFourTwoMainController {
     };
   }
 
+  Future<Map<String, dynamic>> getResult() async {
+    final saved = await EnProblemService.loadProblemResults(
+      problemCode,
+      childId,
+    );
+
+    final correctCount = saved.values.where((v) => v == true).length;
+    final totalCount = saved.length;
+
+    final result = {
+      "correct": correctCount,
+      "wrong": totalCount - correctCount,
+    };
+
+    return result;
+  }
+
   void onNextPressed() async {
     final nextCode = originalProblem["next_problem_code"] as String?;
     if (nextCode == null || nextCode.isEmpty) {
@@ -206,6 +239,8 @@ class LevelOneFourTwoMainController {
 
       // 이어풀기 데이터 제거
       await EnProblemService.clearChapterProblem(childId, problemCode);
+
+      showResult();
       Modular.to.pop();
       return;
     }
@@ -218,11 +253,17 @@ class LevelOneFourTwoMainController {
     }
   }
 
+  void end() async {
+    await EnProblemService.clearChapterProblem(childId, problemCode);
+    Modular.to.pop();
+  }
+
   void dispose() {
     correctController.dispose();
     wrongController.dispose();
     popController.dispose();
     submitController.dispose();
+    resultController.dispose();
   }
 
   String capitalize(String text) => text[0].toUpperCase() + text.substring(1);

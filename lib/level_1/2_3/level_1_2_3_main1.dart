@@ -21,6 +21,7 @@ import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
 import 'package:screenshot/screenshot.dart';
 import '../../shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
 import '../../shared/provider/EnRiverPodProvider.dart';
+import '../../shared/widgets/en_result_popup.dart';
 
 class LevelOneTwoThreeMain1 extends ConsumerStatefulWidget {
   final String problemCode;
@@ -47,11 +48,14 @@ class _LevelOneTwoThreeMain1State extends ConsumerState<LevelOneTwoThreeMain1>
   bool isEnd = true;
   bool isLoading = true;
   bool showSubmitPopup = false;
+  bool isShowResult = false;
   Map<String, List<int>> problemData = {};
   Map<String, dynamic> answerData = {};
   Map<String, dynamic> selectedAnswers = {};
   late AnimationController submitController;
+  late AnimationController resultController;
   late Animation<double> submitAnimation;
+  late Animation<double> resultAnimation;
   final Map<String, GlobalKey<HandwritingRecognitionZoneState>> zoneKeys = {};
 
   @override
@@ -61,9 +65,16 @@ class _LevelOneTwoThreeMain1State extends ConsumerState<LevelOneTwoThreeMain1>
       vsync: this,
       duration: const Duration(milliseconds: 400),
     );
+    resultController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
 
     submitAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: submitController, curve: Curves.elasticOut),
+    );
+    resultAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: resultController, curve: Curves.elasticOut),
     );
 
     // 비동기 로직 실행 후 UI 업데이트
@@ -77,9 +88,11 @@ class _LevelOneTwoThreeMain1State extends ConsumerState<LevelOneTwoThreeMain1>
 
   @override
   void dispose() {
-    super.dispose();
     _timerController.dispose();
+    submitController.dispose();
+    resultController.dispose();
     isSubmitted = false;
+    super.dispose();
   }
 
   // problemcode에 따라 데이터 호출하는 함수
@@ -228,6 +241,7 @@ class _LevelOneTwoThreeMain1State extends ConsumerState<LevelOneTwoThreeMain1>
       );
 
       await EnProblemService.clearChapterProblem(childId, problemCode);
+      showResult();
       Modular.to.pop();
       return;
     }
@@ -240,12 +254,41 @@ class _LevelOneTwoThreeMain1State extends ConsumerState<LevelOneTwoThreeMain1>
     }
   }
 
+  Future<Map<String, dynamic>> getResult() async {
+    final saved = await EnProblemService.loadProblemResults(
+      problemCode,
+      childId,
+    );
+
+    final correctCount = saved.values.where((v) => v == true).length;
+    final totalCount = saved.length;
+
+    final result = {
+      "correct": correctCount,
+      "wrong": totalCount - correctCount,
+    };
+
+    return result;
+  }
+
   void closeSubmit() {
     submitController.reverse().then((_) {
       setState(() {
         showSubmitPopup = false;
       });
     });
+  }
+
+  void showResult() async {
+    setState(() {
+      isShowResult = true;
+    });
+    resultController.forward(from: 0);
+  }
+
+  void end() async {
+    await EnProblemService.clearChapterProblem(childId, problemCode);
+    Modular.to.pop();
   }
 
   @override
@@ -398,7 +441,8 @@ class _LevelOneTwoThreeMain1State extends ConsumerState<LevelOneTwoThreeMain1>
                                             buttonText: isEnd ? "학습종료" : "다음문제",
                                             fontSize: screenWidth * 0.02,
                                             borderRadius: 10,
-                                            onPressed: () => onNextPressed(),
+                                            onPressed: isEnd ?
+                                                () => showResult() : () => onNextPressed(),
                                           ),
                                         ],
 
@@ -409,7 +453,8 @@ class _LevelOneTwoThreeMain1State extends ConsumerState<LevelOneTwoThreeMain1>
                                             buttonText: isEnd ? "학습종료" : "다음문제",
                                             fontSize: screenWidth * 0.02,
                                             borderRadius: 10,
-                                            onPressed: () => onNextPressed(),
+                                            onPressed: isEnd ?
+                                                () => showResult() : () => onNextPressed(),
                                           ),
                                       ],
                                     ),
@@ -446,11 +491,38 @@ class _LevelOneTwoThreeMain1State extends ConsumerState<LevelOneTwoThreeMain1>
                                         isCorrect
                                             ? () async => onNextPressed()
                                             : null,
+                                    result: getResult(),
+                                    end: () async => onNextPressed()
                                   ),
                                 ),
                               ),
                             ),
                           ),
+                        ],
+                      ),
+                    ),
+
+                  if(isShowResult)
+                    Positioned.fill(
+                      child: Stack(
+                        children: [
+                          Container(color: Colors.black54),
+                          Center(
+                            child: FadeTransition(
+                              opacity: resultAnimation,
+                              child: ScaleTransition(
+                                scale: resultAnimation,
+                                child: Material(
+                                  type: MaterialType.transparency,
+                                  child: EnResultPopup(
+                                      scaleAnimation: const AlwaysStoppedAnimation(1.0),
+                                      result: getResult(),
+                                      end: () async => end()
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
                         ],
                       ),
                     ),

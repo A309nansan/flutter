@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
+import 'package:nansan_flutter/shared/widgets/en_result_popup.dart';
 import 'package:screenshot/screenshot.dart';
 import '../../../shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
 import '../../../shared/provider/EnRiverPodProvider.dart';
@@ -452,7 +453,8 @@ class _LevelOneFourTwoMainState extends ConsumerState<LevelOneFourTwoMain> with 
                                   buttonText: isEnd ? "학습종료" : "다음문제",
                                   fontSize: width * 0.02,
                                   borderRadius: 10,
-                                  onPressed: () => controller.onNextPressed(),
+                                  onPressed: isEnd ?
+                                      () => controller.showResult() : () => controller.onNextPressed(),
                                 ),
                               ],
 
@@ -463,7 +465,8 @@ class _LevelOneFourTwoMainState extends ConsumerState<LevelOneFourTwoMain> with 
                                 buttonText: isEnd ? "학습종료" : "다음문제",
                                 fontSize: width * 0.02,
                                 borderRadius: 10,
-                                onPressed: () => controller.onNextPressed(),
+                                onPressed: isEnd ?
+                                    () => controller.showResult() : () => controller.onNextPressed(),
                               ),
                           ],
                         ),
@@ -515,7 +518,33 @@ class _LevelOneFourTwoMainState extends ConsumerState<LevelOneFourTwoMain> with 
                             isEnd: isEnd,
                             closePopup: controller.closeSubmit,
                             onClose: controller.showCorrect ? () async => controller.onNextPressed() : null,
+                            result: controller.getResult(),
                             end: () async => controller.onNextPressed()
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+
+          if(controller.isShowResult)
+            Positioned.fill(
+              child: Stack(
+                children: [
+                  Container(color: Colors.black54),
+                  Center(
+                    child: FadeTransition(
+                      opacity: controller.resultAnimation,
+                      child: ScaleTransition(
+                        scale: controller.resultAnimation,
+                        child: Material(
+                          type: MaterialType.transparency,
+                          child: EnResultPopup(
+                              scaleAnimation: const AlwaysStoppedAnimation(1.0),
+                              result: controller.getResult(),
+                              end: () async => controller.end()
                           ),
                         ),
                       ),

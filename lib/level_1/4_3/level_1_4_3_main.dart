@@ -22,6 +22,7 @@ import 'package:collection/collection.dart';
 import 'package:nansan_flutter/shared/provider/EnRiverPodProvider.dart';
 
 import '../../shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
+import '../../shared/widgets/en_result_popup.dart';
 
 // ✅ 상태변경 1. StatefulWidget -> ConsumerStatefulWidget
 class LevelOneFourThreeMain extends ConsumerStatefulWidget {
@@ -39,7 +40,9 @@ class LevelOneFourThreeMainState extends ConsumerState<LevelOneFourThreeMain> wi
   final TimerController _timerController = TimerController();
   final ProblemApiService _apiService = ProblemApiService();
   late AnimationController submitController;
+  late AnimationController resultController;
   late Animation<double> submitAnimation;
+  late Animation<double> resultAnimation;
   late int childId;
   late int current;
   late int total;
@@ -51,6 +54,7 @@ class LevelOneFourThreeMainState extends ConsumerState<LevelOneFourThreeMain> wi
   bool showSubmitPopup = false;
   bool isEnd = false;
   bool isLoading = true;
+  bool isShowResult = false;
   Map problemData = {};
   Map answerData = {};
   Map<String, dynamic> selectedAnswers = {};
@@ -66,9 +70,16 @@ class LevelOneFourThreeMainState extends ConsumerState<LevelOneFourThreeMain> wi
       vsync: this,
       duration: const Duration(milliseconds: 400),
     );
+    resultController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
 
     submitAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: submitController, curve: Curves.elasticOut),
+    );
+    resultAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: resultController, curve: Curves.elasticOut),
     );
     // 비동기 로직 실행 후 UI 업데이트
     _loadQuestionData().then((_) {
@@ -84,6 +95,8 @@ class LevelOneFourThreeMainState extends ConsumerState<LevelOneFourThreeMain> wi
   @override
   void dispose() {
     _timerController.dispose();
+    submitController.dispose();
+    resultController.dispose();
     isSubmitted = false;
     super.dispose();
   }
@@ -139,10 +152,6 @@ class LevelOneFourThreeMainState extends ConsumerState<LevelOneFourThreeMain> wi
 
   // 문제 제출할때 함수. 수정 필요 x
   Future<void> _submitAnswer() async {
-    final childProfileJson = await SecureStorageService.getChildProfile();
-    final childProfile = jsonDecode(childProfileJson!);
-    final childId = childProfile['id'];
-
     if (isSubmitted) return;
     final submitRequest = SubmitRequest(
       childId: childId,
@@ -214,10 +223,6 @@ class LevelOneFourThreeMainState extends ConsumerState<LevelOneFourThreeMain> wi
       final imageBytes = await screenshotController.capture() as Uint8List;
       if (!context.mounted) return;
 
-      final childProfileJson = await SecureStorageService.getChildProfile();
-      final childProfile = jsonDecode(childProfileJson!);
-      final childId = childProfile['id'];
-
       await ImageService.uploadImage(
         imageBytes: imageBytes,
         childId: childId,
@@ -242,6 +247,7 @@ class LevelOneFourThreeMainState extends ConsumerState<LevelOneFourThreeMain> wi
       );
 
       await EnProblemService.clearChapterProblem(childId, problemCode);
+      showResult();
       Modular.to.pop();
       return;
     }
@@ -254,6 +260,23 @@ class LevelOneFourThreeMainState extends ConsumerState<LevelOneFourThreeMain> wi
     }
   }
 
+  Future<Map<String, dynamic>> getResult() async {
+    final saved = await EnProblemService.loadProblemResults(
+      problemCode,
+      childId,
+    );
+
+    final correctCount = saved.values.where((v) => v == true).length;
+    final totalCount = saved.length;
+
+    final result = {
+      "correct": correctCount,
+      "wrong": totalCount - correctCount,
+    };
+
+    return result;
+  }
+
   // 팝업 조작 함수. 수정 필요 x
   void closeSubmit() {
     submitController.reverse().then((_) {
@@ -261,6 +284,18 @@ class LevelOneFourThreeMainState extends ConsumerState<LevelOneFourThreeMain> wi
         showSubmitPopup = false;
       });
     });
+  }
+
+  void showResult() async {
+    setState(() {
+      isShowResult = true;
+    });
+    resultController.forward(from: 0);
+  }
+
+  void end() async {
+    await EnProblemService.clearChapterProblem(childId, problemCode);
+    Modular.to.pop();
   }
 
   // UI 담당
@@ -429,7 +464,8 @@ class LevelOneFourThreeMainState extends ConsumerState<LevelOneFourThreeMain> wi
                                   buttonText: isEnd ? "학습종료" : "다음문제",
                                   fontSize: screenWidth * 0.02,
                                   borderRadius: 10,
-                                  onPressed: () => onNextPressed(),
+                                  onPressed: isEnd ?
+                                      () => showResult() : () => onNextPressed(),
                                 ),
                               ],
 
@@ -440,7 +476,8 @@ class LevelOneFourThreeMainState extends ConsumerState<LevelOneFourThreeMain> wi
                                   buttonText: isEnd ? "학습종료" : "다음문제",
                                   fontSize: screenWidth * 0.02,
                                   borderRadius: 10,
-                                  onPressed: () => onNextPressed(),
+                                  onPressed: isEnd ?
+                                      () => showResult() : () => onNextPressed(),
                                 ),
                             ],
                           ),
@@ -476,11 +513,38 @@ class LevelOneFourThreeMainState extends ConsumerState<LevelOneFourThreeMain> wi
                             isCorrect
                                 ? () async => onNextPressed()
                                 : null,
+                            result: getResult(),
+                            end: () async => onNextPressed()
                           ),
                         ),
                       ),
                     ),
                   ),
+                ],
+              ),
+            ),
+
+          if(isShowResult)
+            Positioned.fill(
+              child: Stack(
+                children: [
+                  Container(color: Colors.black54),
+                  Center(
+                    child: FadeTransition(
+                      opacity: resultAnimation,
+                      child: ScaleTransition(
+                        scale: resultAnimation,
+                        child: Material(
+                          type: MaterialType.transparency,
+                          child: EnResultPopup(
+                              scaleAnimation: const AlwaysStoppedAnimation(1.0),
+                              result: getResult(),
+                              end: () async => end()
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),

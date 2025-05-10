@@ -29,6 +29,8 @@ import 'package:screenshot/screenshot.dart';
 import 'package:collection/collection.dart';
 import 'package:nansan_flutter/shared/provider/EnRiverPodProvider.dart';
 
+import '../../shared/widgets/en_result_popup.dart';
+
 // ✅ 상태변경 1. StatefulWidget -> ConsumerStatefulWidget
 class Level131main2 extends ConsumerStatefulWidget {
   final String problemCode;
@@ -46,7 +48,9 @@ class Level131main2State extends ConsumerState<Level131main2>
   final TimerController _timerController = TimerController();
   final ProblemApiService _apiService = ProblemApiService();
   late AnimationController submitController;
+  late AnimationController resultController;
   late Animation<double> submitAnimation;
+  late Animation<double> resultAnimation;
   late int childId;
   late int current;
   late int total;
@@ -58,6 +62,7 @@ class Level131main2State extends ConsumerState<Level131main2>
   bool showSubmitPopup = false;
   bool isEnd = false;
   bool isLoading = true;
+  bool isShowResult = false;
   Map problemData = {};
   Map answerData = {};
   Map<String, List<int>> selectedAnswers = {
@@ -85,9 +90,16 @@ class Level131main2State extends ConsumerState<Level131main2>
       vsync: this,
       duration: const Duration(milliseconds: 400),
     );
+    resultController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
 
     submitAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: submitController, curve: Curves.elasticOut),
+    );
+    resultAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: resultController, curve: Curves.elasticOut),
     );
     // 비동기 로직 실행 후 UI 업데이트
     _loadQuestionData().then((_) {
@@ -103,6 +115,8 @@ class Level131main2State extends ConsumerState<Level131main2>
   @override
   void dispose() {
     _timerController.dispose();
+    submitController.dispose();
+    resultController.dispose();
     isSubmitted = false;
     super.dispose();
   }
@@ -253,6 +267,7 @@ class Level131main2State extends ConsumerState<Level131main2>
       await EnProblemService.saveProblemResults(progress, problemCode, childId);
 
       await EnProblemService.clearChapterProblem(childId, problemCode);
+      showResult();
       Modular.to.pop();
       return;
     }
@@ -265,6 +280,23 @@ class Level131main2State extends ConsumerState<Level131main2>
     }
   }
 
+  Future<Map<String, dynamic>> getResult() async {
+    final saved = await EnProblemService.loadProblemResults(
+      problemCode,
+      childId,
+    );
+
+    final correctCount = saved.values.where((v) => v == true).length;
+    final totalCount = saved.length;
+
+    final result = {
+      "correct": correctCount,
+      "wrong": totalCount - correctCount,
+    };
+
+    return result;
+  }
+
   // 팝업 조작 함수. 수정 필요 x
   void closeSubmit() {
     submitController.reverse().then((_) {
@@ -272,6 +304,18 @@ class Level131main2State extends ConsumerState<Level131main2>
         showSubmitPopup = false;
       });
     });
+  }
+
+  void showResult() async {
+    setState(() {
+      isShowResult = true;
+    });
+    resultController.forward(from: 0);
+  }
+
+  void end() async {
+    await EnProblemService.clearChapterProblem(childId, problemCode);
+    Modular.to.pop();
   }
 
   //드래그 앤 드랍2 관련 로직
@@ -600,7 +644,8 @@ class Level131main2State extends ConsumerState<Level131main2>
                                         buttonText: isEnd ? "학습종료" : "다음문제",
                                         fontSize: screenWidth * 0.02,
                                         borderRadius: 10,
-                                        onPressed: () => onNextPressed(),
+                                        onPressed: isEnd ?
+                                            () => showResult() : () => onNextPressed(),
                                       ),
                                     ],
 
@@ -611,7 +656,8 @@ class Level131main2State extends ConsumerState<Level131main2>
                                         buttonText: isEnd ? "학습종료" : "다음문제",
                                         fontSize: screenWidth * 0.02,
                                         borderRadius: 10,
-                                        onPressed: () => onNextPressed(),
+                                        onPressed: isEnd ?
+                                            () => showResult() : () => onNextPressed(),
                                       ),
                                   ],
                                 ),
@@ -646,11 +692,38 @@ class Level131main2State extends ConsumerState<Level131main2>
                                         isCorrect
                                             ? () async => onNextPressed()
                                             : null,
+                                    result: getResult(),
+                                    end: () async => onNextPressed()
                                   ),
                                 ),
                               ),
                             ),
                           ),
+                        ],
+                      ),
+                    ),
+
+                  if(isShowResult)
+                    Positioned.fill(
+                      child: Stack(
+                        children: [
+                          Container(color: Colors.black54),
+                          Center(
+                            child: FadeTransition(
+                              opacity: resultAnimation,
+                              child: ScaleTransition(
+                                scale: resultAnimation,
+                                child: Material(
+                                  type: MaterialType.transparency,
+                                  child: EnResultPopup(
+                                      scaleAnimation: const AlwaysStoppedAnimation(1.0),
+                                      result: getResult(),
+                                      end: () async => end()
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
                         ],
                       ),
                     ),

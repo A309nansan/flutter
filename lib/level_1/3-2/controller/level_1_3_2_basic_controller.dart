@@ -23,12 +23,15 @@ class LevelOneThreeTwoBasicController {
   late bool showCorrect;
   late AnimationController popController;
   late AnimationController submitController;
+  late AnimationController resultController;
   late Animation<double> popAnimation;
   late Animation<double> submitAnimation;
+  late Animation<double> resultAnimation;
 
   bool showSubmitPopup = false;
   bool isShowSample = false;
   bool isInitialized = false;
+  bool isShowResult = false;
   late String problemCode;
   DateTime? submissionTime;
   late int currentProblemNumber;
@@ -90,12 +93,19 @@ class LevelOneThreeTwoBasicController {
       vsync: ticker,
       duration: const Duration(milliseconds: 400),
     );
+    resultController = AnimationController(
+      vsync: ticker,
+      duration: const Duration(milliseconds: 400),
+    );
 
     popAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: popController, curve: Curves.elasticOut),
     );
     submitAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: submitController, curve: Curves.elasticOut),
+    );
+    resultAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: resultController, curve: Curves.elasticOut),
     );
 
     popController.addStatusListener((status) {
@@ -147,11 +157,18 @@ class LevelOneThreeTwoBasicController {
     });
   }
 
+  void showResult() async {
+    isShowResult = true;
+    resultController.forward(from: 0);
+    onUpdate();
+  }
+
   void dispose() {
     (problemData["correctController"] as AnimationController).dispose();
     (problemData["wrongController"] as AnimationController).dispose();
     popController.dispose();
     submitController.dispose();
+    resultController.dispose();
   }
 
   Map<String, dynamic> buildResultJson({
@@ -172,6 +189,28 @@ class LevelOneThreeTwoBasicController {
     };
   }
 
+  Future<Map<String, dynamic>> getResult() async {
+    final saved = await EnProblemService.loadProblemResults(
+      problemCode,
+      childId,
+    );
+
+    final correctCount = saved.values.where((v) => v == true).length;
+    final totalCount = saved.length;
+
+    final result = {
+      "correct": correctCount,
+      "wrong": totalCount - correctCount,
+    };
+
+    return result;
+  }
+
+  void end() async {
+    await EnProblemService.clearChapterProblem(childId, problemCode);
+    Modular.to.pop();
+  }
+
   void onNextPressed() async {
     final nextCode = originalProblem["next_problem_code"] as String?;
     if (nextCode == null || nextCode.isEmpty) {
@@ -186,9 +225,12 @@ class LevelOneThreeTwoBasicController {
 
       // 이어풀기 데이터 제거
       await EnProblemService.clearChapterProblem(childId, problemCode);
+
+      showResult();
       Modular.to.pop();
       return;
     }
+
 
     try {
       final route = EnProblemService().getLevelPath(nextCode);

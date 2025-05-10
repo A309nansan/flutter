@@ -23,6 +23,8 @@ import 'package:screenshot/screenshot.dart';
 import 'package:collection/collection.dart';
 
 import '../../shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
+import '../../shared/provider/EnRiverPodProvider.dart';
+import '../../shared/widgets/en_result_popup.dart';
 
 class LevelOneThreeOneBasic2 extends ConsumerStatefulWidget {
   final String problemCode;
@@ -37,7 +39,9 @@ class LevelOneThreeOneBasic2State extends ConsumerState<LevelOneThreeOneBasic2> 
   final TimerController _timerController = TimerController();
   final ProblemApiService _apiService = ProblemApiService();
   late AnimationController submitController;
+  late AnimationController resultController;
   late Animation<double> submitAnimation;
+  late Animation<double> resultAnimation;
   late int childId;
   late int current;
   late int total;
@@ -49,6 +53,7 @@ class LevelOneThreeOneBasic2State extends ConsumerState<LevelOneThreeOneBasic2> 
   bool showSubmitPopup = false;
   bool isEnd = false;
   bool isLoading = true;
+  bool isShowResult = false;
   Map problemData = {};
   Map answerData = {};
   Map<String, dynamic> selectedAnswers = {};
@@ -68,9 +73,16 @@ class LevelOneThreeOneBasic2State extends ConsumerState<LevelOneThreeOneBasic2> 
       vsync: this,
       duration: const Duration(milliseconds: 400),
     );
+    resultController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
 
     submitAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: submitController, curve: Curves.elasticOut),
+    );
+    resultAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: resultController, curve: Curves.elasticOut),
     );
     // 비동기 로직 실행 후 UI 업데이트
     _loadQuestionData().then((_) {
@@ -86,6 +98,8 @@ class LevelOneThreeOneBasic2State extends ConsumerState<LevelOneThreeOneBasic2> 
   @override
   void dispose() {
     _timerController.dispose();
+    submitController.dispose();
+    resultController.dispose();
     isSubmitted = false;
     super.dispose();
   }
@@ -107,6 +121,18 @@ class LevelOneThreeOneBasic2State extends ConsumerState<LevelOneThreeOneBasic2> 
       debugPrint('Error loading question data: $e');
     }
      */
+
+    final childProfileJson = await SecureStorageService.getChildProfile();
+    final childProfile = jsonDecode(childProfileJson!);
+    childId = childProfile['id'];
+
+    final saved = await EnProblemService.loadProblemResults(problemCode, childId);
+    ref.read(problemProgressProvider.notifier).setFromStorage(saved);
+    final progress = ref.read(problemProgressProvider);
+    debugPrint("📦 불러온 문제 기록: $progress");
+
+    EnProblemService.saveContinueProblem(problemCode, childId);
+
     setState(() {
       nextProblemCode = "enlv1s3c1jy1";
       problemData  = {
@@ -142,6 +168,18 @@ class LevelOneThreeOneBasic2State extends ConsumerState<LevelOneThreeOneBasic2> 
 
     try {
       await _apiService.submitAnswer(jsonEncode(submitRequest.toJson()));
+
+      ref.read(problemProgressProvider.notifier).record(
+        problemCode,
+        isCorrect,
+      );
+
+      await EnProblemService.saveProblemResults(
+        ref.read(problemProgressProvider),
+        problemCode,
+        childId,
+      );
+
       setState(() => isSubmitted = true);
     } catch (e) {
       debugPrint('Submit error: $e');
@@ -174,10 +212,6 @@ class LevelOneThreeOneBasic2State extends ConsumerState<LevelOneThreeOneBasic2> 
       final imageBytes = await screenshotController.capture() as Uint8List;
       if (!context.mounted) return;
 
-      final childProfileJson = await SecureStorageService.getChildProfile();
-      final childProfile = jsonDecode(childProfileJson!);
-      final childId = childProfile['id'];
-
       await ImageService.uploadImage(
         imageBytes: imageBytes,
         childId: childId,
@@ -189,10 +223,19 @@ class LevelOneThreeOneBasic2State extends ConsumerState<LevelOneThreeOneBasic2> 
   }
 
   // 다음페이지로 가는 함수. 수정 필요 x
-  void onNextPressed() {
+  void onNextPressed() async {
     final nextCode = nextProblemCode;
     if (nextCode.isEmpty) {
       debugPrint("📌 다음 문제가 없습니다.");
+      final progress = ref.read(problemProgressProvider);
+      await EnProblemService.saveProblemResults(
+        progress,
+        problemCode,
+        childId,
+      );
+
+      await EnProblemService.clearChapterProblem(childId, problemCode);
+      showResult();
       Modular.to.pop();
       return;
     }
@@ -205,6 +248,23 @@ class LevelOneThreeOneBasic2State extends ConsumerState<LevelOneThreeOneBasic2> 
     }
   }
 
+  Future<Map<String, dynamic>> getResult() async {
+    final saved = await EnProblemService.loadProblemResults(
+      problemCode,
+      childId,
+    );
+
+    final correctCount = saved.values.where((v) => v == true).length;
+    final totalCount = saved.length;
+
+    final result = {
+      "correct": correctCount,
+      "wrong": totalCount - correctCount,
+    };
+
+    return result;
+  }
+
   // 팝업 조작 함수. 수정 필요 x
   void closeSubmit() {
     submitController.reverse().then((_) {
@@ -212,6 +272,18 @@ class LevelOneThreeOneBasic2State extends ConsumerState<LevelOneThreeOneBasic2> 
         showSubmitPopup = false;
       });
     });
+  }
+
+  void showResult() async {
+    setState(() {
+      isShowResult = true;
+    });
+    resultController.forward(from: 0);
+  }
+
+  void end() async {
+    await EnProblemService.clearChapterProblem(childId, problemCode);
+    Modular.to.pop();
   }
 
   // UI 담당
@@ -369,7 +441,8 @@ class LevelOneThreeOneBasic2State extends ConsumerState<LevelOneThreeOneBasic2> 
                                   buttonText: isEnd ? "학습종료" : "다음문제",
                                   fontSize: screenWidth * 0.02,
                                   borderRadius: 10,
-                                  onPressed: () => onNextPressed(),
+                                  onPressed: isEnd ?
+                                      () => showResult() : () => onNextPressed(),
                                 ),
                               ],
 
@@ -380,7 +453,8 @@ class LevelOneThreeOneBasic2State extends ConsumerState<LevelOneThreeOneBasic2> 
                                   buttonText: isEnd ? "학습종료" : "다음문제",
                                   fontSize: screenWidth * 0.02,
                                   borderRadius: 10,
-                                  onPressed: () => onNextPressed(),
+                                  onPressed: isEnd ?
+                                      () => showResult() : () => onNextPressed(),
                                 ),
                             ],
                           ),
@@ -416,11 +490,38 @@ class LevelOneThreeOneBasic2State extends ConsumerState<LevelOneThreeOneBasic2> 
                             isCorrect
                                 ? () async => onNextPressed()
                                 : null,
+                            result: getResult(),
+                            end: () async => onNextPressed()
                           ),
                         ),
                       ),
                     ),
                   ),
+                ],
+              ),
+            ),
+
+          if(isShowResult)
+            Positioned.fill(
+              child: Stack(
+                children: [
+                  Container(color: Colors.black54),
+                  Center(
+                    child: FadeTransition(
+                      opacity: resultAnimation,
+                      child: ScaleTransition(
+                        scale: resultAnimation,
+                        child: Material(
+                          type: MaterialType.transparency,
+                          child: EnResultPopup(
+                              scaleAnimation: const AlwaysStoppedAnimation(1.0),
+                              result: getResult(),
+                              end: () async => end()
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),
