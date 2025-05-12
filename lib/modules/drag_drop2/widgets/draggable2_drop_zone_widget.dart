@@ -45,22 +45,13 @@ class Draggable2DropzoneWidget extends StatelessWidget {
                     : candidateData.isNotEmpty
                     ? Colors.lightBlue[100]
                     : Colors.grey[200],
-            border: Border.all(
-              color:
-                  isFull
-                      ? Colors.red
-                      : candidateData.isNotEmpty
-                      ? Colors.blue
-                      : Colors.grey,
-              width: 2,
-            ),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(8),
           ),
           child:
               zone.cards.isEmpty
                   ? Center(
                     child: Text(
-                      isFull ? '최대 개수 도달 (더 이상 추가 불가)' : '여기에 카드 놓기',
+                      isFull ? '최대 개수 도달 (더 이상 추가 불가)' : '여기에 놓기!',
                       style: TextStyle(
                         color: isFull ? Colors.red : Colors.black54,
                         fontSize: 16,
@@ -77,7 +68,6 @@ class Draggable2DropzoneWidget extends StatelessWidget {
                           IconButton(
                             icon: const Icon(Icons.refresh),
                             onPressed: () => onReset(zone),
-                            tooltip: '이 영역만 초기화',
                           ),
                         ],
                       ),
@@ -102,35 +92,38 @@ class Draggable2DropzoneWidget extends StatelessWidget {
     int cardsPerRow = (width / (cardSize + 16)).floor();
     cardsPerRow = cardsPerRow > 0 ? cardsPerRow : 1;
 
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            for (
-              int i = 0;
-              i < controller.chunkCards(zone.cards, cardsPerRow).length;
-              i++
-            ) ...[
-              Row(
-                children:
-                    controller
-                        .chunkCards(zone.cards, cardsPerRow)[i]
-                        .map(
-                          (card) => Draggable2Card(
-                            imageUrl: card.imageUrl,
-                            cardWidth: cardSize,
-                            cardHeight: cardSize,
-                            onTap: () => onCardRemoved(zone, card),
-                          ),
-                        )
-                        .toList(),
-              ),
-              if (i < controller.chunkCards(zone.cards, cardsPerRow).length - 1)
-                SizedBox(height: controller.rowGap),
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (
+                int i = 0;
+                i < controller.chunkCards(zone.cards, cardsPerRow).length;
+                i++
+              ) ...[
+                Row(
+                  children:
+                      controller
+                          .chunkCards(zone.cards, cardsPerRow)[i]
+                          .map(
+                            (card) => Draggable2Card(
+                              imageUrl: card.imageUrl,
+                              cardWidth: cardSize,
+                              cardHeight: cardSize,
+                              onTap: () => onCardRemoved(zone, card),
+                            ),
+                          )
+                          .toList(),
+                ),
+                if (i <
+                    controller.chunkCards(zone.cards, cardsPerRow).length - 1)
+                  SizedBox(height: controller.rowGap),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
