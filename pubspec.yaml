@@ -149,6 +149,8 @@ flutter:
     - assets/images/number/soccerball/
     - assets/images/number/turtle/
     - assets/images/number/unit/
+    - assets/images/number/pouch/
+    - assets/images/number/bg_apple/
     - assets/jsons/
     - assets/jsons/level1/
     - assets/jsons/level1/1_1/
