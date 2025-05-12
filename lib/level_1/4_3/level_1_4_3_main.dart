@@ -120,29 +120,16 @@ class LevelOneFourThreeMainState extends ConsumerState<LevelOneFourThreeMain> wi
       // ✅ 문제 이어풀기 기록 저장
       EnProblemService.saveContinueProblem(problemCode, childId);
 
-      // setState(() {
-      //   nextProblemCode = response.nextProblemCode;
-      //   problemData = response.problem;
-      //   answerData = response.answer;
-      //   current = response.current;
-      //   total = response.total;
-      // });
       setState(() {
         nextProblemCode = response.nextProblemCode;
-        problemData = {
-          "p1": [ 6, 3, 3 ],
-          "p2": [ 8, 2, 6 ],
-        };
-        answerData = {
-          "p1": [ 6, 3, 3 ],
-          "p2": [ 8, 2, 6 ],
-        };
+        problemData = response.problem;
+        answerData = response.answer;
+        current = response.current;
+        total = response.total;
         selectedAnswers = {
           "p1": [ 0, 0, 0 ],
           "p2": [ 0, 0, 0 ],
         };
-        current = response.current;
-        total = response.total;
       });
       _processProblemData(problemData);
     } catch (e) {
@@ -209,7 +196,6 @@ class LevelOneFourThreeMainState extends ConsumerState<LevelOneFourThreeMain> wi
   // 정답 여부 체크(보통은 이거쓰면됨)
   Future<void> checkAnswer() async {
     await _processInputData();
-    debugPrint(selectedAnswers.toString());
     isCorrect = const DeepCollectionEquality().equals(
       answerData,
       selectedAnswers,
@@ -426,19 +412,15 @@ class LevelOneFourThreeMainState extends ConsumerState<LevelOneFourThreeMain> wi
                                   fontSize: screenWidth * 0.02,
                                   borderRadius: 10,
                                   // TODO : 정답 체크 로직 구현 시 해당 부분 지우고 주석 활성화
-                                  // onPressed: () => onNextPressed(),
                                   onPressed: () async {
+                                    if (isSubmitted) return;
+                                    setState(() {
+                                      showSubmitPopup = true;
+                                    });
                                     await checkAnswer();
+                                    await submitActivity(context);
+                                    submitController.forward();
                                   },
-                                  // onPressed: () async {
-                                  //   if (isSubmitted) return;
-                                  //   setState(() {
-                                  //     showSubmitPopup = true;
-                                  //   });
-                                  //   await checkAnswer();
-                                  //   await submitActivity(context);
-                                  //   submitController.forward();
-                                  // },
                                 ),
 
                               if (isSubmitted &&
@@ -450,7 +432,7 @@ class LevelOneFourThreeMainState extends ConsumerState<LevelOneFourThreeMain> wi
                                   fontSize: screenWidth * 0.02,
                                   borderRadius: 10,
                                   onPressed: () async {
-                                    checkAnswer();
+                                    await checkAnswer();
                                     setState(() {
                                       showSubmitPopup = true;
                                     });

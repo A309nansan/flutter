@@ -26,7 +26,7 @@ class DottedRectangleWidget extends StatelessWidget {
               children: List.generate(5, (col) {
                 int index = row * 5 + col;
                 Widget? content;
-                if (index < data[1]) {
+                if (index < data[0]) {
                   content = Container(
                     width: screenWidth * 0.04,
                     height: screenWidth * 0.04,
@@ -35,7 +35,7 @@ class DottedRectangleWidget extends StatelessWidget {
                       shape: BoxShape.circle,
                     ),
                   );
-                } else if (index < data[1] + data[2]) {
+                } else if (index < data[0] + data[1]) {
                   content = Container(
                     width: screenWidth * 0.04,
                     height: screenWidth * 0.04,
