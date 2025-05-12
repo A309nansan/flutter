@@ -60,6 +60,12 @@ class Level141main1State extends ConsumerState<Level141main1>
   List<List<String>> fixedImageUrls = [];
   List<Map<String, String>> candidates = [];
 
+  // 결과페이지 관련 변수
+  late AnimationController
+  resultController; // ✅ result popup AnimationController
+  late Animation<double> resultAnimation; // ✅ result popup Animation
+  bool isShowResult = false; // ✅ result popup status
+
   // 문제별 변수
   late AnimationController _menuAnimationController;
   final DragDrop2Controller dd2controller = DragDrop2Controller(
@@ -83,9 +89,21 @@ class Level141main1State extends ConsumerState<Level141main1>
       duration: const Duration(milliseconds: 400),
     );
 
+    // ✅ result popup AnimationController init
+    resultController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+
     submitAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: submitController, curve: Curves.elasticOut),
     );
+
+    // ✅ result popup Animation init
+    resultAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: resultController, curve: Curves.elasticOut),
+    );
+
     // 비동기 로직 실행 후 UI 업데이트
     _loadQuestionData().then((_) {
       setState(() {
@@ -105,6 +123,7 @@ class Level141main1State extends ConsumerState<Level141main1>
   @override
   void dispose() {
     _menuAnimationController.dispose();
+    resultController.dispose();
     _timerController.dispose();
     isSubmitted = false;
     super.dispose();
@@ -240,6 +259,8 @@ class Level141main1State extends ConsumerState<Level141main1>
       await EnProblemService.saveProblemResults(progress, problemCode, childId);
 
       await EnProblemService.clearChapterProblem(childId, problemCode);
+      // ✅ show result popup
+      showResult();
       Modular.to.pop();
       return;
     }
@@ -252,6 +273,30 @@ class Level141main1State extends ConsumerState<Level141main1>
     }
   }
 
+  // ✅ En 문제풀이 결과 불러오기
+  Future<Map<String, dynamic>> getResult() async {
+    final saved = await EnProblemService.loadProblemResults(
+      problemCode,
+      childId,
+    );
+
+    final correctCount = saved.values.where((v) => v == true).length;
+    final totalCount = saved.length;
+
+    final result = {
+      "correct": correctCount,
+      "wrong": totalCount - correctCount,
+    };
+
+    return result;
+  }
+
+  // ✅ 학습 종료
+  void end() async {
+    await EnProblemService.clearChapterProblem(childId, problemCode);
+    Modular.to.pop();
+  }
+
   // 팝업 조작 함수. 수정 필요 x
   void closeSubmit() {
     submitController.reverse().then((_) {
@@ -259,6 +304,14 @@ class Level141main1State extends ConsumerState<Level141main1>
         showSubmitPopup = false;
       });
     });
+  }
+
+  // ✅ show result popup 함수
+  void showResult() async {
+    setState(() {
+      isShowResult = true;
+    });
+    resultController.forward(from: 0);
   }
 
   //드래그 앤 드랍2 관련 로직
