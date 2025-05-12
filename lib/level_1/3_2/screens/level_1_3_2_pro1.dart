@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nansan_flutter/level_1/3-2/widgets/box_with_line_widget.dart';
+import 'package:nansan_flutter/level_1/3_2/widgets/box_with_line_widget.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
 import 'package:nansan_flutter/shared/controllers/timer_controller.dart';
@@ -28,7 +28,8 @@ class LevelOneThreeTwoPro1 extends ConsumerStatefulWidget {
   const LevelOneThreeTwoPro1({super.key, required this.problemCode});
 
   @override
-  ConsumerState<LevelOneThreeTwoPro1> createState() => LevelOneThreeTwoPro1State();
+  ConsumerState<LevelOneThreeTwoPro1> createState() =>
+      LevelOneThreeTwoPro1State();
 }
 
 class LevelOneThreeTwoPro1State extends ConsumerState<LevelOneThreeTwoPro1>
@@ -111,7 +112,10 @@ class LevelOneThreeTwoPro1State extends ConsumerState<LevelOneThreeTwoPro1>
       final childProfile = jsonDecode(childProfileJson!);
       childId = childProfile['id'];
 
-      final saved = await EnProblemService.loadProblemResults(problemCode, childId);
+      final saved = await EnProblemService.loadProblemResults(
+        problemCode,
+        childId,
+      );
       ref.read(problemProgressProvider.notifier).setFromStorage(saved);
       final progress = ref.read(problemProgressProvider);
       debugPrint("📦 불러온 문제 기록: $progress");
@@ -148,10 +152,7 @@ class LevelOneThreeTwoPro1State extends ConsumerState<LevelOneThreeTwoPro1>
     try {
       await _apiService.submitAnswer(jsonEncode(submitRequest.toJson()));
 
-      ref.read(problemProgressProvider.notifier).record(
-        problemCode,
-        isCorrect,
-      );
+      ref.read(problemProgressProvider.notifier).record(problemCode, isCorrect);
 
       await EnProblemService.saveProblemResults(
         ref.read(problemProgressProvider),
@@ -217,11 +218,7 @@ class LevelOneThreeTwoPro1State extends ConsumerState<LevelOneThreeTwoPro1>
     if (nextCode.isEmpty) {
       debugPrint("📌 다음 문제가 없습니다.");
       final progress = ref.read(problemProgressProvider);
-      await EnProblemService.saveProblemResults(
-        progress,
-        problemCode,
-        childId,
-      );
+      await EnProblemService.saveProblemResults(progress, problemCode, childId);
 
       await EnProblemService.clearChapterProblem(childId, problemCode);
       showResult();
