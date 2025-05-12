@@ -134,7 +134,7 @@ class LevelOneThreeOneBasic2State extends ConsumerState<LevelOneThreeOneBasic2> 
     EnProblemService.saveContinueProblem(problemCode, childId);
 
     setState(() {
-      nextProblemCode = "enlv1s3c1jy1";
+      nextProblemCode = "enlv1s3c1sh1";
       problemData  = {
         "p1": [ 3, 6, 4 ],
         "p2": [ 5, 3, 6, 4 ]

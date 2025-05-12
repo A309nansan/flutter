@@ -129,35 +129,18 @@ class LevelOneThreeOneProState extends ConsumerState<LevelOneThreeOnePro> with T
       // ✅ 문제 이어풀기 기록 저장
       EnProblemService.saveContinueProblem(problemCode, childId);
 
-      // setState(() {
-      //   nextProblemCode = response.nextProblemCode;
-      //   problemData = response.problem;
-      //   answerData = response.answer;
-      //   current = response.current;
-      //   total = response.total;
-      // });
       setState(() {
         nextProblemCode = response.nextProblemCode;
-        problemData = {
-          "p1": [ 2, 3 ],
-          "p2": [ 4, 5 ],
-          "p3": [ 8, 9 ],
-          "p4": [ 6, 7 ],
-        };
-        answerData = {
-          "a1": [ 2, 3 ],
-          "a2": [ 4, 5 ],
-          "a3": [ 8, 9 ],
-          "a4": [ 6, 7 ],
-        };
+        problemData = response.problem;
+        answerData = response.answer;
+        current = response.current;
+        total = response.total;
         selectedAnswers = {
           "a1": [ 0, 0 ],
           "a2": [ 0, 0 ],
           "a3": [ 0, 0 ],
           "a4": [ 0, 0 ],
         };
-        current = response.current;
-        total = response.total;
       });
       _processProblemData(problemData);
     } catch (e) {
@@ -431,19 +414,15 @@ class LevelOneThreeOneProState extends ConsumerState<LevelOneThreeOnePro> with T
                                   fontSize: screenWidth * 0.02,
                                   borderRadius: 10,
                                   // TODO : 정답 체크 로직 구현 시 해당 부분 지우고 주석 활성화
-                                  // onPressed: () => onNextPressed(),
                                   onPressed: () async {
+                                    if (isSubmitted) return;
+                                    setState(() {
+                                      showSubmitPopup = true;
+                                    });
                                     await checkAnswer();
-                                  }
-                                  // onPressed: () async {
-                                  //   if (isSubmitted) return;
-                                  //   setState(() {
-                                  //     showSubmitPopup = true;
-                                  //   });
-                                  //   await checkAnswer();
-                                  //   await submitActivity(context);
-                                  //   submitController.forward();
-                                  // },
+                                    await submitActivity(context);
+                                    submitController.forward();
+                                  },
                                 ),
 
                               if (isSubmitted &&
@@ -455,7 +434,7 @@ class LevelOneThreeOneProState extends ConsumerState<LevelOneThreeOnePro> with T
                                   fontSize: screenWidth * 0.02,
                                   borderRadius: 10,
                                   onPressed: () async {
-                                    checkAnswer();
+                                    await checkAnswer();
                                     setState(() {
                                       showSubmitPopup = true;
                                     });
