@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nansan_flutter/modules/drag_drop/controllers/drag_drop_controller.dart';
-import 'package:nansan_flutter/modules/drag_drop/widgets/draggable_card_list.dart';
-import 'package:nansan_flutter/modules/drag_drop/widgets/empty_zone.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
 import 'package:nansan_flutter/shared/controllers/timer_controller.dart';
@@ -20,7 +18,6 @@ import 'package:nansan_flutter/shared/widgets/en_progress_bar_widget.dart';
 import 'package:nansan_flutter/shared/widgets/new_header_widget.dart';
 import 'package:nansan_flutter/shared/widgets/new_question_text.dart';
 import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
-import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 import '../../../modules/drag_drop/controllers/drag_drop_controller_riverpod.dart';
 import '../../../modules/drag_drop/models/card_data.dart';
@@ -40,7 +37,8 @@ class LevelOneTwoOneThink extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<LevelOneTwoOneThink> createState() => _LevelOneTwoOneThinkState();
+  ConsumerState<LevelOneTwoOneThink> createState() =>
+      _LevelOneTwoOneThinkState();
 }
 
 class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
@@ -125,7 +123,10 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
       final childProfile = jsonDecode(childProfileJson!);
       childId = childProfile['id'];
 
-      final saved = await EnProblemService.loadProblemResults(problemCode, childId);
+      final saved = await EnProblemService.loadProblemResults(
+        problemCode,
+        childId,
+      );
       ref.read(problemProgressProvider.notifier).setFromStorage(saved);
 
       EnProblemService.saveContinueProblem(problemCode, childId);
@@ -166,10 +167,7 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
       // API 서비스 호출
       await _apiService.submitAnswer(jsonEncode(submitRequest.toJson()));
 
-      ref.read(problemProgressProvider.notifier).record(
-        problemCode,
-        isCorrect,
-      );
+      ref.read(problemProgressProvider.notifier).record(problemCode, isCorrect);
 
       await EnProblemService.saveProblemResults(
         ref.read(problemProgressProvider),
@@ -212,15 +210,19 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
 
     Future.microtask(() {
       ref.read(dragDropControllerProvider.notifier).resetAll(); // zone 초기화
-      ref.read(dragDropControllerProvider.notifier).initializeCards(
-        candidates
-            .map((c) => CardData(
-          id: c['image_name']!,
-          imageName: c['image_name']!,
-          imageUrl: c['image_url']!,
-        ))
-            .toList(),
-      );
+      ref
+          .read(dragDropControllerProvider.notifier)
+          .initializeCards(
+            candidates
+                .map(
+                  (c) => CardData(
+                    id: c['image_name']!,
+                    imageName: c['image_name']!,
+                    imageUrl: c['image_url']!,
+                  ),
+                )
+                .toList(),
+          );
     });
   }
 
@@ -297,11 +299,7 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
     if (nextCode.isEmpty) {
       debugPrint("📌 다음 문제가 없습니다.");
       final progress = ref.read(problemProgressProvider);
-      await EnProblemService.saveProblemResults(
-        progress,
-        problemCode,
-        childId,
-      );
+      await EnProblemService.saveProblemResults(progress, problemCode, childId);
 
       await EnProblemService.clearChapterProblem(childId, problemCode);
       showResult();
@@ -612,8 +610,10 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
                                             buttonText: isEnd ? "학습종료" : "다음문제",
                                             fontSize: screenWidth * 0.02,
                                             borderRadius: 10,
-                                            onPressed: isEnd ?
-                                                () => showResult() : () => onNextPressed(),
+                                            onPressed:
+                                                isEnd
+                                                    ? () => showResult()
+                                                    : () => onNextPressed(),
                                           ),
                                         ],
 
@@ -624,8 +624,10 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
                                             buttonText: isEnd ? "학습종료" : "다음문제",
                                             fontSize: screenWidth * 0.02,
                                             borderRadius: 10,
-                                            onPressed: isEnd ?
-                                                () => showResult() : () => onNextPressed(),
+                                            onPressed:
+                                                isEnd
+                                                    ? () => showResult()
+                                                    : () => onNextPressed(),
                                           ),
                                       ],
                                     ),
@@ -663,7 +665,7 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
                                             ? () async => onNextPressed()
                                             : null,
                                     result: getResult(),
-                                    end: () async => onNextPressed()
+                                    end: () async => onNextPressed(),
                                   ),
                                 ),
                               ),
@@ -673,7 +675,7 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
                       ),
                     ),
 
-                  if(isShowResult)
+                  if (isShowResult)
                     Positioned.fill(
                       child: Stack(
                         children: [
@@ -686,14 +688,15 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
                                 child: Material(
                                   type: MaterialType.transparency,
                                   child: EnResultPopup(
-                                      scaleAnimation: const AlwaysStoppedAnimation(1.0),
-                                      result: getResult(),
-                                      end: () async => end()
+                                    scaleAnimation:
+                                        const AlwaysStoppedAnimation(1.0),
+                                    result: getResult(),
+                                    end: () async => end(),
                                   ),
                                 ),
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),
