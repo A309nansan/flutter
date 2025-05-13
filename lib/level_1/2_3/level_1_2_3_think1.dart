@@ -114,7 +114,8 @@ class LevelOneTwoThreeThink1State extends ConsumerState<LevelOneTwoThreeThink1>
       EnProblemService.saveContinueProblem(problemCode, childId);
 
       setState(() {
-        nextProblemCode = response.nextProblemCode;
+        // nextProblemCode = response.nextProblemCode;
+        nextProblemCode = 'enlv1s2c3gn2';
         problemData = response.problem;
         answerData = response.answer;
         current = response.current;
