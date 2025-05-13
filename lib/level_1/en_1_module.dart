@@ -1,10 +1,5 @@
 import 'package:nansan_flutter/level_1/1_1/screens/level_1_1_1_think.dart';
-import 'package:nansan_flutter/level_1/1_3/screens/level_1_1_3_main2.dart';
-import 'package:nansan_flutter/level_1/1_3/screens/level_1_1_3_main3.dart';
 import 'package:nansan_flutter/level_1/1_3/screens/level_1_1_3_think.dart';
-import 'package:nansan_flutter/level_1/1_4/screens/level_1_1_4_think1.dart';
-import 'package:nansan_flutter/level_1/1_4/screens/level_1_1_4_think2.dart';
-import 'package:nansan_flutter/level_1/1_4/screens/level_1_1_4_think3.dart';
 import 'package:nansan_flutter/level_1/2_1/screens/level_1_2_1_main1.dart';
 import 'package:nansan_flutter/level_1/2_1/screens/level_1_2_1_think.dart';
 import 'package:nansan_flutter/level_1/2_2/level_1_2_2_think1.dart';
@@ -114,46 +109,46 @@ class En1Module extends Module {
         return LevelOneOneThreeMain1(problemCode: nextCode);
       },
     );
-    // 1과 3차시 주요학습활동 2번
-    r.child(
-      '/enlv1s1c3jy2',
-      child: (context) {
-        final nextCode = r.args.data as String;
-        return LevelOneOneThreeMain2(problemCode: nextCode);
-      },
-    );
-    // 1과 3차시 주요학습활동 3번
-    r.child(
-      '/enlv1s1c3jy3',
-      child: (context) {
-        final nextCode = r.args.data as String;
-        return LevelOneOneThreeMain3(problemCode: nextCode);
-      },
-    );
-    // 1과 4차시 주요학습활동 1번
-    r.child(
-      '/enlv1s1c4gn1',
-      child: (context) {
-        final nextCode = r.args.data as String;
-        return LevelOneOneFourThink1(problemCode: nextCode);
-      },
-    );
-    // 1과 4차시 주요학습활동 2번
-    r.child(
-      '/enlv1s1c4gn2',
-      child: (context) {
-        final nextCode = r.args.data as String;
-        return LevelOneOneFourThink2(problemCode: nextCode);
-      },
-    );
-    // 1과 4차시 주요학습활동 3번
-    r.child(
-      '/enlv1s1c4gn3',
-      child: (context) {
-        final nextCode = r.args.data as String;
-        return LevelOneOneFourThink3(problemCode: nextCode);
-      },
-    );
+    // // 1과 3차시 주요학습활동 2번
+    // r.child(
+    //   '/enlv1s1c3jy2',
+    //   child: (context) {
+    //     final nextCode = r.args.data as String;
+    //     return LevelOneOneThreeMain2(problemCode: nextCode);
+    //   },
+    // );
+    // // 1과 3차시 주요학습활동 3번
+    // r.child(
+    //   '/enlv1s1c3jy3',
+    //   child: (context) {
+    //     final nextCode = r.args.data as String;
+    //     return LevelOneOneThreeMain3(problemCode: nextCode);
+    //   },
+    // );
+    // // 1과 4차시 주요학습활동 1번
+    // r.child(
+    //   '/enlv1s1c4gn1',
+    //   child: (context) {
+    //     final nextCode = r.args.data as String;
+    //     return LevelOneOneFourThink1(problemCode: nextCode);
+    //   },
+    // );
+    // // 1과 4차시 주요학습활동 2번
+    // r.child(
+    //   '/enlv1s1c4gn2',
+    //   child: (context) {
+    //     final nextCode = r.args.data as String;
+    //     return LevelOneOneFourThink2(problemCode: nextCode);
+    //   },
+    // );
+    // // 1과 4차시 주요학습활동 3번
+    // r.child(
+    //   '/enlv1s1c4gn3',
+    //   child: (context) {
+    //     final nextCode = r.args.data as String;
+    //     return LevelOneOneFourThink3(problemCode: nextCode);
+    //   },
+    // );
     // 2과 1차시 개념학습활동
     r.child(
       '/enlv1s2c1gn1',

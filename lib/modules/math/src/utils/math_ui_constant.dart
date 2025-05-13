@@ -14,7 +14,6 @@ class MathUIConstant {
     screenWidth = mediaQuery.size.width;
     screenHeight = mediaQuery.size.height;
     MathUIConstant.isTesting = isTest;
-    debugPrint("SCREENWIDTH: $screenWidth");
     MQC = screenWidth / 800;
   }
 
@@ -81,15 +80,15 @@ class MathUIConstant {
       !isTesting ? Colors.transparent : Colors.purpleAccent;
   static Color get boundaryTransparent => Colors.transparent;
 
-  static double statsTransformConstant(int c){
-    if ([101,102,].contains(c)) return 0.8; // Linear, 한자리
+  static double statsTransformConstant(int c) {
+    if ([101, 102].contains(c)) return 0.8; // Linear, 한자리
     if ([103].contains(c)) return 0.65; // Linear 한자리 더
-    if ([104,501].contains(c)) return 0.7; // Linear 한자리 더
-    if([201,202,203,204,301,302,303,304].contains(c)) return 0.9; //가로로 두줄
-    if([401,402,403,404,502].contains(c)) return 0.8; //가로로 세줄
-    if([504, 601, 602, 603].contains(c)) return 0.7; //가로로 네줄
-    if([503, 604].contains(c)) return 0.55; //가로로 다섯줄
+    if ([104, 501].contains(c)) return 0.7; // Linear 한자리 더
+    if ([201, 202, 203, 204, 301, 302, 303, 304].contains(c))
+      return 0.9; //가로로 두줄
+    if ([401, 402, 403, 404, 502].contains(c)) return 0.8; //가로로 세줄
+    if ([504, 601, 602, 603].contains(c)) return 0.7; //가로로 네줄
+    if ([503, 604].contains(c)) return 0.55; //가로로 다섯줄
     return 1;
   }
-
 }
