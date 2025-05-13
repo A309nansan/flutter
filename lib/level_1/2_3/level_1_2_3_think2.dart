@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nansan_flutter/level_1/2_3/widgets/blank_fill_widget.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
 import 'package:nansan_flutter/shared/controllers/timer_controller.dart';
@@ -20,6 +21,7 @@ import 'package:screenshot/screenshot.dart';
 import 'package:collection/collection.dart';
 import 'package:nansan_flutter/shared/provider/EnRiverPodProvider.dart';
 
+import '../../shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
 import '../../shared/widgets/en_result_popup.dart';
 
 // ✅ 상태변경 1. StatefulWidget -> ConsumerStatefulWidget
@@ -59,6 +61,7 @@ class LevelOneTwoThreeThink2State extends ConsumerState<LevelOneTwoThreeThink2>
   Map<String, dynamic> selectedAnswers = {};
   List<List<String>> fixedImageUrls = [];
   List<Map<String, String>> candidates = [];
+  final Map<String, GlobalKey<HandwritingRecognitionZoneState>> zoneKeys = {};
 
   // 페이지 실행 시 작동하는 함수. 수정 필요 x
   @override
@@ -126,10 +129,19 @@ class LevelOneTwoThreeThink2State extends ConsumerState<LevelOneTwoThreeThink2>
 
       setState(() {
         nextProblemCode = response.nextProblemCode;
-        problemData = response.problem;
+        // problemData = response.problem;
+        problemData = {
+          "p1": [ 1, 0, 3, 0, 5, 6, 7, 8, 0 ],
+        };
         answerData = response.answer;
         current = response.current;
         total = response.total;
+        // selectedAnswers = response.answer;
+        selectedAnswers = {
+          "a2": [ 2, 2 ],
+          "a4": [ 4, 4 ],
+          "a9": [ 9, 9 ],
+        };
       });
       _processProblemData(problemData);
     } catch (e) {
@@ -171,13 +183,27 @@ class LevelOneTwoThreeThink2State extends ConsumerState<LevelOneTwoThreeThink2>
   }
 
   // 문제 데이터 받아온 후, 문제에 맞게 데이터 조작
-  void _processProblemData(Map problemData) {}
+  void _processProblemData(Map problemData) {
+    selectedAnswers.updateAll((key, value) => List.filled(value.length, 0));
+  }
 
   // 문제 푸는 로직 수행할때, seletedAnswers 데이터 넣는 로직
-  void _processInputData() {}
+  Future<void> _processInputData() async {
+    for (final key in selectedAnswers.keys) {
+      final zoneKey = zoneKeys[key];
+      if (zoneKey != null && zoneKey.currentState != null) {
+        final recognized = await zoneKey.currentState!.recognize();
+        selectedAnswers[key]![0] = int.tryParse(recognized.toString()) ?? 0;
+      } else {
+        selectedAnswers[key]![0] = 0;
+      }
+    }
+  }
 
   // 정답 여부 체크(보통은 이거쓰면됨)
   Future<void> checkAnswer() async {
+    await _processInputData();
+    debugPrint(selectedAnswers.toString());
     isCorrect = const DeepCollectionEquality().equals(
       answerData,
       selectedAnswers,
@@ -296,19 +322,33 @@ class LevelOneTwoThreeThink2State extends ConsumerState<LevelOneTwoThreeThink2>
                     child: Column(
                       children: [
                         NewHeaderWidget(
-                          headerText: '주요학습활동',
+                          headerText: '개념학습활동',
                           headerTextSize: screenWidth * 0.028,
                           subTextSize: screenWidth * 0.018,
                         ),
                         SizedBox(height: screenHeight * 0.01),
                         NewQuestionTextWidget(
                           questionText:
-                          '회색 빈칸에 알맞은 1 작은 수를 나타내는 그림은 무엇일까요?',
+                          '네모 안에 들어갈 알맞은 숫자를 쓰고, 숫자 개수만큼 칸을 클릭하여 동그라미를 채워 봅시다.',
                           questionTextSize: screenWidth * 0.03,
                         ),
                         SizedBox(height: screenHeight * 0.02),
                         // 여기에 문제 푸는 ui 및 삽입
-
+                        Wrap(
+                          spacing: 8.0,
+                          runSpacing: 8.0,
+                          children: (problemData['p1'] as List<dynamic>? ?? [])
+                              .mapIndexed((index, number) {
+                            final key = 'a${index + 1}';
+                            return BlankFillWidget(
+                              ans: number as int,
+                              answerKey: selectedAnswers.containsKey(key) ? key : null,
+                              zoneKeys: selectedAnswers.containsKey(key) ? zoneKeys : null,
+                              selectedAnswers: selectedAnswers.containsKey(key) ? selectedAnswers : null,
+                            );
+                          })
+                              .toList(),
+                        ),
                       ],
                     ),
                   ),
@@ -345,7 +385,8 @@ class LevelOneTwoThreeThink2State extends ConsumerState<LevelOneTwoThreeThink2>
                                 fontSize: screenWidth * 0.02,
                                 borderRadius: 10,
                                 // TODO : 정답 체크 로직 구현 시 해당 부분 지우고 주석 활성화
-                                onPressed: () => onNextPressed(),
+                                // onPressed: () => onNextPressed(),
+                                onPressed: () => checkAnswer(),
                                 // onPressed: () async {
                                 //   if (isSubmitted) return;
                                 //   await checkAnswer();
