@@ -1,22 +1,32 @@
 import 'package:flutter/material.dart';
 
-class ClickableWidget113 extends StatefulWidget {
-  const ClickableWidget113({
+class ClickableWidget extends StatefulWidget {
+  const ClickableWidget({
     super.key,
-    required this.imageUrl,
-    required this.identifier, // 추가: 고유 식별자 (p1, p2, p3)
-    required this.onClickCountChanged, // 추가: 클릭 카운트 변경 콜백 함수
+    required this.identifier,
+    required this.onClickCountChanged,
+    required this.width,
+    required this.height,
+    required this.bgColor,
+    required this.liColor,
+    required this.textColor,
   });
 
-  final String imageUrl;
-  final String identifier; // 위젯 식별자 (p1, p2, p3)
-  final Function(String, int) onClickCountChanged; // 클릭 카운트 변경 시 호출될 콜백
+  final String identifier;
+  final Function(String, int) onClickCountChanged;
+  // final int identifier;
+  // final Function(int, int) onClickCountChanged;
+  final double width;
+  final double height;
+  final Color bgColor;
+  final Color liColor;
+  final Color textColor;
 
   @override
-  State createState() => _ClickableWidget113State();
+  State createState() => _ClickableWidgetState();
 }
 
-class _ClickableWidget113State extends State<ClickableWidget113> {
+class _ClickableWidgetState extends State<ClickableWidget> {
   // 클릭 횟수를 저장하는 변수
   int clickCount = 0;
   // 각 컨테이너의 상태를 저장하는 리스트
@@ -42,84 +52,51 @@ class _ClickableWidget113State extends State<ClickableWidget113> {
 
   @override
   Widget build(BuildContext context) {
-    // 기존 빌드 메서드 코드 (변경 없음)
-    return SizedBox(
-      width: 600,
-      height: 160,
-      child: Column(
-        children: [
-          SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                alignment: Alignment.center,
-                width: 200,
-                height: 150,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(width: 2, color: Colors.black),
+    return Container(
+      width: widget.width, // GridView에 맞게 너비 조정
+      height: widget.height, // GridView에 맞게 높이 조정
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(width: 2, color: widget.liColor),
+          left: BorderSide(width: 2, color: widget.liColor),
+          bottom: BorderSide(width: 2, color: widget.liColor),
+        ),
+      ),
+      child: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 5, // 5개 열
+          mainAxisSpacing: 0,
+          crossAxisSpacing: 0,
+          childAspectRatio: 50 / 60, // 너비/높이 비율
+        ),
+        itemCount: 10,
+        physics: NeverScrollableScrollPhysics(), // 스크롤 비활성화
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () => handleContainerClick(index),
+            child: Container(
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: widget.bgColor,
+                border: Border(
+                  right: BorderSide(width: 2, color: widget.liColor),
+                  bottom: BorderSide(width: 2, color: widget.liColor),
                 ),
-                child: Image.network(widget.imageUrl),
               ),
-              SizedBox(width: 30),
-              Column(
-                children: [
-                  Row(
-                    children: List.generate(5, (index) {
-                      return GestureDetector(
-                        onTap: () => handleContainerClick(index),
-                        child: Container(
-                          alignment: Alignment.center,
-                          width: 50,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            border: Border.all(width: 1, color: Colors.black),
-                          ),
-                          child:
-                              containerStates[index]
-                                  ? Text(
-                                    'O',
-                                    style: TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  )
-                                  : null,
+              child:
+                  containerStates[index]
+                      ? Text(
+                        'O',
+                        style: TextStyle(
+                          color: widget.textColor,
+                          fontSize: widget.width * 0.1,
+                          fontWeight: FontWeight.bold,
                         ),
-                      );
-                    }),
-                  ),
-                  Row(
-                    children: List.generate(5, (index) {
-                      return GestureDetector(
-                        onTap: () => handleContainerClick(index + 5),
-                        child: Container(
-                          alignment: Alignment.center,
-                          width: 50,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            border: Border.all(width: 1, color: Colors.black),
-                          ),
-                          child:
-                              containerStates[index + 5]
-                                  ? Text(
-                                    'O',
-                                    style: TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  )
-                                  : null,
-                        ),
-                      );
-                    }),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
+                      )
+                      : null,
+            ),
+          );
+        },
       ),
     );
   }
