@@ -77,6 +77,40 @@ class _BoxWithLineWidgetState extends State<BoxWithLineWidget> {
                   color: Colors.red,
                 ),
               ),
+              Positioned(
+                left: 0,
+                top: widget.screenHeight * 0.02 - 4,
+                child: Transform.rotate(
+                  angle: -3.14 / 4,
+                  child: Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(width: 2, color: Colors.red),
+                        left: BorderSide(width: 2, color: Colors.red),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                right: 0,
+                top: widget.screenHeight * 0.02 - 4,
+                child: Transform.rotate(
+                  angle: 3.14 / 4,
+                  child: Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(width: 2, color: Colors.red),
+                        right: BorderSide(width: 2, color: Colors.red),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),

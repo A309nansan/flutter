@@ -3,7 +3,7 @@ import 'package:nansan_flutter/shared/digit_recognition/widgets/handwriting_reco
 
 class DynamicNumberRow extends StatelessWidget {
   final String rowId;
-  final List<int> data;
+  final List<dynamic> data;
   final Map<String, GlobalKey<HandwritingRecognitionZoneState>> zoneKeys;
 
   const DynamicNumberRow({
