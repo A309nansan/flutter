@@ -129,19 +129,11 @@ class LevelOneTwoThreeThink2State extends ConsumerState<LevelOneTwoThreeThink2>
 
       setState(() {
         nextProblemCode = response.nextProblemCode;
-        // problemData = response.problem;
-        problemData = {
-          "p1": [ 1, 0, 3, 0, 5, 6, 7, 8, 0 ],
-        };
-        answerData = response.answer;
+        problemData = response.problem;
+        answerData = Map.from(response.answer);
         current = response.current;
         total = response.total;
-        // selectedAnswers = response.answer;
-        selectedAnswers = {
-          "a2": [ 2, 2 ],
-          "a4": [ 4, 4 ],
-          "a9": [ 9, 9 ],
-        };
+        selectedAnswers = Map.from(response.answer);
       });
       _processProblemData(problemData);
     } catch (e) {
@@ -203,7 +195,6 @@ class LevelOneTwoThreeThink2State extends ConsumerState<LevelOneTwoThreeThink2>
   // 정답 여부 체크(보통은 이거쓰면됨)
   Future<void> checkAnswer() async {
     await _processInputData();
-    debugPrint(selectedAnswers.toString());
     isCorrect = const DeepCollectionEquality().equals(
       answerData,
       selectedAnswers,
@@ -384,18 +375,15 @@ class LevelOneTwoThreeThink2State extends ConsumerState<LevelOneTwoThreeThink2>
                                 buttonText: "제출하기",
                                 fontSize: screenWidth * 0.02,
                                 borderRadius: 10,
-                                // TODO : 정답 체크 로직 구현 시 해당 부분 지우고 주석 활성화
-                                // onPressed: () => onNextPressed(),
-                                onPressed: () => checkAnswer(),
-                                // onPressed: () async {
-                                //   if (isSubmitted) return;
-                                //   await checkAnswer();
-                                //   setState(() {
-                                //     showSubmitPopup = true;
-                                //   });
-                                //   submitController.forward();
-                                //   await submitActivity(context);
-                                // },
+                                onPressed: () async {
+                                  if (isSubmitted) return;
+                                  await checkAnswer();
+                                  setState(() {
+                                    showSubmitPopup = true;
+                                  });
+                                  submitController.forward();
+                                  await submitActivity(context);
+                                },
                               ),
 
                             if (isSubmitted && isCorrect == false) ...[
@@ -406,7 +394,7 @@ class LevelOneTwoThreeThink2State extends ConsumerState<LevelOneTwoThreeThink2>
                                 fontSize: screenWidth * 0.02,
                                 borderRadius: 10,
                                 onPressed: () async {
-                                  checkAnswer();
+                                  await checkAnswer();
                                   setState(() {
                                     showSubmitPopup = true;
                                   });

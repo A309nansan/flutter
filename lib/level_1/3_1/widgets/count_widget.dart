@@ -129,7 +129,6 @@ class _CountWidgetState extends State<CountWidget> {
                   ),
                 ),
               ),
-              // Right arrowhead
               Positioned(
                 right: 0,
                 top: widget.screenHeight * 0.02 - 4,

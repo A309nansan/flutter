@@ -106,7 +106,6 @@ class LevelOneThreeOneBasic2State extends ConsumerState<LevelOneThreeOneBasic2> 
 
   // 페이지 실행 시, 문제 데이터를 불러오는 함수. 수정 필요 x
   Future<void> _loadQuestionData() async {
-    /* api 생성후 살릴 것
     try {
       final response = await _apiService.loadProblemData(problemCode);
       setState(() {
@@ -115,12 +114,15 @@ class LevelOneThreeOneBasic2State extends ConsumerState<LevelOneThreeOneBasic2> 
         answerData = response.answer;
         current = response.current;
         total = response.total;
+        selectedAnswers = {
+          "p1": [ 0, 0, 0 ],
+          "p2": 0
+        };
       });
       _processProblemData(problemData);
     } catch (e) {
       debugPrint('Error loading question data: $e');
     }
-     */
 
     final childProfileJson = await SecureStorageService.getChildProfile();
     final childProfile = jsonDecode(childProfileJson!);
@@ -132,24 +134,6 @@ class LevelOneThreeOneBasic2State extends ConsumerState<LevelOneThreeOneBasic2> 
     debugPrint("📦 불러온 문제 기록: $progress");
 
     EnProblemService.saveContinueProblem(problemCode, childId);
-
-    setState(() {
-      nextProblemCode = "enlv1s3c1jy2";
-      problemData  = {
-        "p1": [ 3, 6, 4 ],
-        "p2": [ 5, 3, 6, 4 ]
-      };
-      answerData = {
-        "p1": [ 3, 6, 4 ],
-        "p2": 6
-      };
-      current = 2;
-      total = 2;
-      selectedAnswers = {
-        "p1": [ 0, 0, 0 ],
-        "p2": 0
-      };
-    });
   }
 
   // 문제 제출할때 함수. 수정 필요 x
@@ -197,13 +181,13 @@ class LevelOneThreeOneBasic2State extends ConsumerState<LevelOneThreeOneBasic2> 
   }
 
   // 정답 여부 체크(보통은 이거쓰면됨)
-  void checkAnswer() async {
+  Future<void> checkAnswer() async {
     await _processInputData();
     isCorrect = const DeepCollectionEquality().equals(
       answerData,
       selectedAnswers,
     );
-    // _submitAnswer();
+    _submitAnswer();
   }
 
   // 문제푸는 스크린 이미지 서버로 전송. 수정 필요 x
@@ -362,7 +346,7 @@ class LevelOneThreeOneBasic2State extends ConsumerState<LevelOneThreeOneBasic2> 
                         ),
                         SizedBox(height: screenHeight * 0.02),
                         Selection(
-                          boxValues: problemData["p2"],
+                          boxValues: List<int>.from(problemData["p2"]),
                           onSelectionChanged: (selectedValue) {
                             setState(() {
                               selectedAnswers["p2"] = selectedValue;
@@ -412,7 +396,7 @@ class LevelOneThreeOneBasic2State extends ConsumerState<LevelOneThreeOneBasic2> 
                                       : () => {
                                     submitController.forward(),
                                     showSubmitPopup = true,
-                                    // submitActivity(context),
+                                    submitActivity(context),
                                     checkAnswer(),
                                   },
                                 ),
@@ -425,13 +409,12 @@ class LevelOneThreeOneBasic2State extends ConsumerState<LevelOneThreeOneBasic2> 
                                   buttonText: "제출하기",
                                   fontSize: screenWidth * 0.02,
                                   borderRadius: 10,
-                                  onPressed:
-                                      () => {
+                                  onPressed: () async {
+                                    await checkAnswer();
                                     setState(() {
-                                      checkAnswer();
                                       showSubmitPopup = true;
-                                    }),
-                                    submitController.forward(),
+                                    });
+                                    submitController.forward();
                                   },
                                 ),
                                 const SizedBox(width: 20),
