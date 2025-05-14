@@ -19,6 +19,8 @@ import 'package:nansan_flutter/shared/widgets/new_header_widget.dart';
 import 'package:nansan_flutter/shared/widgets/new_question_text.dart';
 import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
 import 'package:screenshot/screenshot.dart';
+import 'package:collection/collection.dart';
+
 
 import '../../../shared/provider/EnRiverPodProvider.dart';
 import '../../../shared/widgets/en_result_popup.dart';
@@ -52,18 +54,18 @@ class _LevelOneOneThreeThinkState extends ConsumerState<LevelOneOneThreeThink>
   bool isShowResult = false;
   Map problemData = {};
   Map answerData = {};
-  Map<String, int> selectedAnswers = {"p1": 0, "p2": 0, "p3": 0};
+  Map<String, List<int>> selectedAnswers = {"answer": <int>[]};
   late AnimationController submitController;
   late AnimationController resultController;
   late Animation<double> submitAnimation;
   late Animation<double> resultAnimation;
 
   //페이지별 변수
-  String fruit = '';
-  String exampleData = '';
-  String p1Data = '';
-  String p2Data = '';
-  String p3Data = '';
+  late String object;
+  late int p1Data;
+  late int p2Data;
+  late int p3Data;
+  List<int> selectNumber = [0,0,0];
 
   @override
   void initState() {
@@ -122,7 +124,6 @@ class _LevelOneOneThreeThinkState extends ConsumerState<LevelOneOneThreeThink>
       setState(() {
         nextProblemCode = response.nextProblemCode;
         problemCode = response.problemCode;
-        // problem과 answer 데이터 저장
         problemData = response.problem;
         answerData = response.answer;
         current = response.current;
@@ -176,31 +177,27 @@ class _LevelOneOneThreeThinkState extends ConsumerState<LevelOneOneThreeThink>
   }
 
   void _processProblemData(problemData) {
-    exampleData = problemData['example'];
-    p1Data = problemData['p1'];
-    p2Data = problemData['p2'];
-    p3Data = problemData['p3'];
-
-    //fruit = problemData['fruit'];
-    //p1Data = problemData['problem'][0];
-    //p2Data = problemData['problem'][1];
-    //p3Data = problemData['problem'][2];
+    object = problemData['object'];
+    p1Data = problemData['problem'][0];
+    p2Data = problemData['problem'][1];
+    p3Data = problemData['problem'][2];
   }
 
   // 수정: 제출 시 최종 입력 데이터 처리
-  // void _processInputData(int identifier, int count) {
-  void _processInputData(String identifier, int count) {
+  void _processInputData(int identifier, int count) {
     setState(() {
-      selectedAnswers[identifier] = count;
+      selectNumber[identifier] = count;
+      selectedAnswers["answer"] = selectNumber;
     });
   }
 
   void checkAnswer() {
     _timerController.stop();
 
-    isCorrect = answerData.entries.every((entry) {
-      return selectedAnswers[entry.key] == entry.value;
-    });
+    isCorrect = const DeepCollectionEquality().equals(
+      answerData,
+      selectedAnswers,
+    );
 
     _submitAnswer();
   }
@@ -302,221 +299,214 @@ class _LevelOneOneThreeThinkState extends ConsumerState<LevelOneOneThreeThink>
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        Screenshot(
-                          controller: screenshotController,
-                          child: Container(
-                            color: Colors.white,
-                            child: Column(
-                              children: [
-                                NewHeaderWidget(
-                                  headerText: '개념학습활동',
-                                  headerTextSize: screenWidth * 0.028,
-                                  subTextSize: screenWidth * 0.018,
-                                ),
-                                SizedBox(height: screenHeight * 0.01),
-                                NewQuestionTextWidget(
-                                  questionText:
-                                      '<보기>와 같이 그림이 나타내는 수만큼 네모를 클릭해 보세요!',
-                                  questionTextSize: screenWidth * 0.03,
-                                ),
-                                ExampleWidget113(
-                                  exampleData: exampleData,
-                                  width: screenWidth,
-                                  height: screenHeight,
-                                ),
-                                SizedBox(height: screenHeight * 0.02),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      alignment: Alignment.center,
-                                      width: screenWidth * 0.3,
-                                      height: screenHeight * 0.15,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(
-                                          width: 2,
-                                          color: Colors.lightBlue,
-                                        ),
-                                      ),
-                                      child: Image.network(p1Data),
-                                      // child: Image.Asset('assets/images/number/$fruit/$p1Data'),
-                                    ),
-                                    SizedBox(width: screenWidth * 0.05),
-                                    ClickableWidget(
-                                      width: screenWidth * 0.5,
-                                      height: screenWidth * 0.24,
-                                      bgColor: Colors.white,
-                                      liColor: Colors.black,
-                                      textColor: Colors.black,
-                                      identifier: 'p1', // p1 식별자 전달
-                                      //idetifier : 0,
-                                      onClickCountChanged:
-                                          _processInputData, // 콜백 함수 전달
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: screenHeight * 0.02),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      alignment: Alignment.center,
-                                      width: screenWidth * 0.3,
-                                      height: screenHeight * 0.15,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(
-                                          width: 2,
-                                          color: Colors.lightBlue,
-                                        ),
-                                      ),
-                                      child: Image.network(p2Data),
-                                      // child: Image.Asset('assets/images/number/$fruit/$p2Data'),
-                                    ),
-                                    SizedBox(width: screenWidth * 0.05),
-                                    ClickableWidget(
-                                      width: screenWidth * 0.5,
-                                      height: screenWidth * 0.24,
-                                      bgColor: Colors.white,
-                                      liColor: Colors.black,
-                                      textColor: Colors.black,
-                                      identifier: 'p2', // p1 식별자 전달
-                                      //idetifier : 1,
-                                      onClickCountChanged:
-                                          _processInputData, // 콜백 함수 전달
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: screenHeight * 0.02),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      alignment: Alignment.center,
-                                      width: screenWidth * 0.3,
-                                      height: screenHeight * 0.15,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(
-                                          width: 2,
-                                          color: Colors.lightBlue,
-                                        ),
-                                      ),
-                                      child: Image.network(p3Data),
-                                      //child: Image.Asset('assets/images/number/$fruit/$p3Data'),
-                                    ),
-                                    SizedBox(width: screenWidth * 0.05),
-                                    ClickableWidget(
-                                      width: screenWidth * 0.5,
-                                      height: screenWidth * 0.24,
-                                      bgColor: Colors.white,
-                                      liColor: Colors.black,
-                                      textColor: Colors.black,
-                                      identifier: 'p3', // p1 식별자 전달
-                                      //idetifier : 2,
-                                      onClickCountChanged:
-                                          _processInputData, // 콜백 함수 전달
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Spacer(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            EnProgressBarWidget(current: current, total: total),
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 30.0,
-                                vertical: screenHeight * 0.02,
-                              ),
-                              child: AnimatedSwitcher(
-                                duration: const Duration(milliseconds: 300),
-                                transitionBuilder: (child, animation) {
-                                  return FadeTransition(
-                                    opacity: animation,
-                                    child: child,
-                                  );
-                                },
-                                child: Row(
-                                  key: ValueKey<String>(
-                                    '${isSubmitted}_$isCorrect',
+                    child: Container(
+                      color: Colors.white,
+                      child: Column(
+                        children: [
+                          Screenshot(
+                            controller: screenshotController,
+                            child: Container(
+                              color: Colors.white,
+                              child: Column(
+                                children: [
+                                  NewHeaderWidget(
+                                    headerText: '개념학습활동',
+                                    headerTextSize: screenWidth * 0.028,
+                                    subTextSize: screenWidth * 0.018,
                                   ),
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    if (!isSubmitted)
-                                      ButtonWidget(
-                                        height: screenHeight * 0.035,
-                                        width: screenWidth * 0.18,
-                                        buttonText: "제출하기",
-                                        fontSize: screenWidth * 0.02,
-                                        borderRadius: 10,
-                                        onPressed:
-                                            (isSubmitted)
-                                                ? null
-                                                : () => {
-                                                  submitController.forward(),
-                                                  showSubmitPopup = true,
-                                                  submitActivity(context),
-                                                  checkAnswer(),
-                                                },
+                                  SizedBox(height: screenHeight * 0.01),
+                                  NewQuestionTextWidget(
+                                    questionText:
+                                        '<보기>와 같이 그림이 나타내는 수만큼 네모를 클릭해 보세요!',
+                                    questionTextSize: screenWidth * 0.03,
+                                  ),
+                                  ExampleWidget113(width: screenWidth, height: screenHeight, object : object),
+                                  SizedBox(height: screenHeight * 0.02),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        alignment: Alignment.center,
+                                        width: screenWidth * 0.3,
+                                        height: screenHeight * 0.15,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(10),
+                                          border: Border.all(
+                                            width: 2,
+                                            color: Colors.lightBlue,
+                                          ),
+                                        ),
+                                        child: Image.asset('assets/images/number/$object/$p1Data.png'),
                                       ),
-
-                                    if (isSubmitted && isCorrect == false) ...[
-                                      ButtonWidget(
-                                        height: screenHeight * 0.035,
-                                        width: screenWidth * 0.18,
-                                        buttonText: "제출하기",
-                                        fontSize: screenWidth * 0.02,
-                                        borderRadius: 10,
-                                        onPressed:
-                                            () => {
-                                              setState(() {
-                                                checkAnswer();
-                                                showSubmitPopup = true;
-                                              }),
-                                              submitController.forward(),
-                                            },
-                                      ),
-                                      const SizedBox(width: 20),
-                                      ButtonWidget(
-                                        height: screenHeight * 0.035,
-                                        width: screenWidth * 0.18,
-                                        buttonText: isEnd ? "학습종료" : "다음문제",
-                                        fontSize: screenWidth * 0.02,
-                                        borderRadius: 10,
-                                        onPressed:
-                                            isEnd
-                                                ? () => showResult()
-                                                : () => onNextPressed(),
+                                      SizedBox(width: screenWidth * 0.05),
+                                      ClickableWidget(
+                                        width: screenWidth * 0.5,
+                                        height: screenWidth * 0.24,
+                                        bgColor: Colors.white,
+                                        liColor: Colors.black,
+                                        textColor: Colors.black,
+                                        identifier : 0,
+                                        onClickCountChanged:
+                                            _processInputData, // 콜백 함수 전달
                                       ),
                                     ],
-
-                                    if (isSubmitted && isCorrect == true)
-                                      ButtonWidget(
-                                        height: screenHeight * 0.035,
-                                        width: screenWidth * 0.18,
-                                        buttonText: isEnd ? "학습종료" : "다음문제",
-                                        fontSize: screenWidth * 0.02,
-                                        borderRadius: 10,
-                                        onPressed:
-                                            isEnd
-                                                ? () => showResult()
-                                                : () => onNextPressed(),
+                                  ),
+                                  SizedBox(height: screenHeight * 0.02),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        alignment: Alignment.center,
+                                        width: screenWidth * 0.3,
+                                        height: screenHeight * 0.15,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(10),
+                                          border: Border.all(
+                                            width: 2,
+                                            color: Colors.lightBlue,
+                                          ),
+                                        ),
+                                        child: Image.asset('assets/images/number/$object/$p2Data.png'),
                                       ),
-                                  ],
-                                ),
+                                      SizedBox(width: screenWidth * 0.05),
+                                      ClickableWidget(
+                                        width: screenWidth * 0.5,
+                                        height: screenWidth * 0.24,
+                                        bgColor: Colors.white,
+                                        liColor: Colors.black,
+                                        textColor: Colors.black,
+                                        identifier : 1,
+                                        onClickCountChanged:
+                                            _processInputData, // 콜백 함수 전달
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: screenHeight * 0.02),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        alignment: Alignment.center,
+                                        width: screenWidth * 0.3,
+                                        height: screenHeight * 0.15,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(10),
+                                          border: Border.all(
+                                            width: 2,
+                                            color: Colors.lightBlue,
+                                          ),
+                                        ),
+                                        child: Image.asset('assets/images/number/$object/$p3Data.png'),
+                                      ),
+                                      SizedBox(width: screenWidth * 0.05),
+                                      ClickableWidget(
+                                        width: screenWidth * 0.5,
+                                        height: screenWidth * 0.24,
+                                        bgColor: Colors.white,
+                                        liColor: Colors.black,
+                                        textColor: Colors.black,
+                                        identifier : 2,
+                                        onClickCountChanged:
+                                            _processInputData, // 콜백 함수 전달
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
-                      ],
+                          ),
+                          Spacer(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              EnProgressBarWidget(current: current, total: total),
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 30.0,
+                                  vertical: screenHeight * 0.02,
+                                ),
+                                child: AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 300),
+                                  transitionBuilder: (child, animation) {
+                                    return FadeTransition(
+                                      opacity: animation,
+                                      child: child,
+                                    );
+                                  },
+                                  child: Row(
+                                    key: ValueKey<String>(
+                                      '${isSubmitted}_$isCorrect',
+                                    ),
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      if (!isSubmitted)
+                                        ButtonWidget(
+                                          height: screenHeight * 0.035,
+                                          width: screenWidth * 0.18,
+                                          buttonText: "제출하기",
+                                          fontSize: screenWidth * 0.02,
+                                          borderRadius: 10,
+                                          onPressed:
+                                              (isSubmitted)
+                                                  ? null
+                                                  : () => {
+                                                    submitController.forward(),
+                                                    showSubmitPopup = true,
+                                                    submitActivity(context),
+                                                    checkAnswer(),
+                                                  },
+                                        ),
+
+                                      if (isSubmitted && isCorrect == false) ...[
+                                        ButtonWidget(
+                                          height: screenHeight * 0.035,
+                                          width: screenWidth * 0.18,
+                                          buttonText: "제출하기",
+                                          fontSize: screenWidth * 0.02,
+                                          borderRadius: 10,
+                                          onPressed:
+                                              () => {
+                                                setState(() {
+                                                  checkAnswer();
+                                                  showSubmitPopup = true;
+                                                }),
+                                                submitController.forward(),
+                                              },
+                                        ),
+                                        const SizedBox(width: 20),
+                                        ButtonWidget(
+                                          height: screenHeight * 0.035,
+                                          width: screenWidth * 0.18,
+                                          buttonText: isEnd ? "학습종료" : "다음문제",
+                                          fontSize: screenWidth * 0.02,
+                                          borderRadius: 10,
+                                          onPressed:
+                                              isEnd
+                                                  ? () => showResult()
+                                                  : () => onNextPressed(),
+                                        ),
+                                      ],
+
+                                      if (isSubmitted && isCorrect == true)
+                                        ButtonWidget(
+                                          height: screenHeight * 0.035,
+                                          width: screenWidth * 0.18,
+                                          buttonText: isEnd ? "학습종료" : "다음문제",
+                                          fontSize: screenWidth * 0.02,
+                                          borderRadius: 10,
+                                          onPressed:
+                                              isEnd
+                                                  ? () => showResult()
+                                                  : () => onNextPressed(),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   if (showSubmitPopup)

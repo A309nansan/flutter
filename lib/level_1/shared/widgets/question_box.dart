@@ -3,25 +3,22 @@ import 'package:flutter/material.dart';
 class QuestionBox extends StatefulWidget {
   final double width;
   final double height;
-  final String imageText;
-  final List<String> options;
-  //final List<int> options;
-  final String correctAnswer;
+  final List<int> options;
   final int questionId;
-  final Function(int, String) onAnswerSelected;
-  // final Function(int, int) onAnswerSelected;
+  final Function(int, int) onAnswerSelected;
   final String? selectedAnswer;
-  //final int number;
+  final int number;
+  final String object;
 
   const QuestionBox({
     super.key,
     required this.width,
     required this.height,
-    required this.imageText,
     required this.options,
-    required this.correctAnswer,
     required this.questionId,
     required this.onAnswerSelected,
+    required this.number,
+    required this.object,
     this.selectedAnswer,
   });
 
@@ -52,8 +49,7 @@ class _QuestionBoxState extends State<QuestionBox> {
               borderRadius: BorderRadius.circular(10),
               border: Border.all(color: Colors.black, width: 2),
             ),
-            child: Image.network(widget.imageText),
-            // child: Image.asset('assets/images/number/$object/$number'),
+            child: Image.asset('assets/images/number/${widget.object}/${widget.number}.png'),
           ),
           Container(
             width: widget.width * 0.38,
@@ -82,7 +78,7 @@ class _QuestionBoxState extends State<QuestionBox> {
                                   ? Colors.blue[100]
                                   : null, // 선택된 항목 강조
                           child: Text(
-                            option,
+                            '$option',
                             style: TextStyle(
                               fontSize: widget.width * 0.05,
                               fontWeight:
