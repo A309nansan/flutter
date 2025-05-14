@@ -12,10 +12,8 @@ class ClickableWidget extends StatefulWidget {
     required this.textColor,
   });
 
-  final String identifier;
-  final Function(String, int) onClickCountChanged;
-  // final int identifier;
-  // final Function(int, int) onClickCountChanged;
+  final int identifier;
+  final Function(int, int) onClickCountChanged;
   final double width;
   final double height;
   final Color bgColor;

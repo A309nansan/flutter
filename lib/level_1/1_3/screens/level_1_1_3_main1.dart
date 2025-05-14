@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -51,22 +52,17 @@ class _LevelOneOneThreeMain1State extends ConsumerState<LevelOneOneThreeMain1>
   bool isShowResult = false;
   Map<String, dynamic> problemData = {};
   Map<String, dynamic> answerData = {};
-  List<String> selectedAnswers = [];
-  // List<int> selectedAnswers = [];
+  List<int> selectedAnswers = [];
   late AnimationController submitController;
   late AnimationController resultController;
   late Animation<double> submitAnimation;
   late Animation<double> resultAnimation;
 
   // 옵션
-  List<String> problem1Option = [];
-  List<String> problem2Option = [];
-  List<String> problem3Option = [];
-  List<String> problem4Option = [];
-  // List<int> problem1Option = [];
-  // List<int> problem2Option = [];
-  // List<int> problem3Option = [];
-  // List<int> problem4Option = [];
+  List<int> problem1Option = [0,0,0];
+  List<int> problem2Option = [0,0,0];
+  List<int> problem3Option = [0,0,0];
+  List<int> problem4Option = [0,0,0];
   final Map<String, String?> input = {};
 
   @override
@@ -139,15 +135,15 @@ class _LevelOneOneThreeMain1State extends ConsumerState<LevelOneOneThreeMain1>
 
   // 문제별 문제데이터 처리파트
   void _processProblemData(problemData) {
-    problem1Option = problemData['problem1']['candidates'].cast<String>();
-    problem2Option = problemData['problem2']['candidates'].cast<String>();
-    problem3Option = problemData['problem3']['candidates'].cast<String>();
-    problem4Option = problemData['problem4']['candidates'].cast<String>();
+    List<dynamic> p1 = problemData['p1']['candidates'];
+    List<dynamic> p2 = problemData['p2']['candidates'];
+    List<dynamic> p3 = problemData['p3']['candidates'];
+    List<dynamic> p4 = problemData['p4']['candidates'];
 
-    // problem1Option = problemData['p1']['candidates'];
-    // problem2Option = problemData['p2']['candidates'];
-    // problem3Option = problemData['p2']['candidates'];
-    // problem4Option = problemData['p4']['candidates'];
+    problem1Option = List<int>.from(p1) ;
+    problem2Option = List<int>.from(p2) ;
+    problem3Option = List<int>.from(p3) ;
+    problem4Option = List<int>.from(p4) ;
   }
 
   // 제출함수(제출하기 버튼 누를시 작동하도록 설정)
@@ -334,18 +330,13 @@ class _LevelOneOneThreeMain1State extends ConsumerState<LevelOneOneThreeMain1>
                                     QuestionBox(
                                       width: screenWidth,
                                       height: screenHeight,
-                                      imageText:
-                                          problemData['problem1']['image'],
-                                      //object: problemData['p1']['object],
-                                      //number: problemData['p1']['number'],
+                                      object: problemData['object'],
+                                      number: problemData['p1']['number'],
                                       options: problem1Option,
-                                      correctAnswer:
-                                          answerData['problem1'], // TODO: 삭제
                                       questionId: 0,
                                       onAnswerSelected: (questionId, selected) {
                                         setState(() {
-                                          input['problem1'] = selected;
-                                          //selectedAnswers['questionId'] = selected;
+                                          selectedAnswers[questionId] = selected;
                                         });
                                       },
                                       selectedAnswer: input['problem1'],
@@ -354,21 +345,19 @@ class _LevelOneOneThreeMain1State extends ConsumerState<LevelOneOneThreeMain1>
                                     QuestionBox(
                                       width: screenWidth,
                                       height: screenHeight,
-                                      imageText:
-                                          problemData['problem2']['image'],
+                                      object: problemData['object'],
+                                      number: problemData['p2']['number'],
                                       options: problem2Option,
-                                      correctAnswer: answerData['problem2'],
                                       questionId: 1,
                                       onAnswerSelected: (questionId, selected) {
                                         setState(() {
-                                          input['problem2'] = selected;
+                                          selectedAnswers[questionId] = selected;
                                         });
                                       },
-                                      selectedAnswer: input['problem2'],
+                                      selectedAnswer: input['problem1'],
                                     ),
                                   ],
                                 ),
-
                                 SizedBox(height: screenHeight * 0.03),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -376,14 +365,13 @@ class _LevelOneOneThreeMain1State extends ConsumerState<LevelOneOneThreeMain1>
                                     QuestionBox(
                                       width: screenWidth,
                                       height: screenHeight,
-                                      imageText:
-                                          problemData['problem3']['image'],
+                                      object: problemData['object'],
+                                      number: problemData['p3']['number'],
                                       options: problem3Option,
-                                      correctAnswer: answerData['problem3'],
                                       questionId: 2,
                                       onAnswerSelected: (questionId, selected) {
                                         setState(() {
-                                          input['problem3'] = selected;
+                                          selectedAnswers[questionId] = selected;
                                         });
                                       },
                                       selectedAnswer: input['problem3'],
@@ -392,15 +380,13 @@ class _LevelOneOneThreeMain1State extends ConsumerState<LevelOneOneThreeMain1>
                                     QuestionBox(
                                       width: screenWidth,
                                       height: screenHeight,
-                                      imageText:
-                                          problemData['problem4']['image'],
+                                      object: problemData['object'],
+                                      number: problemData['p4']['number'],
                                       options: problem4Option,
-                                      correctAnswer: answerData['problem4'],
-                                      questionId: 3,
+                                      questionId: 1,
                                       onAnswerSelected: (questionId, selected) {
                                         setState(() {
-                                          input['problem4'] = selected;
-                                          debugPrint('$input');
+                                          selectedAnswers[questionId] = selected;
                                         });
                                       },
                                       selectedAnswer: input['problem4'],
