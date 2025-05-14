@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 class ExampleWidget113 extends StatelessWidget {
   const ExampleWidget113({
     super.key,
-    required this.exampleData,
     required this.width,
     required this.height,
+    required this.object
   });
 
-  final String exampleData;
   final double width;
   final double height;
+  final String object;
 
   @override
   Widget build(BuildContext context) {
@@ -50,8 +50,7 @@ class ExampleWidget113 extends StatelessWidget {
                   border: Border.all(width: 2, color: Colors.lightBlue),
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                 ),
-                child: Image.network(exampleData),
-                // child: Image.asset('assets/images/number/$fruit/2')
+                child: Image.asset('assets/images/number/$object/2.png')
               ),
               SizedBox(width: width * 0.1),
               Container(
