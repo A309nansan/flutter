@@ -3,12 +3,16 @@ import 'package:flutter/material.dart';
 class ClickableAnimalCard extends StatelessWidget {
   const ClickableAnimalCard({
     super.key,
+    required this.width,
+    required this.height,
     required this.animalName,
     required this.isSelected,
     required this.onTap,
   });
 
-  final String animalName;
+  final double width;
+  final double height;
+  final int animalName;
   final bool isSelected;
   final VoidCallback onTap;
 
@@ -18,8 +22,8 @@ class ClickableAnimalCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         alignment: Alignment.center,
-        width: 75,
-        height: 80,
+        width: width * 0.12,
+        height: height * 0.08,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
@@ -28,7 +32,7 @@ class ClickableAnimalCard extends StatelessWidget {
           ),
           color: isSelected ? Colors.amber.shade100 : Colors.grey.shade300,
         ),
-        child: Image.network(animalName),
+        child: Image.asset('assets/images/number/zodiac/${animalName.toString()}.png'),
       ),
     );
   }

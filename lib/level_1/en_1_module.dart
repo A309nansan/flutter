@@ -2,6 +2,7 @@ import 'package:nansan_flutter/level_1/1_1/screens/level_1_1_1_think.dart';
 import 'package:nansan_flutter/level_1/1_3/screens/level_1_1_3_main2.dart';
 import 'package:nansan_flutter/level_1/1_3/screens/level_1_1_3_main3.dart';
 import 'package:nansan_flutter/level_1/1_3/screens/level_1_1_3_think.dart';
+import 'package:nansan_flutter/level_1/1_4/level_1_1_4_think1.dart';
 import 'package:nansan_flutter/level_1/1_4/level_1_1_4_think2.dart';
 import 'package:nansan_flutter/level_1/1_4/level_1_1_4_think3.dart';
 import 'package:nansan_flutter/level_1/1_4/level_1_1_4_think4.dart';

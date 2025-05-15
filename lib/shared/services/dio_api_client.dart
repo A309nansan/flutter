@@ -28,7 +28,7 @@ class ApiClient {
             options.headers['Authorization'] =
             'Bearer ${TokenStorage.accessToken}';
           }
-          return handler.next(options);
+          return handler.next(options); `
         },
         onError: (DioException error, handler) async {
           final retryCount =

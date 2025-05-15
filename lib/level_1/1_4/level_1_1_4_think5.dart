@@ -307,7 +307,7 @@ class Level114Think5State extends ConsumerState<Level114Think5>
                                   SizedBox(height: screenHeight * 0.01),
                                   NewQuestionTextWidget(
                                     questionText:
-                                        '회색 빈칸에 알맞은 1 작은 수를 나타내는 그림은 무엇일까요?',
+                                        '5. 숫자를 완성하기 위해 몇 개가 더 필요할까요?',
                                     questionTextSize: screenWidth * 0.03,
                                   ),
                                   SizedBox(height: screenHeight * 0.02),

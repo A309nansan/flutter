@@ -104,7 +104,6 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
 
   // 페이지 실행 시, 문제 데이터를 불러오는 함수. 수정 필요 x
   Future<void> _loadQuestionData() async {
-    /* api 생성후 살릴 것
     try {
       final response = await _apiService.loadProblemData(problemCode);
       setState(() {
@@ -118,7 +117,6 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
     } catch (e) {
       debugPrint('Error loading question data: $e');
     }
-     */
 
     final childProfileJson = await SecureStorageService.getChildProfile();
     final childProfile = jsonDecode(childProfileJson!);
@@ -132,7 +130,6 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
     EnProblemService.saveContinueProblem(problemCode, childId);
 
     setState(() {
-      nextProblemCode = "enlv1s2c3jy2";
       problemData  = {
         "p1": [ 1, 2, 3 ],
       };
@@ -377,15 +374,16 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
                                   buttonText: "제출하기",
                                   fontSize: screenWidth * 0.02,
                                   borderRadius: 10,
-                                  onPressed:
-                                  (isSubmitted)
-                                      ? null
-                                      : () => {
-                                    submitController.forward(),
-                                    showSubmitPopup = true,
-                                    // submitActivity(context),
-                                    checkAnswer(),
-                                  },
+                                  onPressed: onNextPressed,
+                                  // onPressed:
+                                  // (isSubmitted)
+                                  //     ? null
+                                  //     : () => {
+                                  //   submitController.forward(),
+                                  //   showSubmitPopup = true,
+                                  //   // submitActivity(context),
+                                  //   checkAnswer(),
+                                  // },
                                 ),
 
                               if (isSubmitted &&

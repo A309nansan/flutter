@@ -308,7 +308,7 @@ class _LevelOneOneFourThink2State extends ConsumerState<LevelOneOneFourThink2>
                                 SizedBox(height: screenHeight * 0.01),
                                 NewQuestionTextWidget(
                                   questionText:
-                                      '1. 그림의 수를 세고, 알맞은 숫자 이름을 클릭하세요.',
+                                      '2. 그림의 수를 세고, 알맞은 숫자 이름을 클릭하세요.',
                                   questionTextSize: screenWidth * 0.03,
                                 ),
                                 SizedBox(height: screenWidth * 0.03),

@@ -342,7 +342,7 @@ class Level141main2State extends ConsumerState<Level141main2>
                                         children: [
                                           NewQuestionTextWidget(
                                             questionText:
-                                                '2. <보기>와 같이 사과가 $problemNumber개 되도록 오른쪽 사과주머니를 \n클릭하여 열고 빈칸에 알맞게 사과를 옮겨 보세요.',
+                                                '2. <보기>와 같이 사과가 $problemNumber개 되도록 오른쪽  사과주머니를 \n클릭하여 열고 빈칸에 알맞게 사과를 옮겨 보세요.',
                                             questionTextSize:
                                                 screenWidth * 0.03,
                                           ),
