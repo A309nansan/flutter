@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nansan_flutter/level_1/shared/widgets/question_box_String.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
 import 'package:nansan_flutter/level_1/shared/widgets/question_box.dart';
@@ -23,16 +24,16 @@ import 'package:screenshot/screenshot.dart';
 import '../../../shared/provider/EnRiverPodProvider.dart';
 import '../../../shared/widgets/en_result_popup.dart';
 
-class LevelOneOneThreeMain1 extends ConsumerStatefulWidget {
+class LevelOneOneFourThink4 extends ConsumerStatefulWidget {
   final String problemCode;
-  const LevelOneOneThreeMain1({super.key, required this.problemCode});
+  const LevelOneOneFourThink4({super.key, required this.problemCode});
 
   @override
-  ConsumerState<LevelOneOneThreeMain1> createState() =>
-      _LevelOneOneThreeMain1State();
+  ConsumerState<LevelOneOneFourThink4> createState() =>
+      _LevelOneOneFourThink4State();
 }
 
-class _LevelOneOneThreeMain1State extends ConsumerState<LevelOneOneThreeMain1>
+class _LevelOneOneFourThink4State extends ConsumerState<LevelOneOneFourThink4>
     with TickerProviderStateMixin {
   // 필수코드
   final ScreenshotController screenshotController = ScreenshotController();
@@ -42,8 +43,8 @@ class _LevelOneOneThreeMain1State extends ConsumerState<LevelOneOneThreeMain1>
   int? elapsedSeconds;
   int current = 1;
   int total = 1;
-  String nextProblemCode = 'enlv1s1c3jy2';
-  String problemCode = 'enlv1s1c3jy1';
+  String nextProblemCode = 'enlv1s1cgn5';
+  String problemCode = 'enlv1s1c4gn4';
   bool isSubmitted = false;
   bool isCorrect = false;
   bool showSubmitPopup = false;
@@ -52,17 +53,17 @@ class _LevelOneOneThreeMain1State extends ConsumerState<LevelOneOneThreeMain1>
   bool isShowResult = false;
   Map<String, dynamic> problemData = {};
   Map<String, dynamic> answerData = {};
-  List<int> selectedAnswers = [0,0,0,0];
+  List<String> selectedAnswers = ['0','0','0','0'];
   late AnimationController submitController;
   late AnimationController resultController;
   late Animation<double> submitAnimation;
   late Animation<double> resultAnimation;
 
   // 옵션
-  List<int> problem1Option = [0,0,0];
-  List<int> problem2Option = [0,0,0];
-  List<int> problem3Option = [0,0,0];
-  List<int> problem4Option = [0,0,0];
+  List<String> problem1Option = ['0','0','0'];
+  List<String> problem2Option = ['0','0','0'];
+  List<String> problem3Option = ['0','0','0'];
+  List<String> problem4Option = ['0','0','0'];
 
   @override
   void initState() {
@@ -139,12 +140,12 @@ class _LevelOneOneThreeMain1State extends ConsumerState<LevelOneOneThreeMain1>
     List<dynamic> p3 = problemData['p3']['candidates'];
     List<dynamic> p4 = problemData['p4']['candidates'];
 
-    problem1Option = List<int>.from(p1) ;
-    problem2Option = List<int>.from(p2) ;
-    problem3Option = List<int>.from(p3) ;
-    problem4Option = List<int>.from(p4) ;
+    problem1Option = List<String>.from(p1) ;
+    problem2Option = List<String>.from(p2) ;
+    problem3Option = List<String>.from(p3) ;
+    problem4Option = List<String>.from(p4) ;
 
-    debugPrint('$answerData');
+    debugPrint('$problem1Option');
   }
 
   // 제출함수(제출하기 버튼 누를시 작동하도록 설정)
@@ -308,14 +309,14 @@ class _LevelOneOneThreeMain1State extends ConsumerState<LevelOneOneThreeMain1>
                                 SizedBox(height: screenHeight * 0.01),
                                 NewQuestionTextWidget(
                                   questionText:
-                                      '1. 그림의 수를 세고, 알맞은 숫자 이름을 클릭하세요.',
+                                      '2. 그림의 수를 세고, 알맞은 숫자 이름을 클릭하세요.',
                                   questionTextSize: screenWidth * 0.03,
                                 ),
                                 SizedBox(height: screenWidth * 0.03),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    QuestionBox(
+                                    QuestionBoxString(
                                       width: screenWidth,
                                       height: screenHeight,
                                       object: problemData['object'],
@@ -325,13 +326,12 @@ class _LevelOneOneThreeMain1State extends ConsumerState<LevelOneOneThreeMain1>
                                       onAnswerSelected: (questionId, selected) {
                                         setState(() {
                                           selectedAnswers[questionId] = selected;
-                                          debugPrint('$selectedAnswers');
                                         });
                                       },
                                       selectedAnswer: selectedAnswers[0],
                                     ),
                                     SizedBox(width: screenHeight * 0.03),
-                                    QuestionBox(
+                                    QuestionBoxString(
                                       width: screenWidth,
                                       height: screenHeight,
                                       object: problemData['object'],
@@ -341,7 +341,6 @@ class _LevelOneOneThreeMain1State extends ConsumerState<LevelOneOneThreeMain1>
                                       onAnswerSelected: (questionId, selected) {
                                         setState(() {
                                           selectedAnswers[questionId] = selected;
-                                          debugPrint('$selectedAnswers');
                                         });
                                       },
                                       selectedAnswer: selectedAnswers[1],
@@ -352,7 +351,7 @@ class _LevelOneOneThreeMain1State extends ConsumerState<LevelOneOneThreeMain1>
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    QuestionBox(
+                                    QuestionBoxString(
                                       width: screenWidth,
                                       height: screenHeight,
                                       object: problemData['object'],
@@ -362,13 +361,12 @@ class _LevelOneOneThreeMain1State extends ConsumerState<LevelOneOneThreeMain1>
                                       onAnswerSelected: (questionId, selected) {
                                         setState(() {
                                           selectedAnswers[questionId] = selected;
-                                          debugPrint('$selectedAnswers');
                                         });
                                       },
                                       selectedAnswer: selectedAnswers[2],
                                     ),
                                     SizedBox(width: screenHeight * 0.03),
-                                    QuestionBox(
+                                    QuestionBoxString(
                                       width: screenWidth,
                                       height: screenHeight,
                                       object: problemData['object'],
