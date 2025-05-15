@@ -22,7 +22,7 @@ class DotContainer extends StatelessWidget {
         width: screenHeight * 0.17 - 16,
         height: screenHeight * 0.17 - 16,
         child: Image.asset(
-          'assets/images/number/dot/${ans / 2}.png',
+          'assets/images/number/dot/$ans.png',
           fit: BoxFit.scaleDown,
           errorBuilder: (context, error, stackTrace) {
             return Center(
@@ -37,8 +37,11 @@ class DotContainer extends StatelessWidget {
     }
 
     Widget topImage = Container(
-      width: (screenHeight * 0.17 - 16) * 2, // Width for two images side by side
-      height: screenHeight * 0.17 - 16,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.blue, width: 2),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.all(8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -55,8 +58,8 @@ class DotContainer extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: HandwritingRecognitionZone(
           key: zoneKey,
-          width: 100,
-          height: 100,
+          width: screenWidth * 0.15,
+          height: screenWidth * 0.15,
         ),
       );
     } else {
@@ -68,32 +71,61 @@ class DotContainer extends StatelessWidget {
             border: Border.all(color: Colors.black, width: 1),
             borderRadius: BorderRadius.circular(8),
           ),
-          width: 100,
-          height: 100,
+          width: screenWidth * 0.15,
+          height: screenWidth * 0.15,
           child: Text(
-            ans.toString(),
+            (ans * 2).toString(),
             style: const TextStyle(fontSize: 60),
           ),
         ),
       );
     }
 
-    return Container(
-      width: containerWidth,
-      padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.blue, width: 2),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          topImage,
-          SizedBox(width: 10),
-          boxContent,
-        ],
-      ),
+    return Stack(
+      clipBehavior: Clip.none, // Allows overlap outside the Stack bounds
+      children: [
+        Container(
+          width: containerWidth,
+          padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
+          decoration: zoneKey == null
+              ? BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.deepOrange, width: 2),
+          )
+              : null,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              topImage,
+              const SizedBox(width: 10),
+              boxContent,
+            ],
+          ),
+        ),
+        if (zoneKey == null)
+          Positioned(
+            top: -12, // Adjust as needed to control overlap depth
+            left: 0,
+            right: 0,
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: const Text(
+                  '  <보기>  ',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.deepOrange,
+                    backgroundColor: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
     );
+
   }
 }

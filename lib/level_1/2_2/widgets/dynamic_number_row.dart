@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nansan_flutter/modules/math/src/utils/math_ui_constant.dart';
 import 'package:nansan_flutter/shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
 
 class DynamicNumberRow extends StatelessWidget {
@@ -30,8 +31,8 @@ class DynamicNumberRow extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: HandwritingRecognitionZone(
               key: zoneKey,
-              width: 100,
-              height: 100,
+              width: MathUIConstant.screenWidth * 0.12,
+              height: MathUIConstant.screenWidth * 0.12,
             ),
           );
         } else {
@@ -44,8 +45,8 @@ class DynamicNumberRow extends StatelessWidget {
                 border: Border.all(color: Colors.black, width: 1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              width: 100,
-              height: 100,
+              width: MathUIConstant.screenWidth * 0.12,
+              height: MathUIConstant.screenWidth * 0.12,
               child: Text(
                 number.toString(),
                 style: const TextStyle(fontSize: 60),
