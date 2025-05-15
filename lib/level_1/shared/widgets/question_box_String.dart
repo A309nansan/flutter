@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
-class QuestionBox extends StatefulWidget {
+class QuestionBoxString extends StatefulWidget {
   final double width;
   final double height;
-  final List<int> options;
+  final List<String> options;
   final int questionId;
-  final Function(int, int) onAnswerSelected;
-  final int? selectedAnswer; // 타입 변경 가능성 확인 필요 (int?)
+  final Function(int, String) onAnswerSelected;
+  final String? selectedAnswer;
   final int number;
   final String object;
 
-  const QuestionBox({
+  const QuestionBoxString({
     super.key,
     required this.width,
     required this.height,
@@ -23,10 +23,10 @@ class QuestionBox extends StatefulWidget {
   });
 
   @override
-  State createState() => _QuestionBoxState();
+  State createState() => _QuestionBoxStringState();
 }
 
-class _QuestionBoxState extends State<QuestionBox> {
+class _QuestionBoxStringState extends State<QuestionBoxString> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -62,7 +62,7 @@ class _QuestionBoxState extends State<QuestionBox> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: widget.options.map((option) {
-                bool isSelected = widget.selectedAnswer == option;
+                bool isSelected = widget.selectedAnswer == option.toString()  ;
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 5.0),
                   child: GestureDetector(
@@ -77,7 +77,7 @@ class _QuestionBoxState extends State<QuestionBox> {
                         color: isSelected ? Colors.blue[100] : null,
                       ),
                       child: Text(
-                        '$option',
+                        option,
                         style: TextStyle(
                           fontSize: widget.width * 0.05,
                           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
