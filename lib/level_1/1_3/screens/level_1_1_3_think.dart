@@ -44,7 +44,7 @@ class _LevelOneOneThreeThinkState extends ConsumerState<LevelOneOneThreeThink>
   int? elapsedSeconds;
   int current = 1;
   int total = 1;
-  String nextProblemCode = 'enlv1s1c3jy1';
+  String nextProblemCode = 'enlv1s1c4gn1';
   String problemCode = 'enlv1s1c3gn1';
   bool isSubmitted = false;
   bool isCorrect = false;
@@ -122,7 +122,8 @@ class _LevelOneOneThreeThinkState extends ConsumerState<LevelOneOneThreeThink>
       EnProblemService.saveContinueProblem(problemCode, childId);
 
       setState(() {
-        nextProblemCode = response.nextProblemCode;
+        // nextProblemCode = response.nextProblemCode;
+        nextProblemCode = 'enlv1s1c4gn1';
         problemCode = response.problemCode;
         problemData = response.problem;
         answerData = response.answer;
