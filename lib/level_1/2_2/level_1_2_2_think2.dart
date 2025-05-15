@@ -322,12 +322,10 @@ class _LevelOneTwoTwoThink2State extends ConsumerState<LevelOneTwoTwoThink2>
                               headerTextSize: screenWidth * 0.028,
                               subTextSize: screenWidth * 0.018,
                             ),
-                            SizedBox(height: screenHeight * 0.01),
                             NewQuestionTextWidget(
                               questionText: '2. 순서에 맞게 알맞은 숫자를 빈칸에 써 보세요.',
                               questionTextSize: screenWidth * 0.025,
                             ),
-                            SizedBox(height: screenHeight * 0.01),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: List.generate(5, (index) {

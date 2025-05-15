@@ -69,9 +69,9 @@ class LevelOneThreeTwoBasicController {
 
     problemData = {
       "value": problem["value"],
-      "options": problem["options"],
       "images": problem["images"],
       "result": answer["value"],
+      "object" : problem["object"],
       "correctController": AnimationController(
         vsync: ticker,
         duration: const Duration(milliseconds: 800),
@@ -80,7 +80,7 @@ class LevelOneThreeTwoBasicController {
         vsync: ticker,
         duration: const Duration(milliseconds: 500),
       ),
-      "selectedValue": null,
+      "selectedValue": 0,
     };
 
     showCorrect = false;
@@ -120,7 +120,7 @@ class LevelOneThreeTwoBasicController {
   }
 
   void updateUserInput({int? selectedValue}) {
-    if (selectedValue != null) {
+    if (selectedValue != 0) {
       problemData["selectedValue"] = selectedValue;
     }
 

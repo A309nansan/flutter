@@ -51,12 +51,7 @@ class _LevelOneTwoOneMain1State extends ConsumerState<LevelOneTwoOneMain1>
   bool isShowResult = false;
   Map<String, dynamic> problemData = {};
   Map<String, dynamic> answerData = {};
-  Map<String, dynamic> selectedAnswers = {
-    'p1': {'number': 0},
-    'p2': {'number': 0},
-    'p3': {'number': 0},
-    'p4': {'number': 0},
-  };
+  List<int> selectedAnswers = [0,0,0,0];
   late AnimationController submitController;
   late AnimationController resultController;
   late Animation<double> submitAnimation;
@@ -64,14 +59,10 @@ class _LevelOneTwoOneMain1State extends ConsumerState<LevelOneTwoOneMain1>
 
   // 문제별 변수
   List imageUrl = [];
-  Map<String, dynamic> p1Data = {'urls': [], 'text': '', 'candidates': []};
-  Map<String, dynamic> p2Data = {'urls': [], 'text': '', 'candidates': []};
-  Map<String, dynamic> p3Data = {'urls': [], 'text': '', 'candidates': []};
-  Map<String, dynamic> p4Data = {'urls': [], 'text': '', 'candidates': []};
-  late final int answer1 = answerData['p1']['number'];
-  late final int answer2 = answerData['p2']['number'];
-  late final int answer3 = answerData['p3']['number'];
-  late final int answer4 = answerData['p4']['number'];
+  late Map<String, dynamic> p1Data;
+  late Map<String, dynamic> p2Data;
+  late Map<String, dynamic> p3Data;
+  late Map<String, dynamic> p4Data;
 
   @override
   void initState() {
@@ -141,7 +132,6 @@ class _LevelOneTwoOneMain1State extends ConsumerState<LevelOneTwoOneMain1>
 
   // 문제별 문제데이터 처리파트
   void _processProblemData(problemData) {
-    imageUrl = problemData['image_url'];
     p1Data = problemData['p1'];
     p2Data = problemData['p2'];
     p3Data = problemData['p3'];
@@ -165,7 +155,7 @@ class _LevelOneTwoOneMain1State extends ConsumerState<LevelOneTwoOneMain1>
       isCorrected: isCorrect,
       problem: problemData,
       answer: answerData,
-      input: selectedAnswers,
+      input: {'answer' : selectedAnswers},
     );
 
     try {
@@ -197,24 +187,25 @@ class _LevelOneTwoOneMain1State extends ConsumerState<LevelOneTwoOneMain1>
     setState(() {
       switch (questionNumber) {
         case 1:
-          selectedAnswers['p1']['number'] = candidate;
+          selectedAnswers[0] = candidate;
           break;
         case 2:
-          selectedAnswers['p2']['number'] = candidate;
+          selectedAnswers[1] = candidate;
           break;
         case 3:
-          selectedAnswers['p3']['number'] = candidate;
+          selectedAnswers[2] = candidate;
           break;
         case 4:
-          selectedAnswers['p4']['number'] = candidate;
+          selectedAnswers[3] = candidate;
           break;
       }
-      debugPrint('$selectedAnswers');
+      debugPrint('answer : ${answerData}');
+      debugPrint('selected : $selectedAnswers');
     });
   }
 
   void checkAnswer() {
-    isCorrect = DeepCollectionEquality().equals(answerData, selectedAnswers);
+    isCorrect = DeepCollectionEquality().equals(answerData['answer'], selectedAnswers);
     _submitAnswer();
   }
 
@@ -337,11 +328,13 @@ class _LevelOneTwoOneMain1State extends ConsumerState<LevelOneTwoOneMain1>
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: List.generate(imageUrl.length, (index) {
+                              children: List.generate(9, (index) {
                                 return Row(
                                   children: [
                                     AnimalCard(
-                                      animalName: imageUrl[index], // 이미지 URL 전달
+                                      width: screenWidth,
+                                      height: screenHeight,
+                                      animalName: 'assets/images/number/zodiac/${index + 1}.png',
                                     ),
                                     SizedBox(width: screenWidth * 0.01),
                                   ],
@@ -366,10 +359,10 @@ class _LevelOneTwoOneMain1State extends ConsumerState<LevelOneTwoOneMain1>
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                ClickableAnimalCard(
-                                  animalName: p1Data['urls']?[0] ?? 'error',
+                                ClickableAnimalCard(width : screenWidth, height: screenHeight,
+                                  animalName: p1Data['candidates'][0] ?? 'error',
                                   isSelected:
-                                      selectedAnswers['p1']['number'] ==
+                                      selectedAnswers[0] ==
                                       p1Data['candidates'][0],
                                   onTap:
                                       () => _processInputData(
@@ -378,10 +371,10 @@ class _LevelOneTwoOneMain1State extends ConsumerState<LevelOneTwoOneMain1>
                                       ),
                                 ),
                                 SizedBox(width: screenWidth * 0.02),
-                                ClickableAnimalCard(
-                                  animalName: p1Data['urls']?[1] ?? 'error',
+                                ClickableAnimalCard(width : screenWidth, height: screenHeight,
+                                  animalName: p1Data['candidates'][1] ?? 'error',
                                   isSelected:
-                                      selectedAnswers['p1']['number'] ==
+                                      selectedAnswers[0] ==
                                       p1Data['candidates'][1],
                                   onTap:
                                       () => _processInputData(
@@ -390,10 +383,10 @@ class _LevelOneTwoOneMain1State extends ConsumerState<LevelOneTwoOneMain1>
                                       ),
                                 ),
                                 SizedBox(width: screenWidth * 0.02),
-                                ClickableAnimalCard(
-                                  animalName: p1Data['urls']?[2] ?? 'error',
+                                ClickableAnimalCard(width : screenWidth, height: screenHeight,
+                                  animalName: p1Data['candidates'][2] ?? 'error',
                                   isSelected:
-                                      selectedAnswers['p1']['number'] ==
+                                      selectedAnswers[0] ==
                                       p1Data['candidates'][2],
                                   onTap:
                                       () => _processInputData(
@@ -402,10 +395,10 @@ class _LevelOneTwoOneMain1State extends ConsumerState<LevelOneTwoOneMain1>
                                       ),
                                 ),
                                 SizedBox(width: screenWidth * 0.02),
-                                ClickableAnimalCard(
-                                  animalName: p1Data['urls']?[3] ?? 'error',
+                                ClickableAnimalCard(width : screenWidth, height: screenHeight,
+                                  animalName: p1Data['candidates'][3] ?? 'error',
                                   isSelected:
-                                      selectedAnswers['p1']['number'] ==
+                                      selectedAnswers[0] ==
                                       p1Data['candidates'][3],
                                   onTap:
                                       () => _processInputData(
@@ -433,10 +426,10 @@ class _LevelOneTwoOneMain1State extends ConsumerState<LevelOneTwoOneMain1>
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                ClickableAnimalCard(
-                                  animalName: p2Data['urls']?[0] ?? 'error',
+                                ClickableAnimalCard(width : screenWidth, height: screenHeight,
+                                  animalName: p2Data['candidates'][0] ?? 'error',
                                   isSelected:
-                                      selectedAnswers['p2']['number'] ==
+                                      selectedAnswers[1] ==
                                       p2Data['candidates'][0],
                                   onTap:
                                       () => _processInputData(
@@ -445,10 +438,10 @@ class _LevelOneTwoOneMain1State extends ConsumerState<LevelOneTwoOneMain1>
                                       ),
                                 ),
                                 SizedBox(width: screenWidth * 0.02),
-                                ClickableAnimalCard(
-                                  animalName: p2Data['urls']?[1] ?? 'error',
+                                ClickableAnimalCard(width : screenWidth, height: screenHeight,
+                                  animalName: p2Data['candidates'][1] ?? 'error',
                                   isSelected:
-                                      selectedAnswers['p2']['number'] ==
+                                      selectedAnswers[1] ==
                                       p2Data['candidates'][1],
                                   onTap:
                                       () => _processInputData(
@@ -457,10 +450,10 @@ class _LevelOneTwoOneMain1State extends ConsumerState<LevelOneTwoOneMain1>
                                       ),
                                 ),
                                 SizedBox(width: screenWidth * 0.02),
-                                ClickableAnimalCard(
-                                  animalName: p2Data['urls']?[2] ?? 'error',
+                                ClickableAnimalCard(width : screenWidth, height: screenHeight,
+                                  animalName: p2Data['candidates'][2] ?? 'error',
                                   isSelected:
-                                      selectedAnswers['p2']['number'] ==
+                                      selectedAnswers[1] ==
                                       p2Data['candidates'][2],
                                   onTap:
                                       () => _processInputData(
@@ -469,10 +462,10 @@ class _LevelOneTwoOneMain1State extends ConsumerState<LevelOneTwoOneMain1>
                                       ),
                                 ),
                                 SizedBox(width: screenWidth * 0.02),
-                                ClickableAnimalCard(
-                                  animalName: p2Data['urls']?[3] ?? 'error',
+                                ClickableAnimalCard(width : screenWidth, height: screenHeight,
+                                  animalName: p2Data['candidates'][3] ?? 'error',
                                   isSelected:
-                                      selectedAnswers['p2']['number'] ==
+                                      selectedAnswers[1] ==
                                       p2Data['candidates'][3],
                                   onTap:
                                       () => _processInputData(
@@ -500,10 +493,10 @@ class _LevelOneTwoOneMain1State extends ConsumerState<LevelOneTwoOneMain1>
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                ClickableAnimalCard(
-                                  animalName: p3Data['urls']?[0] ?? 'error',
+                                ClickableAnimalCard(width : screenWidth, height: screenHeight,
+                                  animalName: p3Data['candidates'][0] ?? 'error',
                                   isSelected:
-                                      selectedAnswers['p3']['number'] ==
+                                      selectedAnswers[2] ==
                                       p3Data['candidates'][0],
                                   onTap:
                                       () => _processInputData(
@@ -512,10 +505,10 @@ class _LevelOneTwoOneMain1State extends ConsumerState<LevelOneTwoOneMain1>
                                       ),
                                 ),
                                 SizedBox(width: screenWidth * 0.02),
-                                ClickableAnimalCard(
-                                  animalName: p3Data['urls']?[1] ?? 'error',
+                                ClickableAnimalCard(width : screenWidth, height: screenHeight,
+                                  animalName: p3Data['candidates'][1] ?? 'error',
                                   isSelected:
-                                      selectedAnswers['p3']['number'] ==
+                                      selectedAnswers[2] ==
                                       p3Data['candidates'][1],
                                   onTap:
                                       () => _processInputData(
@@ -524,10 +517,10 @@ class _LevelOneTwoOneMain1State extends ConsumerState<LevelOneTwoOneMain1>
                                       ),
                                 ),
                                 SizedBox(width: screenWidth * 0.02),
-                                ClickableAnimalCard(
-                                  animalName: p3Data['urls']?[2] ?? 'error',
+                                ClickableAnimalCard(width : screenWidth, height: screenHeight,
+                                  animalName: p3Data['candidates'][2] ?? 'error',
                                   isSelected:
-                                      selectedAnswers['p3']['number'] ==
+                                      selectedAnswers[2] ==
                                       p3Data['candidates'][2],
                                   onTap:
                                       () => _processInputData(
@@ -536,10 +529,10 @@ class _LevelOneTwoOneMain1State extends ConsumerState<LevelOneTwoOneMain1>
                                       ),
                                 ),
                                 SizedBox(width: screenWidth * 0.02),
-                                ClickableAnimalCard(
-                                  animalName: p3Data['urls']?[3] ?? 'error',
+                                ClickableAnimalCard(width : screenWidth, height: screenHeight,
+                                  animalName: p3Data['candidates'][3] ?? 'error',
                                   isSelected:
-                                      selectedAnswers['p3']['number'] ==
+                                      selectedAnswers[2] ==
                                       p3Data['candidates'][3],
                                   onTap:
                                       () => _processInputData(
@@ -567,10 +560,10 @@ class _LevelOneTwoOneMain1State extends ConsumerState<LevelOneTwoOneMain1>
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                ClickableAnimalCard(
-                                  animalName: p4Data['urls']?[0] ?? 'error',
+                                ClickableAnimalCard(width : screenWidth, height: screenHeight,
+                                  animalName: p4Data['candidates'][0] ?? 'error',
                                   isSelected:
-                                      selectedAnswers['p4']['number'] ==
+                                      selectedAnswers[3] ==
                                       p4Data['candidates'][0],
                                   onTap:
                                       () => _processInputData(
@@ -579,10 +572,10 @@ class _LevelOneTwoOneMain1State extends ConsumerState<LevelOneTwoOneMain1>
                                       ),
                                 ),
                                 SizedBox(width: screenWidth * 0.02),
-                                ClickableAnimalCard(
-                                  animalName: p4Data['urls']?[1] ?? 'error',
+                                ClickableAnimalCard(width : screenWidth, height: screenHeight,
+                                  animalName: p4Data['candidates'][1] ?? 'error',
                                   isSelected:
-                                      selectedAnswers['p4']['number'] ==
+                                      selectedAnswers[3] ==
                                       p4Data['candidates'][1],
                                   onTap:
                                       () => _processInputData(
@@ -591,10 +584,10 @@ class _LevelOneTwoOneMain1State extends ConsumerState<LevelOneTwoOneMain1>
                                       ),
                                 ),
                                 SizedBox(width: screenWidth * 0.02),
-                                ClickableAnimalCard(
-                                  animalName: p4Data['urls']?[2] ?? 'error',
+                                ClickableAnimalCard(width : screenWidth, height: screenHeight,
+                                  animalName: p4Data['candidates'][2] ?? 'error',
                                   isSelected:
-                                      selectedAnswers['p4']['number'] ==
+                                      selectedAnswers[3] ==
                                       p4Data['candidates'][2],
                                   onTap:
                                       () => _processInputData(
@@ -603,10 +596,10 @@ class _LevelOneTwoOneMain1State extends ConsumerState<LevelOneTwoOneMain1>
                                       ),
                                 ),
                                 SizedBox(width: screenWidth * 0.02),
-                                ClickableAnimalCard(
-                                  animalName: p4Data['urls']?[3] ?? 'error',
+                                ClickableAnimalCard(width : screenWidth, height: screenHeight,
+                                  animalName: p4Data['candidates'][3] ?? 'error',
                                   isSelected:
-                                      selectedAnswers['p4']['number'] ==
+                                      selectedAnswers[3] ==
                                       p4Data['candidates'][3],
                                   onTap:
                                       () => _processInputData(

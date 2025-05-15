@@ -62,16 +62,16 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
   Map problemData = {};
   Map answerData = {};
   // selectedAnswers는 문제유형에 따라 변경 필요
-  Map<String, dynamic> selectedAnswers = {};
+  List<String> selectedAnswers = [];
   late AnimationController submitController;
   late AnimationController resultController;
   late Animation<double> submitAnimation;
   late Animation<double> resultAnimation;
 
   //문제별 변수
-  String imageUrl1 = '';
-  String imageUrl2 = '';
-  String imageUrl3 = '';
+  late String person_high;
+  late String person_mid;
+  late String person_low;
   String name1 = '';
   String name2 = '';
   String name3 = '';
@@ -138,7 +138,6 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
         answerData = response.answer;
         current = response.current;
         total = response.total;
-        debugPrint('$problemData');
       });
       _processProblemData(problemData);
     } catch (e) {
@@ -161,7 +160,7 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
       isCorrected: isCorrect,
       problem: problemData,
       answer: answerData,
-      input: selectedAnswers,
+      input: {'answer' : selectedAnswers},
     );
     try {
       // API 서비스 호출
@@ -187,26 +186,13 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
   void _processProblemData(Map problemData) {
     candidates.clear();
 
-    if (problemData.containsKey('person1')) {
-      imageUrl1 = problemData['person1']['image'] ?? '';
-      name1 = problemData['person1']['name'] ?? '';
+    person_high = problemData['person_high'];
+    person_mid = problemData['person_mid'];
+    person_low = problemData['person_low'];
 
-      candidates.add({'image_name': name1, 'image_url': ''});
-    }
-
-    if (problemData.containsKey('person2')) {
-      imageUrl2 = problemData['person2']['image'] ?? '';
-      name2 = problemData['person2']['name'] ?? '';
-
-      candidates.add({'image_name': name2, 'image_url': ''});
-    }
-
-    if (problemData.containsKey('person3')) {
-      imageUrl3 = problemData['person3']['image'] ?? '';
-      name3 = problemData['person3']['name'] ?? '';
-
-      candidates.add({'image_name': name3, 'image_url': ''});
-    }
+    candidates.add({'image_name': engToKr(problemData['person_high']), 'image_url': ''});
+    candidates.add({'image_name': engToKr(problemData['person_mid']), 'image_url': ''});
+    candidates.add({'image_name': engToKr(problemData['person_low']), 'image_url': ''});
 
     Future.microtask(() {
       ref.read(dragDropControllerProvider.notifier).resetAll(); // zone 초기화
@@ -227,51 +213,30 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
   }
 
   void _processInputData() {
-    // final controller = Provider.of<DragDropController>(context, listen: false);
-    // final controller = ref.read(dragDropControllerProvider.notifier);
     final state = ref.read(dragDropControllerProvider);
-    selectedAnswers = {"problem1": "", "problem2": "", "problem3": ""};
-
-    // for (int zoneKey = 1; zoneKey <= 3; zoneKey++) {
-    //   final card = controller.zoneCards[zoneKey];
-    //   if (card != null) {
-    //     switch (zoneKey) {
-    //       case 1:
-    //         selectedAnswers["problem1"] = card.imageName;
-    //         break;
-    //       case 2:
-    //         selectedAnswers["problem2"] = card.imageName;
-    //         break;
-    //       case 3:
-    //         selectedAnswers["problem3"] = card.imageName;
-    //         break;
-    //     }
-    //   }
-    // }
+    selectedAnswers = ["","",""];
 
     for (int zoneKey = 1; zoneKey <= 3; zoneKey++) {
       final card = state.zoneCards[zoneKey];
       if (card != null) {
         switch (zoneKey) {
           case 1:
-            selectedAnswers["problem1"] = card.imageName;
+            selectedAnswers[0] = krToEng(card.imageName);
             break;
           case 2:
-            selectedAnswers["problem2"] = card.imageName;
+            selectedAnswers[1] = krToEng(card.imageName);
             break;
           case 3:
-            selectedAnswers["problem3"] = card.imageName;
+            selectedAnswers[2] = krToEng(card.imageName);
             break;
         }
       }
     }
-
-    debugPrint('$selectedAnswers');
   }
 
   void checkAnswer() {
     _processInputData();
-    isCorrect = DeepCollectionEquality().equals(answerData, selectedAnswers);
+    isCorrect = DeepCollectionEquality().equals(answerData['answer'], selectedAnswers);
     submitAnswer();
   }
 
@@ -352,6 +317,39 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
     Modular.to.pop();
   }
 
+  String engToKr(String english) {
+    const Map<String, String> match = {
+      'orange': '주황이',
+      'red': '빨강이',
+      'yellow': '노랑이',
+      'blue': '파랑이',
+      'green': '초록이',
+      'purple': '보랑이',
+      'black': '검정이',
+      'brown': '갈색이',
+      'pink': '분홍이'
+    };
+
+    return match[english] ?? '해당 색상이 없습니다';
+  }
+
+  String krToEng(String korean) {
+    const Map<String, String> match = {
+      '주황이': 'orange',
+      '빨강이': 'red',
+      '노랑이': 'yellow',
+      '파랑이': 'blue',
+      '초록이': 'green',
+      '보랑이': 'purple',
+      '검정이': 'black',
+      '갈색이': 'brown',
+      '분홍이': 'pink'
+    };
+
+    return match[korean] ?? 'No corresponding color found';
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -394,6 +392,7 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
                               width: screenWidth * 0.9,
                               height: screenHeight * 0.38,
                               decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
                                   color: Colors.lightBlue,
                                   width: 2,
@@ -402,7 +401,7 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
                                   image: AssetImage(
                                     'assets/images/schoolBackground.jpg',
                                   ),
-                                  fit: BoxFit.fill,
+                                  fit: BoxFit.cover,
                                 ),
                               ),
                               child: Row(
@@ -410,25 +409,39 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
                                 children: [
                                   Column(
                                     mainAxisAlignment: MainAxisAlignment.end,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
+                                      Container(alignment: Alignment.center,
+                                        width: screenWidth * 0.15,
+                                        height: screenHeight * 0.025,
+                                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: Colors.white,border: Border.all(color: Colors.lightBlue, width: 2)),
+                                      child: Text('${engToKr('$person_low')}', style: TextStyle(fontSize: screenWidth * 0.025
+                                      ),),),
                                       SizedBox(
                                         width: screenWidth * 0.2,
-                                        child: Image.network(
-                                          imageUrl1,
+                                        child: Image.asset(
+                                          'assets/images/number/person_low/${person_low}.png',
                                           errorBuilder:
                                               (_, __, ___) => Icon(Icons.error),
                                         ),
                                       ),
                                     ],
+
                                   ),
                                   SizedBox(width: screenWidth * 0.01),
                                   Column(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
+                                      Container(alignment: Alignment.center,
+                                        width: screenWidth * 0.15,
+                                        height: screenHeight * 0.025,
+                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: Colors.white,border: Border.all(color: Colors.lightBlue, width: 2)),
+                                        child: Text('${engToKr('$person_mid')}', style: TextStyle(fontSize: screenWidth * 0.025
+                                        ),),),
                                       SizedBox(
                                         width: screenWidth * 0.3,
-                                        child: Image.network(
-                                          imageUrl2,
+                                        child: Image.asset(
+                                          'assets/images/number/person_mid/${person_mid}.png',
                                           errorBuilder:
                                               (_, __, ___) => Icon(Icons.error),
                                         ),
@@ -439,10 +452,16 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
                                   Column(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
+                                      Container(alignment: Alignment.center,
+                                        width: screenWidth * 0.15,
+                                        height: screenHeight * 0.025,
+                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: Colors.white,border: Border.all(color: Colors.lightBlue, width: 2)),
+                                        child: Text('${engToKr('$person_high')}', style: TextStyle(fontSize: screenWidth * 0.025
+                                        ),),),
                                       SizedBox(
                                         width: screenWidth * 0.35,
-                                        child: Image.network(
-                                          imageUrl3,
+                                        child: Image.asset(
+                                          'assets/images/number/person_high/${person_high}.png',
                                           errorBuilder:
                                               (_, __, ___) => Icon(Icons.error),
                                         ),
