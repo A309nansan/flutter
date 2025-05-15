@@ -134,10 +134,10 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
     setState(() {
       nextProblemCode = "enlv1s2c3jy2";
       problemData  = {
-        "p1": [ 2, 3, 4 ],
+        "p1": [ 1, 2, 3 ],
       };
       answerData = {
-        "p1": [ 2, 4 ],
+        "p1": [ 4, 6 ],
       };
       current = 2;
       total = 2;
@@ -317,7 +317,7 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
                         SizedBox(height: screenHeight * 0.01),
                         NewQuestionTextWidget(
                           questionText:
-                          '1. 포도는 몇 개인가요? 네모 안에 알맞은 숫자를 써 봅시다.',
+                          '1. 동그라미의 수를 세고, <보기>와 같이 알맞은 숫자를 적어 봅시다.',
                           questionTextSize: screenWidth * 0.03,
                         ),
                         SizedBox(height: screenHeight * 0.02),
@@ -327,11 +327,11 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
                           children: [
                             DotContainer(
                               ans: problemData["p1"][0],
-                              zoneKey: zoneKeys['first'],
                             ),
                             SizedBox(height: screenHeight * 0.02),
                             DotContainer(
-                              ans: problemData["p1"][1]
+                              ans: problemData["p1"][1],
+                              zoneKey: zoneKeys['first'],
                             ),
                             SizedBox(height: screenHeight * 0.02),
                             DotContainer(

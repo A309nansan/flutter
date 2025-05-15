@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nansan_flutter/level_1/2_2/widgets/dynamic_number_row.dart';
+import 'package:nansan_flutter/level_1/2_1/widgets/caterpillar_widget.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
 import 'package:nansan_flutter/shared/controllers/timer_controller.dart';
@@ -21,22 +21,21 @@ import 'package:screenshot/screenshot.dart';
 import 'package:collection/collection.dart';
 import 'package:nansan_flutter/shared/provider/EnRiverPodProvider.dart';
 
-import '../../shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
-import '../../shared/widgets/en_result_popup.dart';
-import '../shared/widgets/en_result_popup.dart';
+import '../../../shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
+import '../../../shared/widgets/en_result_popup.dart';
 
 // ✅ 상태변경 1. StatefulWidget -> ConsumerStatefulWidget
-class LevelOneTwoTwoThink2 extends ConsumerStatefulWidget {
+class LevelOneTwoOneMain2 extends ConsumerStatefulWidget {
   final String problemCode;
-  const LevelOneTwoTwoThink2({super.key, required this.problemCode});
+  const LevelOneTwoOneMain2({super.key, required this.problemCode});
 
   @override
   // ✅ 상태변경 2. State -> ConsumerState
-  ConsumerState<LevelOneTwoTwoThink2> createState() => LevelOneTwoTwoThink2State();
+  ConsumerState<LevelOneTwoOneMain2> createState() => LevelOneTwoOneMain2State();
 }
 
 // ✅ 상태변경 3. State -> ConsumerState
-class LevelOneTwoTwoThink2State extends ConsumerState<LevelOneTwoTwoThink2>
+class LevelOneTwoOneMain2State extends ConsumerState<LevelOneTwoOneMain2>
     with TickerProviderStateMixin {
   final ScreenshotController screenshotController = ScreenshotController();
   final TimerController _timerController = TimerController();
@@ -131,11 +130,14 @@ class LevelOneTwoTwoThink2State extends ConsumerState<LevelOneTwoTwoThink2>
 
       setState(() {
         nextProblemCode = response.nextProblemCode;
-        problemData = response.problem;
+        // problemData = response.problem;
+        problemData = {
+          "p1": [ 1, 2, 3, 0, 5],
+          "p2": [ 4, 5, 0, 7, 8],
+        };
         answerData = response.answer;
         current = response.current;
         total = response.total;
-        selectedAnswers = Map.from(response.problem);
       });
       _processProblemData(problemData);
     } catch (e) {
@@ -180,36 +182,10 @@ class LevelOneTwoTwoThink2State extends ConsumerState<LevelOneTwoTwoThink2>
   void _processProblemData(Map problemData) {}
 
   // 문제 푸는 로직 수행할때, seletedAnswers 데이터 넣는 로직
-  Future<void> _processInputData() async {
-    for (final entry in zoneKeys.entries) {
-      final key = entry.key; // e.g. "p1-2"
-      final zoneKey = entry.value;
-      final state = zoneKey.currentState;
-
-      // Skip the entry if state is null or the widget is unmounted
-      if (state == null) {
-        debugPrint("Skipping $key — state is null");
-        continue;
-      }
-
-      try {
-        final recognized = await state.recognize();
-        final parts = key.split('-');
-        final rowKey = parts[0];
-        final index = int.parse(parts[1]);
-
-        final row = List<int>.from(selectedAnswers[rowKey]);
-        row[index] = int.tryParse(recognized) ?? -1;
-        selectedAnswers[rowKey] = row;
-      } catch (e) {
-        debugPrint("Recognition failed for $key: $e");
-      }
-    }
-  }
+  void _processInputData() {}
 
   // 정답 여부 체크(보통은 이거쓰면됨)
   Future<void> checkAnswer() async {
-    await _processInputData();
     isCorrect = const DeepCollectionEquality().equals(
       answerData,
       selectedAnswers,
@@ -330,7 +306,7 @@ class LevelOneTwoTwoThink2State extends ConsumerState<LevelOneTwoTwoThink2>
                       child: Column(
                         children: [
                           NewHeaderWidget(
-                            headerText: '개념학습활동',
+                            headerText: '주요학습활동',
                             headerTextSize: screenWidth * 0.028,
                             subTextSize: screenWidth * 0.018,
                           ),
@@ -343,19 +319,20 @@ class LevelOneTwoTwoThink2State extends ConsumerState<LevelOneTwoTwoThink2>
                           SizedBox(height: screenHeight * 0.02),
                           // 여기에 문제 푸는 ui 및 삽입
                           Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: List.generate(problemData.length, (index) {
+                            children: List.generate(5, (index) {
                               final key = 'p${index + 1}';
                               final data = problemData[key] ?? [];
+
                               return Padding(
                                 padding: EdgeInsets.only(
-                                  bottom: screenHeight * 0.04,
+                                  bottom: screenHeight * 0.02,
                                 ),
                                 child: Padding(
-                                  padding: const EdgeInsets.only(left: 32.0, right: 64.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  padding: const EdgeInsets.only(left: 16.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
                                     children: [
                                       Container(
                                         alignment: Alignment.center,
@@ -374,7 +351,7 @@ class LevelOneTwoTwoThink2State extends ConsumerState<LevelOneTwoTwoThink2>
                                           ),
                                         ),
                                       ),
-                                      DynamicNumberRow(
+                                      CaterpillarWidget(
                                         rowId: key,
                                         data: data,
                                         zoneKeys: zoneKeys,
@@ -420,15 +397,17 @@ class LevelOneTwoTwoThink2State extends ConsumerState<LevelOneTwoTwoThink2>
                                   buttonText: "제출하기",
                                   fontSize: screenWidth * 0.02,
                                   borderRadius: 10,
-                                  onPressed: () async {
-                                    if (isSubmitted) return;
-                                    await checkAnswer();
-                                    setState(() {
-                                      showSubmitPopup = true;
-                                    });
-                                    submitController.forward();
-                                    await submitActivity(context);
-                                  },
+                                  // TODO : 정답 체크 로직 구현 시 해당 부분 지우고 주석 활성화
+                                  onPressed: () => onNextPressed(),
+                                  // onPressed: () async {
+                                  //   if (isSubmitted) return;
+                                  //   await checkAnswer();
+                                  //   setState(() {
+                                  //     showSubmitPopup = true;
+                                  //   });
+                                  //   submitController.forward();
+                                  //   await submitActivity(context);
+                                  // },
                                 ),
 
                               if (isSubmitted && isCorrect == false) ...[
@@ -439,7 +418,7 @@ class LevelOneTwoTwoThink2State extends ConsumerState<LevelOneTwoTwoThink2>
                                   fontSize: screenWidth * 0.02,
                                   borderRadius: 10,
                                   onPressed: () async {
-                                    await checkAnswer();
+                                    checkAnswer();
                                     setState(() {
                                       showSubmitPopup = true;
                                     });
