@@ -149,7 +149,7 @@ class _LevelOneThreeTwoBasicState extends ConsumerState<LevelOneThreeTwoBasic>
     }
 
     final problem = controller.problemData;
-    final options = problem["options"] as List;
+    final object = problem["object"] as String;
     final images = problem["images"] as List? ?? [];
     final selected = problem["selectedValue"];
     final value = problem["value"];
@@ -281,8 +281,8 @@ class _LevelOneThreeTwoBasicState extends ConsumerState<LevelOneThreeTwoBasic>
                           crossAxisSpacing: 8,
                           childAspectRatio: 0.75,
                           padding: const EdgeInsets.all(16),
-                          children: List.generate(options.length, (i) {
-                            final opt = options[i];
+                          children: List.generate(images.length, (i) {
+                            final opt = images[i];
                             final image = images[i];
                             final isSelectable = opt == null;
                             final isTapped = selected == i;
@@ -309,9 +309,9 @@ class _LevelOneThreeTwoBasicState extends ConsumerState<LevelOneThreeTwoBasic>
                                 elevation: 5,
                               ),
                               child:
-                                  opt != null
-                                      ? Image.network(
-                                        image,
+                                  opt != 0
+                                      ? Image.asset(
+                                        'assets/images/number/$object/$image.png',
                                         fit: BoxFit.contain,
                                       )
                                       : const Icon(

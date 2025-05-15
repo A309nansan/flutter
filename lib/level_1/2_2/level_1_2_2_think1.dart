@@ -5,10 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nansan_flutter/modules/drag_drop/controllers/drag_drop_controller.dart';
-import 'package:nansan_flutter/modules/drag_drop/widgets/draggable_card_list.dart';
-import 'package:nansan_flutter/modules/drag_drop/widgets/draggable_card_list_riverpod.dart';
-import 'package:nansan_flutter/modules/drag_drop/widgets/empty_zone.dart';
-import 'package:nansan_flutter/modules/drag_drop/widgets/empty_zone_riverpod.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
 import 'package:nansan_flutter/shared/controllers/timer_controller.dart';
@@ -22,13 +18,13 @@ import 'package:nansan_flutter/shared/widgets/en_progress_bar_widget.dart';
 import 'package:nansan_flutter/shared/widgets/new_header_widget.dart';
 import 'package:nansan_flutter/shared/widgets/new_question_text.dart';
 import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
-import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
-
-import '../../modules/drag_drop/controllers/drag_drop_controller_riverpod.dart';
-import '../../modules/drag_drop/models/card_data.dart';
-import '../../shared/provider/EnRiverPodProvider.dart';
-import '../../shared/widgets/en_result_popup.dart';
+import '../../../modules/drag_drop/controllers/drag_drop_controller_riverpod.dart';
+import '../../../modules/drag_drop/models/card_data.dart';
+import '../../../modules/drag_drop/widgets/draggable_card_list_riverpod.dart';
+import '../../../modules/drag_drop/widgets/empty_zone_riverpod.dart';
+import '../../../shared/provider/EnRiverPodProvider.dart';
+import '../../../shared/widgets/en_result_popup.dart';
 
 class LevelOneTwoTwoThink1 extends ConsumerStatefulWidget {
   final String problemCode;
@@ -41,7 +37,8 @@ class LevelOneTwoTwoThink1 extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<LevelOneTwoTwoThink1> createState() => _LevelOneTwoTwoThink1State();
+  ConsumerState<LevelOneTwoTwoThink1> createState() =>
+      _LevelOneTwoTwoThink1State();
 }
 
 class _LevelOneTwoTwoThink1State extends ConsumerState<LevelOneTwoTwoThink1>
@@ -54,7 +51,7 @@ class _LevelOneTwoTwoThink1State extends ConsumerState<LevelOneTwoTwoThink1>
   int? elapsedSeconds;
   int current = 1;
   int total = 1;
-  String nextProblemCode = 'enlv1s2c2gn2';
+  String nextProblemCode = 'enlv1s2c2jy1';
   String problemCode = 'enlv1s2c2gn1';
   bool isSubmitted = false;
   bool isCorrect = false;
@@ -65,16 +62,16 @@ class _LevelOneTwoTwoThink1State extends ConsumerState<LevelOneTwoTwoThink1>
   Map problemData = {};
   Map answerData = {};
   // selectedAnswers는 문제유형에 따라 변경 필요
-  Map<String, dynamic> selectedAnswers = {};
+  List<String> selectedAnswers = [];
   late AnimationController submitController;
   late AnimationController resultController;
   late Animation<double> submitAnimation;
   late Animation<double> resultAnimation;
 
   //문제별 변수
-  String imageUrl1 = '';
-  String imageUrl2 = '';
-  String imageUrl3 = '';
+  late String person_high;
+  late String person_mid;
+  late String person_low;
   String name1 = '';
   String name2 = '';
   String name3 = '';
@@ -126,10 +123,11 @@ class _LevelOneTwoTwoThink1State extends ConsumerState<LevelOneTwoTwoThink1>
       final childProfile = jsonDecode(childProfileJson!);
       childId = childProfile['id'];
 
-      final saved = await EnProblemService.loadProblemResults(problemCode, childId);
+      final saved = await EnProblemService.loadProblemResults(
+        problemCode,
+        childId,
+      );
       ref.read(problemProgressProvider.notifier).setFromStorage(saved);
-      final progress = ref.read(problemProgressProvider);
-      debugPrint("📦 불러온 문제 기록: $progress");
 
       EnProblemService.saveContinueProblem(problemCode, childId);
 
@@ -162,16 +160,13 @@ class _LevelOneTwoTwoThink1State extends ConsumerState<LevelOneTwoTwoThink1>
       isCorrected: isCorrect,
       problem: problemData,
       answer: answerData,
-      input: selectedAnswers,
+      input: {'answer' : selectedAnswers},
     );
     try {
       // API 서비스 호출
       await _apiService.submitAnswer(jsonEncode(submitRequest.toJson()));
 
-      ref.read(problemProgressProvider.notifier).record(
-        problemCode,
-        isCorrect,
-      );
+      ref.read(problemProgressProvider.notifier).record(problemCode, isCorrect);
 
       await EnProblemService.saveProblemResults(
         ref.read(problemProgressProvider),
@@ -191,88 +186,57 @@ class _LevelOneTwoTwoThink1State extends ConsumerState<LevelOneTwoTwoThink1>
   void _processProblemData(Map problemData) {
     candidates.clear();
 
-    if (problemData.containsKey('person1')) {
-      imageUrl1 = problemData['person1']['image'] ?? '';
-      name1 = problemData['person1']['name'] ?? '';
+    person_high = problemData['person_high'];
+    person_mid = problemData['person_mid'];
+    person_low = problemData['person_low'];
 
-      candidates.add({'image_name': name1, 'image_url': ''});
-    }
-
-    if (problemData.containsKey('person2')) {
-      imageUrl2 = problemData['person2']['image'] ?? '';
-      name2 = problemData['person2']['name'] ?? '';
-
-      candidates.add({'image_name': name2, 'image_url': ''});
-    }
-
-    if (problemData.containsKey('person3')) {
-      imageUrl3 = problemData['person3']['image'] ?? '';
-      name3 = problemData['person3']['name'] ?? '';
-
-      candidates.add({'image_name': name3, 'image_url': ''});
-    }
+    candidates.add({'image_name': engToKr(problemData['person_high']), 'image_url': ''});
+    candidates.add({'image_name': engToKr(problemData['person_mid']), 'image_url': ''});
+    candidates.add({'image_name': engToKr(problemData['person_low']), 'image_url': ''});
 
     Future.microtask(() {
       ref.read(dragDropControllerProvider.notifier).resetAll(); // zone 초기화
-      ref.read(dragDropControllerProvider.notifier).initializeCards(
+      ref
+          .read(dragDropControllerProvider.notifier)
+          .initializeCards(
         candidates
-            .map((c) => CardData(
-          id: c['image_name']!,
-          imageName: c['image_name']!,
-          imageUrl: c['image_url']!,
-        ))
+            .map(
+              (c) => CardData(
+            id: c['image_name']!,
+            imageName: c['image_name']!,
+            imageUrl: c['image_url']!,
+          ),
+        )
             .toList(),
       );
     });
   }
 
   void _processInputData() {
-    // final controller = Provider.of<DragDropController>(context, listen: false);
-    //
-    // selectedAnswers = {"problem1": "", "problem2": "", "problem3": ""};
-    //
-    // for (int zoneKey = 1; zoneKey <= 3; zoneKey++) {
-    //   final card = controller.zoneCards[zoneKey];
-    //   if (card != null) {
-    //     switch (zoneKey) {
-    //       case 1:
-    //         selectedAnswers["problem1"] = card.imageName;
-    //         break;
-    //       case 2:
-    //         selectedAnswers["problem2"] = card.imageName;
-    //         break;
-    //       case 3:
-    //         selectedAnswers["problem3"] = card.imageName;
-    //         break;
-    //     }
-    //   }
-    // }
     final state = ref.read(dragDropControllerProvider);
-    selectedAnswers = {"problem1": "", "problem2": "", "problem3": ""};
+    selectedAnswers = ["","",""];
 
     for (int zoneKey = 1; zoneKey <= 3; zoneKey++) {
       final card = state.zoneCards[zoneKey];
       if (card != null) {
         switch (zoneKey) {
           case 1:
-            selectedAnswers["problem1"] = card.imageName;
+            selectedAnswers[0] = krToEng(card.imageName);
             break;
           case 2:
-            selectedAnswers["problem2"] = card.imageName;
+            selectedAnswers[1] = krToEng(card.imageName);
             break;
           case 3:
-            selectedAnswers["problem3"] = card.imageName;
+            selectedAnswers[2] = krToEng(card.imageName);
             break;
         }
       }
     }
-
-    debugPrint('$selectedAnswers');
   }
 
   void checkAnswer() {
     _processInputData();
-    isCorrect = DeepCollectionEquality().equals(answerData, selectedAnswers);
+    isCorrect = DeepCollectionEquality().equals(answerData['answer'], selectedAnswers);
     submitAnswer();
   }
 
@@ -300,11 +264,7 @@ class _LevelOneTwoTwoThink1State extends ConsumerState<LevelOneTwoTwoThink1>
     if (nextCode.isEmpty) {
       debugPrint("📌 다음 문제가 없습니다.");
       final progress = ref.read(problemProgressProvider);
-      await EnProblemService.saveProblemResults(
-        progress,
-        problemCode,
-        childId,
-      );
+      await EnProblemService.saveProblemResults(progress, problemCode, childId);
 
       await EnProblemService.clearChapterProblem(childId, problemCode);
       showResult();
@@ -357,6 +317,39 @@ class _LevelOneTwoTwoThink1State extends ConsumerState<LevelOneTwoTwoThink1>
     Modular.to.pop();
   }
 
+  String engToKr(String english) {
+    const Map<String, String> match = {
+      'orange': '주황이',
+      'red': '빨강이',
+      'yellow': '노랑이',
+      'blue': '파랑이',
+      'green': '초록이',
+      'purple': '보랑이',
+      'black': '검정이',
+      'brown': '갈색이',
+      'pink': '분홍이'
+    };
+
+    return match[english] ?? '해당 색상이 없습니다';
+  }
+
+  String krToEng(String korean) {
+    const Map<String, String> match = {
+      '주황이': 'orange',
+      '빨강이': 'red',
+      '노랑이': 'yellow',
+      '파랑이': 'blue',
+      '초록이': 'green',
+      '보랑이': 'purple',
+      '검정이': 'black',
+      '갈색이': 'brown',
+      '분홍이': 'pink'
+    };
+
+    return match[korean] ?? 'No corresponding color found';
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -371,337 +364,363 @@ class _LevelOneTwoTwoThink1State extends ConsumerState<LevelOneTwoTwoThink1>
         ),
       ),
       body:
-          isLoading
-              ? const Center(child: EnProblemSplashScreen())
-              : Stack(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Screenshot(
-                      controller: screenshotController,
-                      child: Container(
-                        color: Colors.white,
-                        child: Column(
-                          children: [
-                            NewHeaderWidget(
-                              headerText: '개념학습활동',
-                              headerTextSize: screenWidth * 0.028,
-                              subTextSize: screenWidth * 0.018,
-                            ),
-                            SizedBox(height: screenHeight * 0.01),
-                            NewQuestionTextWidget(
-                              questionText:
-                                  '친구들이 키를 재고 있어요. 친구들의 키를 큰 순서대로 빈칸에 넣어 봅시다.',
-                              questionTextSize: screenWidth * 0.025,
-                            ),
-                            Container(
-                              alignment: Alignment.center,
-                              width: screenWidth * 0.9,
-                              height: screenHeight * 0.38,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.lightBlue,
-                                  width: 2,
-                                ),
-                                image: DecorationImage(
-                                  image: AssetImage(
-                                    'assets/images/schoolBackground.jpg',
-                                  ),
-                                  fit: BoxFit.fill,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      SizedBox(
-                                        width: screenWidth * 0.2,
-                                        child: Image.network(
-                                          imageUrl1,
-                                          errorBuilder:
-                                              (_, __, ___) => Icon(Icons.error),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(width: screenWidth * 0.01),
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      SizedBox(
-                                        width: screenWidth * 0.3,
-                                        child: Image.network(
-                                          imageUrl2,
-                                          errorBuilder:
-                                              (_, __, ___) => Icon(Icons.error),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(width: screenWidth * 0.01),
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      SizedBox(
-                                        width: screenWidth * 0.35,
-                                        child: Image.network(
-                                          imageUrl3,
-                                          errorBuilder:
-                                              (_, __, ___) => Icon(Icons.error),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: screenHeight * 0.03),
-                            // Question 1
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '1. 첫 번째로 키가 큰 친구는 누구인가요? ',
-                                  style: TextStyle(
-                                    fontSize: screenWidth * 0.025,
-                                  ),
-                                ),
-                                SizedBox(width: screenWidth * 0.01),
-                                EmptyZoneRiverpod(
-                                  zoneKey: 1,
-                                  width: screenWidth * 0.15,
-                                  height: screenHeight * 0.055,
-                                ),
-                                SizedBox(width: screenWidth * 0.01),
-                                Text(
-                                  '가 첫 번째로 커요!',
-                                  style: TextStyle(
-                                    fontSize: screenWidth * 0.025,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: screenHeight * 0.02),
-                            // Question 2
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '2. 두 번째로 키가 큰 친구는 누구인가요? ',
-                                  style: TextStyle(
-                                    fontSize: screenWidth * 0.025,
-                                  ),
-                                ),
-                                SizedBox(width: screenWidth * 0.01),
-                                EmptyZoneRiverpod(
-                                  zoneKey: 2,
-                                  width: screenWidth * 0.15,
-                                  height: screenHeight * 0.055,
-                                ),
-                                SizedBox(width: screenWidth * 0.01),
-                                Text(
-                                  '가 두 번째로 커요!',
-                                  style: TextStyle(
-                                    fontSize: screenWidth * 0.025,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: screenHeight * 0.02),
-                            // Question 3
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '3. 세 번째로 키가 큰 친구는 누구인가요? ',
-                                  style: TextStyle(
-                                    fontSize: screenWidth * 0.025,
-                                  ),
-                                ),
-                                SizedBox(width: screenWidth * 0.01),
-                                EmptyZoneRiverpod(
-                                  zoneKey: 3,
-                                  width: screenWidth * 0.15,
-                                  height: screenHeight * 0.055,
-                                ),
-                                SizedBox(width: screenWidth * 0.01),
-                                Text(
-                                  '가 세 번째로 커요!',
-                                  style: TextStyle(
-                                    fontSize: screenWidth * 0.025,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: screenHeight * 0.03),
-                            DraggableCardListRiverpod(
-                              showRemoveButton: false,
-                              candidates: candidates,
-                              boxWidth: 400,
-                              boxHeight: 80,
-                              cardWidth: 80,
-                              cardHeight: 50,
-                              // controller: widget.controller,
-                            ),
-                            Spacer(),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                EnProgressBarWidget(
-                                  current: current,
-                                  total: total,
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 30.0,
-                                    vertical: screenHeight * 0.02,
-                                  ),
-                                  child: AnimatedSwitcher(
-                                    duration: const Duration(milliseconds: 300),
-                                    transitionBuilder: (child, animation) {
-                                      return FadeTransition(
-                                        opacity: animation,
-                                        child: child,
-                                      );
-                                    },
-                                    child: Row(
-                                      key: ValueKey<String>(
-                                        '${isSubmitted}_$isCorrect',
-                                      ),
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        if (!isSubmitted)
-                                          ButtonWidget(
-                                            height: screenHeight * 0.035,
-                                            width: screenWidth * 0.18,
-                                            buttonText: "제출하기",
-                                            fontSize: screenWidth * 0.02,
-                                            borderRadius: 10,
-                                            onPressed:
-                                                (isSubmitted)
-                                                    ? null
-                                                    : () => {
-                                                      submitController
-                                                          .forward(),
-                                                      showSubmitPopup = true,
-                                                      submitActivity(context),
-                                                      checkAnswer(),
-                                                    },
-                                          ),
-
-                                        if (isSubmitted &&
-                                            isCorrect == false) ...[
-                                          ButtonWidget(
-                                            height: screenHeight * 0.035,
-                                            width: screenWidth * 0.18,
-                                            buttonText: "제출하기",
-                                            fontSize: screenWidth * 0.02,
-                                            borderRadius: 10,
-                                            onPressed:
-                                                () => {
-                                                  setState(() {
-                                                    checkAnswer();
-                                                    showSubmitPopup = true;
-                                                  }),
-                                                  submitController.forward(),
-                                                },
-                                          ),
-                                          const SizedBox(width: 20),
-                                          ButtonWidget(
-                                            height: screenHeight * 0.035,
-                                            width: screenWidth * 0.18,
-                                            buttonText: isEnd ? "학습종료" : "다음문제",
-                                            fontSize: screenWidth * 0.02,
-                                            borderRadius: 10,
-                                            onPressed: isEnd ?
-                                                () => showResult() : () => onNextPressed(),
-                                          ),
-                                        ],
-
-                                        if (isSubmitted && isCorrect == true)
-                                          ButtonWidget(
-                                            height: screenHeight * 0.035,
-                                            width: screenWidth * 0.18,
-                                            buttonText: isEnd ? "학습종료" : "다음문제",
-                                            fontSize: screenWidth * 0.02,
-                                            borderRadius: 10,
-                                            onPressed: isEnd ?
-                                                () => showResult() : () => onNextPressed(),
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+      isLoading
+          ? const Center(child: EnProblemSplashScreen())
+          : Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Screenshot(
+              controller: screenshotController,
+              child: Container(
+                color: Colors.white,
+                child: Column(
+                  children: [
+                    NewHeaderWidget(
+                      headerText: '개념학습활동',
+                      headerTextSize: screenWidth * 0.028,
+                      subTextSize: screenWidth * 0.018,
+                    ),
+                    SizedBox(height: screenHeight * 0.01),
+                    NewQuestionTextWidget(
+                      questionText:
+                      '친구들이 키를 재고 있어요. 친구들의 키가 작은 순서대로 빈칸에 넣어 봅시다.',
+                      questionTextSize: screenWidth * 0.025,
+                    ),
+                    Container(
+                      alignment: Alignment.center,
+                      width: screenWidth * 0.9,
+                      height: screenHeight * 0.38,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: Colors.lightBlue,
+                          width: 2,
+                        ),
+                        image: DecorationImage(
+                          image: AssetImage(
+                            'assets/images/schoolBackground.jpg',
+                          ),
+                          fit: BoxFit.cover,
                         ),
                       ),
-                    ),
-                  ),
-                  if (showSubmitPopup)
-                    Positioned.fill(
-                      child: Stack(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(color: Colors.black54),
-                          Center(
-                            child: FadeTransition(
-                              opacity: submitAnimation,
-                              child: ScaleTransition(
-                                scale: submitAnimation,
-                                child: Material(
-                                  type: MaterialType.transparency,
-                                  child: SuccessfulPopup(
-                                    scaleAnimation:
-                                        const AlwaysStoppedAnimation(1.0),
-                                    isCorrect: isCorrect,
-                                    customMessage:
-                                        isCorrect ? "🎉 정답이에요!" : "틀렸어요...",
-                                    isEnd: isEnd,
-                                    closePopup: closeSubmit,
-                                    onClose:
-                                        isCorrect
-                                            ? () async => onNextPressed()
-                                            : null,
-                                    result: getResult(),
-                                    end: () async => onNextPressed()
-                                  ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(alignment: Alignment.center,
+                                width: screenWidth * 0.15,
+                                height: screenHeight * 0.025,
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: Colors.white,border: Border.all(color: Colors.lightBlue, width: 2)),
+                                child: Text('${engToKr('$person_low')}', style: TextStyle(fontSize: screenWidth * 0.025
+                                ),),),
+                              SizedBox(
+                                width: screenWidth * 0.2,
+                                child: Image.asset(
+                                  'assets/images/number/person_low/${person_low}.png',
+                                  errorBuilder:
+                                      (_, __, ___) => Icon(Icons.error),
                                 ),
                               ),
-                            ),
+                            ],
+
+                          ),
+                          SizedBox(width: screenWidth * 0.01),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Container(alignment: Alignment.center,
+                                width: screenWidth * 0.15,
+                                height: screenHeight * 0.025,
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: Colors.white,border: Border.all(color: Colors.lightBlue, width: 2)),
+                                child: Text('${engToKr('$person_mid')}', style: TextStyle(fontSize: screenWidth * 0.025
+                                ),),),
+                              SizedBox(
+                                width: screenWidth * 0.3,
+                                child: Image.asset(
+                                  'assets/images/number/person_mid/${person_mid}.png',
+                                  errorBuilder:
+                                      (_, __, ___) => Icon(Icons.error),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(width: screenWidth * 0.01),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Container(alignment: Alignment.center,
+                                width: screenWidth * 0.15,
+                                height: screenHeight * 0.025,
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: Colors.white,border: Border.all(color: Colors.lightBlue, width: 2)),
+                                child: Text('${engToKr('$person_high')}', style: TextStyle(fontSize: screenWidth * 0.025
+                                ),),),
+                              SizedBox(
+                                width: screenWidth * 0.35,
+                                child: Image.asset(
+                                  'assets/images/number/person_high/${person_high}.png',
+                                  errorBuilder:
+                                      (_, __, ___) => Icon(Icons.error),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ),
-
-                  if(isShowResult)
-                    Positioned.fill(
-                      child: Stack(
-                        children: [
-                          Container(color: Colors.black54),
-                          Center(
-                            child: FadeTransition(
-                              opacity: resultAnimation,
-                              child: ScaleTransition(
-                                scale: resultAnimation,
-                                child: Material(
-                                  type: MaterialType.transparency,
-                                  child: EnResultPopup(
-                                      scaleAnimation: const AlwaysStoppedAnimation(1.0),
-                                      result: getResult(),
-                                      end: () async => end()
-                                  ),
-                                ),
+                    SizedBox(height: screenHeight * 0.03),
+                    // Question 1
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '1. 첫 번째로 키가 큰 친구는 누구인가요? ',
+                          style: TextStyle(
+                            fontSize: screenWidth * 0.025,
+                          ),
+                        ),
+                        SizedBox(width: screenWidth * 0.01),
+                        EmptyZoneRiverpod(
+                          zoneKey: 1,
+                          width: screenWidth * 0.15,
+                          height: screenHeight * 0.055,
+                        ),
+                        SizedBox(width: screenWidth * 0.01),
+                        Text(
+                          '가 첫 번째로 커요!',
+                          style: TextStyle(
+                            fontSize: screenWidth * 0.025,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: screenHeight * 0.02),
+                    // Question 2
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '2. 두 번째로 키가 큰 친구는 누구인가요? ',
+                          style: TextStyle(
+                            fontSize: screenWidth * 0.025,
+                          ),
+                        ),
+                        SizedBox(width: screenWidth * 0.01),
+                        EmptyZoneRiverpod(
+                          zoneKey: 2,
+                          width: screenWidth * 0.15,
+                          height: screenHeight * 0.055,
+                        ),
+                        SizedBox(width: screenWidth * 0.01),
+                        Text(
+                          '가 두 번째로 커요!',
+                          style: TextStyle(
+                            fontSize: screenWidth * 0.025,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: screenHeight * 0.02),
+                    // Question 3
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '3. 세 번째로 키가 큰 친구는 누구인가요? ',
+                          style: TextStyle(
+                            fontSize: screenWidth * 0.025,
+                          ),
+                        ),
+                        SizedBox(width: screenWidth * 0.01),
+                        EmptyZoneRiverpod(
+                          zoneKey: 3,
+                          width: screenWidth * 0.15,
+                          height: screenHeight * 0.055,
+                        ),
+                        SizedBox(width: screenWidth * 0.01),
+                        Text(
+                          '가 세 번째로 커요!',
+                          style: TextStyle(
+                            fontSize: screenWidth * 0.025,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: screenHeight * 0.03),
+                    DraggableCardListRiverpod(
+                      showRemoveButton: false,
+                      candidates: candidates,
+                      boxWidth: 400,
+                      boxHeight: 80,
+                      cardWidth: 80,
+                      cardHeight: 50,
+                      // controller: widget.controller,
+                    ),
+                    Spacer(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        EnProgressBarWidget(
+                          current: current,
+                          total: total,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 30.0,
+                            vertical: screenHeight * 0.02,
+                          ),
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 300),
+                            transitionBuilder: (child, animation) {
+                              return FadeTransition(
+                                opacity: animation,
+                                child: child,
+                              );
+                            },
+                            child: Row(
+                              key: ValueKey<String>(
+                                '${isSubmitted}_$isCorrect',
                               ),
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                if (!isSubmitted)
+                                  ButtonWidget(
+                                    height: screenHeight * 0.035,
+                                    width: screenWidth * 0.18,
+                                    buttonText: "제출하기",
+                                    fontSize: screenWidth * 0.02,
+                                    borderRadius: 10,
+                                    onPressed:
+                                    (isSubmitted)
+                                        ? null
+                                        : () => {
+                                      submitController
+                                          .forward(),
+                                      showSubmitPopup = true,
+                                      submitActivity(context),
+                                      checkAnswer(),
+                                    },
+                                  ),
+
+                                if (isSubmitted &&
+                                    isCorrect == false) ...[
+                                  ButtonWidget(
+                                    height: screenHeight * 0.035,
+                                    width: screenWidth * 0.18,
+                                    buttonText: "제출하기",
+                                    fontSize: screenWidth * 0.02,
+                                    borderRadius: 10,
+                                    onPressed:
+                                        () => {
+                                      setState(() {
+                                        checkAnswer();
+                                        showSubmitPopup = true;
+                                      }),
+                                      submitController.forward(),
+                                    },
+                                  ),
+                                  const SizedBox(width: 20),
+                                  ButtonWidget(
+                                    height: screenHeight * 0.035,
+                                    width: screenWidth * 0.18,
+                                    buttonText: isEnd ? "학습종료" : "다음문제",
+                                    fontSize: screenWidth * 0.02,
+                                    borderRadius: 10,
+                                    onPressed:
+                                    isEnd
+                                        ? () => showResult()
+                                        : () => onNextPressed(),
+                                  ),
+                                ],
+
+                                if (isSubmitted && isCorrect == true)
+                                  ButtonWidget(
+                                    height: screenHeight * 0.035,
+                                    width: screenWidth * 0.18,
+                                    buttonText: isEnd ? "학습종료" : "다음문제",
+                                    fontSize: screenWidth * 0.02,
+                                    borderRadius: 10,
+                                    onPressed:
+                                    isEnd
+                                        ? () => showResult()
+                                        : () => onNextPressed(),
+                                  ),
+                              ],
                             ),
-                          )
-                        ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          if (showSubmitPopup)
+            Positioned.fill(
+              child: Stack(
+                children: [
+                  Container(color: Colors.black54),
+                  Center(
+                    child: FadeTransition(
+                      opacity: submitAnimation,
+                      child: ScaleTransition(
+                        scale: submitAnimation,
+                        child: Material(
+                          type: MaterialType.transparency,
+                          child: SuccessfulPopup(
+                            scaleAnimation:
+                            const AlwaysStoppedAnimation(1.0),
+                            isCorrect: isCorrect,
+                            customMessage:
+                            isCorrect ? "🎉 정답이에요!" : "틀렸어요...",
+                            isEnd: isEnd,
+                            closePopup: closeSubmit,
+                            onClose:
+                            isCorrect
+                                ? () async => onNextPressed()
+                                : null,
+                            result: getResult(),
+                            end: () async => onNextPressed(),
+                          ),
+                        ),
                       ),
                     ),
+                  ),
                 ],
               ),
+            ),
+
+          if (isShowResult)
+            Positioned.fill(
+              child: Stack(
+                children: [
+                  Container(color: Colors.black54),
+                  Center(
+                    child: FadeTransition(
+                      opacity: resultAnimation,
+                      child: ScaleTransition(
+                        scale: resultAnimation,
+                        child: Material(
+                          type: MaterialType.transparency,
+                          child: EnResultPopup(
+                            scaleAnimation:
+                            const AlwaysStoppedAnimation(1.0),
+                            result: getResult(),
+                            end: () async => end(),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

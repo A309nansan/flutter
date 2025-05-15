@@ -43,7 +43,7 @@ class _LevelOneOneFourThink4State extends ConsumerState<LevelOneOneFourThink4>
   int? elapsedSeconds;
   int current = 1;
   int total = 1;
-  String nextProblemCode = 'enlv1s1cgn5';
+  String nextProblemCode = 'enlv1s1c4gn5';
   String problemCode = 'enlv1s1c4gn4';
   bool isSubmitted = false;
   bool isCorrect = false;
@@ -309,7 +309,7 @@ class _LevelOneOneFourThink4State extends ConsumerState<LevelOneOneFourThink4>
                                 SizedBox(height: screenHeight * 0.01),
                                 NewQuestionTextWidget(
                                   questionText:
-                                      '2. 그림의 수를 세고, 알맞은 숫자 이름을 클릭하세요.',
+                                      '4. 그림의 수를 세고, 알맞은 숫자 이름을 클릭하세요.',
                                   questionTextSize: screenWidth * 0.03,
                                 ),
                                 SizedBox(height: screenWidth * 0.03),

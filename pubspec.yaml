@@ -150,7 +150,11 @@ flutter:
     - assets/images/number/turtle/
     - assets/images/number/unit/
     - assets/images/number/pouch/
+    - assets/images/number/zodiac/
     - assets/images/number/bg_apple/
+    - assets/images/number/person_high/
+    - assets/images/number/person_mid/
+    - assets/images/number/person_low/
     - assets/lottie/
     - assets/numbers/
     - .env
