@@ -23,16 +23,16 @@ import 'package:screenshot/screenshot.dart';
 import '../../../shared/provider/EnRiverPodProvider.dart';
 import '../../../shared/widgets/en_result_popup.dart';
 
-class LevelOneOneThreeMain1 extends ConsumerStatefulWidget {
+class LevelOneOneFourThink1 extends ConsumerStatefulWidget {
   final String problemCode;
-  const LevelOneOneThreeMain1({super.key, required this.problemCode});
+  const LevelOneOneFourThink1({super.key, required this.problemCode});
 
   @override
-  ConsumerState<LevelOneOneThreeMain1> createState() =>
-      _LevelOneOneThreeMain1State();
+  ConsumerState<LevelOneOneFourThink1> createState() =>
+      _LevelOneOneFourThink1State();
 }
 
-class _LevelOneOneThreeMain1State extends ConsumerState<LevelOneOneThreeMain1>
+class _LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1>
     with TickerProviderStateMixin {
   // 필수코드
   final ScreenshotController screenshotController = ScreenshotController();
@@ -42,8 +42,8 @@ class _LevelOneOneThreeMain1State extends ConsumerState<LevelOneOneThreeMain1>
   int? elapsedSeconds;
   int current = 1;
   int total = 1;
-  String nextProblemCode = 'enlv1s1c3jy2';
-  String problemCode = 'enlv1s1c3jy1';
+  String nextProblemCode = 'enlv1s1c4gn2';
+  String problemCode = 'enlv1s1c4gn1';
   bool isSubmitted = false;
   bool isCorrect = false;
   bool showSubmitPopup = false;
