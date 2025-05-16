@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:nansan_flutter/shared/services/request_service.dart';
 import 'package:screenshot/screenshot.dart';
 import '../../../modules/level_api/services/problem_api_service.dart';
 import '../../../shared/services/image_service.dart';
@@ -13,7 +12,6 @@ import '../../../shared/widgets/en_progress_bar_widget.dart';
 import '../../../shared/widgets/new_header_widget.dart';
 import '../../../shared/widgets/new_question_text.dart';
 import '../../../shared/widgets/successful_popup.dart';
-import '../../../shared/widgets/toase_message.dart';
 import '../controller/level_2_1_2_think_controller.dart';
 import '../widgets/drag_group_widget.dart';
 import '../widgets/hand_write_widget.dart';

@@ -4,7 +4,6 @@ import 'package:nansan_flutter/modules/math/src/widgets/m_presentation/progress_
 import '../../../../../shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
 import '../../models/m_problem_metadata.dart';
 import '../../services/m_response.dart';
-import '../../utils/math_basic.dart';
 import '../../utils/math_ui_constant.dart';
 import '../m_presentation/m_input_list.dart';
 import '../m_presentation/m_present_division_list.dart';
@@ -23,7 +22,7 @@ class MProblemDiv extends StatelessWidget {
   final VoidCallback? onCleared;
 
   const MProblemDiv({
-    Key? key,
+    super.key,
     required this.mathData,
     required this.onResultUpdated,
     required this.initialResult,
@@ -32,7 +31,7 @@ class MProblemDiv extends StatelessWidget {
     required this.recognitionAnswerZoneKeys,
     required this.userResponse,
     this.onCleared,
-  }) : super(key: key);
+  });
 
   void _clearAll() {
     clearDrawingState([
@@ -48,13 +47,14 @@ class MProblemDiv extends StatelessWidget {
     double wSize = MathUIConstant.wSize;
     final String problemStr = "${mathData.num2}|${mathData.num1}";
     final List<List<String>> problemToList = [problemStr.split('')];
-    print(problemStr + "PROBLEMSTR");
+    print("${problemStr}PROBLEMSTR");
     List<List<List<Stroke>>> carryStrokes = userResponse.carryStrokes;
     List<List<List<Stroke>>> progressStrokes = userResponse.progressStrokes;
     List<List<List<Stroke>>> answerStrokes = userResponse.answerStrokes;
     List<GlobalKey<HandwritingRecognitionZoneState>> CarryKeys = [];
-    if (recognitionCarryZoneKeys.isNotEmpty)
+    if (recognitionCarryZoneKeys.isNotEmpty) {
       CarryKeys = recognitionCarryZoneKeys[0];
+    }
     return Container(
       decoration: BoxDecoration(
         color: Colors.white, // 배경색 (필요에 따라 변경 가능)

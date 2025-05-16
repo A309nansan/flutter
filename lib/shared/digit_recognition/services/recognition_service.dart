@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:google_mlkit_digital_ink_recognition/google_mlkit_digital_ink_recognition.dart';
-import 'package:google_mlkit_commons/google_mlkit_commons.dart'; // ✅ 꼭 필요
+// ✅ 꼭 필요
 
 class DigitalInkRecognitionService {
   static final DigitalInkRecognitionService _instance =

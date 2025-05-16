@@ -23,7 +23,7 @@ import '../../../modules/drag_drop/controllers/drag_drop_controller_riverpod.dar
 import '../../../modules/drag_drop/models/card_data.dart';
 import '../../../modules/drag_drop/widgets/draggable_card_list_riverpod.dart';
 import '../../../modules/drag_drop/widgets/empty_zone_riverpod.dart';
-import '../../../shared/provider/EnRiverPodProvider.dart';
+import '../../../shared/provider/en_riverpod_provider.dart';
 import '../../../shared/widgets/en_result_popup.dart';
 
 class LevelOneTwoOneThink extends ConsumerStatefulWidget {
@@ -415,12 +415,12 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
                                         width: screenWidth * 0.15,
                                         height: screenHeight * 0.025,
                                       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: Colors.white,border: Border.all(color: Colors.lightBlue, width: 2)),
-                                      child: Text('${engToKr('$person_low')}', style: TextStyle(fontSize: screenWidth * 0.025
+                                      child: Text(engToKr(person_low), style: TextStyle(fontSize: screenWidth * 0.025
                                       ),),),
                                       SizedBox(
                                         width: screenWidth * 0.2,
                                         child: Image.asset(
-                                          'assets/images/number/person_low/${person_low}.png',
+                                          'assets/images/number/person_low/$person_low.png',
                                           errorBuilder:
                                               (_, __, ___) => Icon(Icons.error),
                                         ),
@@ -436,12 +436,12 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
                                         width: screenWidth * 0.15,
                                         height: screenHeight * 0.025,
                                         decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: Colors.white,border: Border.all(color: Colors.lightBlue, width: 2)),
-                                        child: Text('${engToKr('$person_mid')}', style: TextStyle(fontSize: screenWidth * 0.025
+                                        child: Text(engToKr(person_mid), style: TextStyle(fontSize: screenWidth * 0.025
                                         ),),),
                                       SizedBox(
                                         width: screenWidth * 0.3,
                                         child: Image.asset(
-                                          'assets/images/number/person_mid/${person_mid}.png',
+                                          'assets/images/number/person_mid/$person_mid.png',
                                           errorBuilder:
                                               (_, __, ___) => Icon(Icons.error),
                                         ),
@@ -456,12 +456,12 @@ class _LevelOneTwoOneThinkState extends ConsumerState<LevelOneTwoOneThink>
                                         width: screenWidth * 0.15,
                                         height: screenHeight * 0.025,
                                         decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: Colors.white,border: Border.all(color: Colors.lightBlue, width: 2)),
-                                        child: Text('${engToKr('$person_high')}', style: TextStyle(fontSize: screenWidth * 0.025
+                                        child: Text(engToKr(person_high), style: TextStyle(fontSize: screenWidth * 0.025
                                         ),),),
                                       SizedBox(
                                         width: screenWidth * 0.35,
                                         child: Image.asset(
-                                          'assets/images/number/person_high/${person_high}.png',
+                                          'assets/images/number/person_high/$person_high.png',
                                           errorBuilder:
                                               (_, __, ___) => Icon(Icons.error),
                                         ),

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nansan_flutter/level_1/2_3/widgets/NumberSelectionWidget.dart';
-import 'package:nansan_flutter/level_1/2_3/widgets/line_painter.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
 import 'package:nansan_flutter/shared/controllers/timer_controller.dart';
@@ -20,7 +19,7 @@ import 'package:nansan_flutter/shared/widgets/new_question_text.dart';
 import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:collection/collection.dart';
-import 'package:nansan_flutter/shared/provider/EnRiverPodProvider.dart';
+import 'package:nansan_flutter/shared/provider/en_riverpod_provider.dart';
 
 import '../../shared/widgets/en_result_popup.dart';
 

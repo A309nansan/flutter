@@ -1,11 +1,8 @@
-import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 
 import '../../../../shared/services/request_service.dart';
 import '../models/m_problem_checkresponse.dart';
-import '../utils/math_basic.dart';
 import '../utils/math_data_utils.dart';
 
 class BasaMathEncoder {
@@ -75,32 +72,33 @@ class BasaMathEncoder {
   }
   Map<String, dynamic> responseToAnswerMap(
     List<List<List<String>>> ans,
-    List<int> MV,
+    List<int> whatTheFuckIsMv,
   ) {
     Map<String, dynamic> map = {};
-    bool hasRemainder = MV[2] != 0 && (MV[1] == 1 || MV[0] == 0);
-    for (int i = 0; i < MV[4]; i++) {
-      Map<String, dynamic> temp = convertListToNumberMap(ans[2][i], MV[5]);
+    bool hasRemainder = whatTheFuckIsMv[2] != 0 && (whatTheFuckIsMv[1] == 1 || whatTheFuckIsMv[0] == 0);
+    for (int i = 0; i < whatTheFuckIsMv[4]; i++) {
+      Map<String, dynamic> temp = convertListToNumberMap(ans[2][i], whatTheFuckIsMv[5]);
       if (temp.isNotEmpty) map["result"] = temp;
     }
     if (!hasRemainder) {
-      for (int i = 0; i < MV[0]; i++) {
-        Map<String, dynamic> temp = convertListToNumberMap(ans[0][i], MV[1]);
-        if (temp.isNotEmpty) map["carry${MV[0] - i}"] = temp;
-        //map["carry${MV[0] - i}"] = convertListToNumberMap(ans[0][i], MV[1]);
+      for (int i = 0; i < whatTheFuckIsMv[0]; i++) {
+        Map<String, dynamic> temp = convertListToNumberMap(ans[0][i], whatTheFuckIsMv[1]);
+        if (temp.isNotEmpty) map["carry${whatTheFuckIsMv[0] - i}"] = temp;
+        //map["carry${whatTheFuckIsMv[0] - i}"] = convertListToNumberMap(ans[0][i], whatTheFuckIsMv[1]);
       }
     }
-    for (int i = 0; i < MV[2]; i++) {
-      Map<String, dynamic> temp = convertListToNumberMap(ans[1][i], MV[3]);
+    for (int i = 0; i < whatTheFuckIsMv[2]; i++) {
+      Map<String, dynamic> temp = convertListToNumberMap(ans[1][i], whatTheFuckIsMv[3]);
       if (temp.isNotEmpty) map["calculate${i + 1}"] = temp;
-      //map["calculate${i + 1}"] = convertListToNumberMap(ans[1][i], MV[3]);
+      //map["calculate${i + 1}"] = convertListToNumberMap(ans[1][i], whatTheFuckIsMv[3]);
     }
 
     if (hasRemainder) {
-      if (MV[0] == 0 || ans[0][0][0] == "")
+      if (whatTheFuckIsMv[0] == 0 || ans[0][0][0] == "") {
         map["remainder"] = 0;
-      else
+      } else {
         map["remainder"] = int.parse(ans[0][0][0]);
+      }
     }
     return map;
   }

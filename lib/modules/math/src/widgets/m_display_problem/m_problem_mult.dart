@@ -24,7 +24,7 @@ class MProblemMult extends StatelessWidget {
   final MResponse userResponse;
 
   const MProblemMult({
-    Key? key,
+    super.key,
     required this.mathData,
     required this.onResultUpdated,
     required this.initialResult,
@@ -33,7 +33,7 @@ class MProblemMult extends StatelessWidget {
     required this.recognitionAnswerZoneKeys,
     required this.userResponse,
     this.onCleared,
-  }) : super(key: key);
+  });
 
   void _clearAll() {
     clearDrawingState([
@@ -62,8 +62,9 @@ class MProblemMult extends StatelessWidget {
       problemSize,
     );
     List<GlobalKey<HandwritingRecognitionZoneState>> CarryKeys = [];
-    if (recognitionCarryZoneKeys.isNotEmpty)
+    if (recognitionCarryZoneKeys.isNotEmpty) {
       CarryKeys = recognitionCarryZoneKeys[0];
+    }
     return Container(
       decoration: BoxDecoration(
         color: Colors.white, // 배경색 (필요에 따라 변경 가능)

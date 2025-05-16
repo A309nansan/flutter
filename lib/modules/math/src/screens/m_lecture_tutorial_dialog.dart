@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../utils/math_string_hardcoder.dart';
 import '../utils/math_ui_constant.dart';
@@ -17,7 +16,7 @@ class _TutorialDialog extends StatefulWidget {
   final bool isTeachingMode;
   final int categoryIndex;
 
-  const _TutorialDialog(this.isTeachingMode, this.categoryIndex, {Key? key}) : super(key: key);
+  const _TutorialDialog(this.isTeachingMode, this.categoryIndex);
 
   @override
   State<_TutorialDialog> createState() => _TutorialDialogState();

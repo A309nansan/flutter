@@ -14,7 +14,6 @@ import '../utils/math_ui_constant.dart';
 import '../widgets/m_animator/m_feedback_lottie_widget.dart';
 
 import '../widgets/m_index_presenter_new.dart';
-import '../widgets/m_lecture_loading_screen.dart';
 import 'm_lecture_continue_dialog.dart';
 import 'm_problem_display.dart';
 import 'm_problem_switch_button.dart';
@@ -425,8 +424,9 @@ class _MRandomDefenceScreenState extends State<MRandomDefenceScreen>
               ValueListenableBuilder<String?>(
                 valueListenable: FeedbackAnimatorService().currentAsset,
                 builder: (context, asset, child) {
-                  if (asset == null)
+                  if (asset == null) {
                     return const SizedBox.shrink(); // 애니메이션 안띄움
+                  }
                   return FeedbackLottieWidget(asset: asset); // 애니메이션 실행
                 },
               ),

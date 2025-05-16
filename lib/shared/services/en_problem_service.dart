@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:nansan_flutter/shared/services/secure_storage_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -126,12 +127,12 @@ class EnProblemService {
         chapterData.remove(chapterCode);
         data[childIdKey] = chapterData;
         await prefs.setString('child_problems', jsonEncode(data));
-        print('🧹 초기화 완료: childId=$childId, chapterCode=$chapterCode 기록 삭제');
+        debugPrint('🧹 초기화 완료: childId=$childId, chapterCode=$chapterCode 기록 삭제');
       } else {
-        print('ℹ️ 해당 챕터 기록 없음: childId=$childId, chapterCode=$chapterCode');
+        debugPrint('ℹ️ 해당 챕터 기록 없음: childId=$childId, chapterCode=$chapterCode');
       }
     } else {
-      print('ℹ️ 해당 아이 기록 없음: childId=$childId');
+      debugPrint('ℹ️ 해당 아이 기록 없음: childId=$childId');
     }
   }
 }
