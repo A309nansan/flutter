@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 
@@ -11,13 +10,13 @@ class MPresentDivisionList extends StatelessWidget {
   final double? fSizeOverride;
   final Color? textColorOverride;
   const MPresentDivisionList({
-    Key? key,
+    super.key,
     required this.gridData,
     this.wSizeOverride,
     this.hSizeOverride,
     this.fSizeOverride,
     this.textColorOverride,
-  }) : super(key: key);
+  });
   double get wSize => wSizeOverride ?? MathUIConstant.wSize;
   double get hSize => hSizeOverride ?? MathUIConstant.hSize;
   double get fSize => fSizeOverride ?? MathUIConstant.fSize;

@@ -18,7 +18,7 @@ class RequestService {
       );
 
       return response.data;
-    } on DioException catch (e) {
+    } on DioException {
       rethrow;
     }
   }
@@ -78,7 +78,7 @@ class RequestService {
         options: Options(headers: headers),
       );
       return response;
-    } on DioException catch (e) {
+    } on DioException {
       rethrow;
     }
   }
@@ -95,7 +95,7 @@ class RequestService {
         options: Options(headers: headers),
       );
       return response;
-    } on DioException catch (e) {
+    } on DioException {
       rethrow;
     }
   }

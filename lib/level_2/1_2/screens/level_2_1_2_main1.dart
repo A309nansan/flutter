@@ -14,7 +14,6 @@ import '../../../shared/widgets/en_progress_bar_widget.dart';
 import '../../../shared/widgets/new_header_widget.dart';
 import '../../../shared/widgets/new_question_text.dart';
 import '../../../shared/widgets/successful_popup.dart';
-import '../../../shared/widgets/toase_message.dart';
 import '../widgets/pattern_fill_board.dart';
 import '../widgets/pattern_selector.dart';
 import '../widgets/main1_sample_popup.dart';

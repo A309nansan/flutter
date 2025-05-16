@@ -1,4 +1,3 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:nansan_flutter/modules/math/src/widgets/m_chart/m_accuracy_chart.dart';
@@ -11,7 +10,7 @@ import '../widgets/m_chart/m_overview_chart.dart';
 class MStatChartScreen extends StatelessWidget {
   final Map<String, dynamic> statsData; // 변환된 결과 하나
   final String categoryName;
-  const MStatChartScreen({Key? key, required this.statsData, required this.categoryName}) : super(key: key);
+  const MStatChartScreen({super.key, required this.statsData, required this.categoryName});
 
   @override
   Widget build(BuildContext context) {

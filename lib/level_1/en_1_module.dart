@@ -1,4 +1,3 @@
-import 'package:nansan_flutter/level_1/1_1/screens/level_1_1_1_think.dart';
 import 'package:nansan_flutter/level_1/1_3/screens/level_1_1_3_main2.dart';
 import 'package:nansan_flutter/level_1/1_3/screens/level_1_1_3_main3.dart';
 import 'package:nansan_flutter/level_1/1_3/screens/level_1_1_3_think.dart';

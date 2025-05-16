@@ -119,8 +119,9 @@ class _BoxWithLineWidgetState extends State<BoxWithLineWidget> {
           children: [
             GestureDetector(
               onTap: () {
-                if (widget.onSelected != null)
+                if (widget.onSelected != null) {
                   widget.onSelected!(widget.data[0]);
+                }
                 // setState()로 상태 변경 가능
               },
               child: Container(
@@ -140,8 +141,9 @@ class _BoxWithLineWidgetState extends State<BoxWithLineWidget> {
             SizedBox(width: widget.screenWidth * 0.1),
             GestureDetector(
               onTap: () {
-                if (widget.onSelected != null)
+                if (widget.onSelected != null) {
                   widget.onSelected!(widget.data[1]);
+                }
                 // setState()로 상태 변경 가능
               },
               child: Container(

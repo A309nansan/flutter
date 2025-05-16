@@ -57,7 +57,7 @@ class _SuccessfulPopupState extends State<SuccessfulPopup> {
         await widget.onClose!();
       }
     } catch (e, stack) {
-      print(stack);
+      debugPrint('$stack');
     }
     if (mounted) {
       setState(() => isLoading = false);

@@ -6,11 +6,11 @@ class MOverviewChart extends StatelessWidget {
   final String overallAccuracy;
 
   const MOverviewChart({
-    Key? key,
+    super.key,
     required this.totalQuestions,
     required this.totalCorrect,
     required this.overallAccuracy,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -52,11 +52,11 @@ class MOverviewChart2 extends StatelessWidget {
   final String medianTime;
 
   const MOverviewChart2({
-    Key? key,
+    super.key,
     required this.totalTime,
     required this.averageTime,
     required this.medianTime,
-  }) : super(key: key);
+  });
 
   Widget _buildMetric(String title, String value) {
     return Column(
@@ -86,8 +86,8 @@ class MOverviewChart2 extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildMetric("총 소요시간", "$totalMinutes분 $totalSeconds초"),
-          _buildMetric("평균 소요시간", averageTime + "초"),
-          _buildMetric("중앙값", medianTime + "초"),
+          _buildMetric("평균 소요시간", "$averageTime초"),
+          _buildMetric("중앙값", "$medianTime초"),
         ],
       ),
     );

@@ -7,7 +7,7 @@ import 'package:nansan_flutter/modules/level_api/services/problem_api_service.da
 import 'package:nansan_flutter/shared/widgets/en_result_popup.dart';
 import 'package:screenshot/screenshot.dart';
 import '../../../shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
-import '../../../shared/provider/EnRiverPodProvider.dart';
+import '../../../shared/provider/en_riverpod_provider.dart';
 import '../../../shared/services/en_problem_service.dart';
 import '../../../shared/services/image_service.dart';
 import '../../../shared/services/secure_storage_service.dart';

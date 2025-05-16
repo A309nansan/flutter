@@ -1,13 +1,10 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import '../../models/m_problem_metadata.dart';
 import '../../services/m_response.dart';
 import '../../utils/math_ui_constant.dart';
 import '../m_presentation/m_answer_list.dart';
-import '../m_presentation/m_input_list.dart';
 import '../m_presentation/m_present_division_list.dart';
-import '../m_presentation/m_present_matrix.dart';
 import '../m_presentation/progress_divider.dart';
 
 class MAnswerDiv extends StatelessWidget {
@@ -18,13 +15,13 @@ class MAnswerDiv extends StatelessWidget {
   final VoidCallback? onCleared;
 
   const MAnswerDiv({
-    Key? key,
+    super.key,
     required this.mathData,
     required this.userResponse,
     required this.answer,
     required this.isShowingUserInput,
     this.onCleared,
-  }) : super(key: key);
+  });
 
   void _clear() {
     onCleared?.call();

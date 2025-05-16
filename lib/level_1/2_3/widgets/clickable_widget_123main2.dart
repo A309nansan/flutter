@@ -59,7 +59,7 @@ class _ClickableWidget123Main2State extends State<ClickableWidget123Main2> {
                 height: screenHeight * 0.04,
                 child: Center(
                   child: Text(
-                    "${widget.problemNum}",
+                    widget.problemNum,
                     style: TextStyle(
                         fontSize: screenHeight * 0.03,
                         fontWeight: FontWeight.bold

@@ -5,10 +5,11 @@ import 'package:flutter/material.dart';
 String opConvert(String op) {
   if (op == "add" || op == "PLUS") return "＋";
   if (op == "sub" || op == "MIN") return "–";
-  if (op == "mult" || op == "MULT")
+  if (op == "mult" || op == "MULT") {
     return "×";
-  else
+  } else {
     return "÷";
+  }
 }
 
 String addPaddingToNumber(int x) {

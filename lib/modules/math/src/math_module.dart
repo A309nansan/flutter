@@ -3,13 +3,8 @@ import 'package:nansan_flutter/modules/math/src/screens/m_basa_random_defense.da
 import 'package:nansan_flutter/modules/math/src/screens/m_lecture_screen.dart';
 import 'package:nansan_flutter/modules/math/src/screens/m_statchart_screen.dart';
 import 'package:nansan_flutter/modules/math/src/screens/m_stats_screen.dart';
-import 'package:nansan_flutter/modules/math/src/_legacy_/m_test_screen.dart';
 
 class MathModule extends Module {
-  @override
-  void binds(Injector i) {
-    super.binds(i);
-  }
 
   @override
   void routes(RouteManager r) {
