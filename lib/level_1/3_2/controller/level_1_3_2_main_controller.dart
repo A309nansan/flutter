@@ -65,6 +65,7 @@ class LevelOneThreeTwoMainController {
       "value": p["value"],
       "options": p["options"],
       "images": p["images"],
+      "object": p["object"],
       "type": p["type"],
       "result": a["value"],
       "keys": List.generate(3, (_) => GlobalKey<HandwritingRecognitionZoneState>()),

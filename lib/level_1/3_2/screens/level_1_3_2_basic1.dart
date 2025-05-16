@@ -17,16 +17,16 @@ import '../../../shared/widgets/toase_message.dart';
 import '../controller/level_1_3_2_basic_controller.dart';
 import '../widgets/basic_sample_popup.dart';
 
-class LevelOneThreeTwoBasic extends ConsumerStatefulWidget {
+class LevelOneThreeTwoBasic1 extends ConsumerStatefulWidget {
   final String problemCode;
 
-  const LevelOneThreeTwoBasic({super.key, required this.problemCode});
+  const LevelOneThreeTwoBasic1({super.key, required this.problemCode});
 
   @override
-  ConsumerState<LevelOneThreeTwoBasic> createState() => _LevelOneThreeTwoBasicState();
+  ConsumerState<LevelOneThreeTwoBasic1> createState() => _LevelOneThreeTwoBasic1State();
 }
 
-class _LevelOneThreeTwoBasicState extends ConsumerState<LevelOneThreeTwoBasic>
+class _LevelOneThreeTwoBasic1State extends ConsumerState<LevelOneThreeTwoBasic1>
     with TickerProviderStateMixin {
   late final LevelOneThreeTwoBasicController controller;
   final ScreenshotController screenshotController = ScreenshotController();
@@ -284,7 +284,7 @@ class _LevelOneThreeTwoBasicState extends ConsumerState<LevelOneThreeTwoBasic>
                           children: List.generate(images.length, (i) {
                             final opt = images[i];
                             final image = images[i];
-                            final isSelectable = opt == null;
+                            final isSelectable = opt == 0;
                             final isTapped = selected == i;
 
                             return ElevatedButton(
