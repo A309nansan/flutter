@@ -20,7 +20,7 @@ import 'package:nansan_flutter/shared/widgets/new_question_text.dart';
 import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
 import 'package:screenshot/screenshot.dart';
 
-import '../../../shared/provider/EnRiverPodProvider.dart';
+import '../../../shared/provider/en_riverpod_provider.dart';
 import '../../../shared/widgets/en_result_popup.dart';
 
 class LevelOneOneThreeMain1 extends ConsumerStatefulWidget {

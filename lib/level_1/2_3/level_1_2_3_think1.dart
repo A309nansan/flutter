@@ -19,7 +19,7 @@ import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:collection/collection.dart';
 import '../../shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
-import '../../shared/provider/EnRiverPodProvider.dart';
+import '../../shared/provider/en_riverpod_provider.dart';
 import '../../shared/widgets/en_result_popup.dart';
 
 class LevelOneTwoThreeThink1 extends ConsumerStatefulWidget {

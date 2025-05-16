@@ -6,7 +6,7 @@ import '../utils/math_basic.dart';
 class IndexPresenterNew extends StatelessWidget {
   final int indexLabel;
 
-  const IndexPresenterNew({Key? key, required this.indexLabel}) : super(key: key);
+  const IndexPresenterNew({super.key, required this.indexLabel});
 
   @override
   Widget build(BuildContext context) {

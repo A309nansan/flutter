@@ -96,7 +96,7 @@ class BasaMathDecoder {
     int index,
     int categoryIndex,
   ) {
-    List<int> MV = getMatrixVolumes(
+    List<int> whatTheFuckIsMv = getMatrixVolumes(
       categoryIndex,
       json['problem']['first'],
       json['problem']['second'],
@@ -113,25 +113,25 @@ class BasaMathDecoder {
         carryList.add([json['answer']['remainder'].toString()]);
       }
     } else {
-      for (int i = 1; i <= MV[0]; i++) {
+      for (int i = 1; i <= whatTheFuckIsMv[0]; i++) {
         carryList.add(
           convertNumberMapToList(
             json['answer'],
-            "carry${MV[0] - i + 1}",
-            MV[1],
+            "carry${whatTheFuckIsMv[0] - i + 1}",
+            whatTheFuckIsMv[1],
           ),
         );
       }
     }
 
-    for (int i = 1; i <= MV[2]; i++) {
+    for (int i = 1; i <= whatTheFuckIsMv[2]; i++) {
       progressList.add(
-        convertNumberMapToList(json['answer'], "calculate$i", MV[3]),
+        convertNumberMapToList(json['answer'], "calculate$i", whatTheFuckIsMv[3]),
       );
     }
 
-    for (int i = 1; i <= MV[4]; i++) {
-      answerList.add(convertNumberMapToList(json['answer'], "result", MV[5]));
+    for (int i = 1; i <= whatTheFuckIsMv[4]; i++) {
+      answerList.add(convertNumberMapToList(json['answer'], "result", whatTheFuckIsMv[5]));
     }
 
     // 4) 세 개의 2차원 리스트를 한번에 묶어서 3차원 리스트로 반환
@@ -145,7 +145,7 @@ class BasaMathDecoder {
     String type,
   ) {
     //debugPrint("🚀🚀🚀🚀🚀");
-    List<int> MV = getMatrixVolumes(
+    List<int> whatTheFuckIsMv = getMatrixVolumes(
       categoryIndex,
       json['generatedProblem']['first'],
       json['generatedProblem']['second'],
@@ -162,25 +162,25 @@ class BasaMathDecoder {
         debugPrint("REMAINDER EXISTS CASE");
         carryList.add([json[type]['remainder'].toString()]);
       } else {
-        if (MV[0] != 0) carryList.add(["0"]);
+        if (whatTheFuckIsMv[0] != 0) carryList.add(["0"]);
       }
     } else {
-      for (int i = 1; i <= MV[0]; i++) {
+      for (int i = 1; i <= whatTheFuckIsMv[0]; i++) {
         //debugPrint("REMAINDER NONEXIST CASE");
         carryList.add(
-          convertNumberMapToList(json[type], "carry${MV[0] - i + 1}", MV[1]),
+          convertNumberMapToList(json[type], "carry${whatTheFuckIsMv[0] - i + 1}", whatTheFuckIsMv[1]),
         );
       }
     }
 
-    for (int i = 1; i <= MV[2]; i++) {
+    for (int i = 1; i <= whatTheFuckIsMv[2]; i++) {
       progressList.add(
-        convertNumberMapToList(json[type], "calculate$i", MV[3]),
+        convertNumberMapToList(json[type], "calculate$i", whatTheFuckIsMv[3]),
       );
     }
 
-    for (int i = 1; i <= MV[4]; i++) {
-      answerList.add(convertNumberMapToList(json[type], "result", MV[5]));
+    for (int i = 1; i <= whatTheFuckIsMv[4]; i++) {
+      answerList.add(convertNumberMapToList(json[type], "result", whatTheFuckIsMv[5]));
     }
 
     return [carryList, progressList, answerList];

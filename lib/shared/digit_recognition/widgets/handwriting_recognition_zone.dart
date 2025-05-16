@@ -292,7 +292,7 @@ class HandwritingRecognitionZoneState
     });
     // Ink를 JSON으로 변환 후 출력
     final inkJsonString = jsonEncode(_ink.toJson());
-    debugPrint(inkJsonString, wrapWidth: 8000); // 긴 로그도 잘림 없이 출력[2][6]
+    debugPrint(inkJsonString, wrapWidth: 8000000); // 긴 로그도 잘림 없이 출력[2][6]
   }
 }
 

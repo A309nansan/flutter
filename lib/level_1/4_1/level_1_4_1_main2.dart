@@ -23,7 +23,7 @@ import 'package:nansan_flutter/shared/widgets/new_question_text.dart';
 import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:collection/collection.dart';
-import 'package:nansan_flutter/shared/provider/EnRiverPodProvider.dart';
+import 'package:nansan_flutter/shared/provider/en_riverpod_provider.dart';
 
 // ✅ 상태변경 1. StatefulWidget -> ConsumerStatefulWidget
 class Level141main2 extends ConsumerStatefulWidget {

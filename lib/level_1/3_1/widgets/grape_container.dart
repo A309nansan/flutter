@@ -17,7 +17,7 @@ class GrapeContainer extends StatelessWidget {
     double screenHeight = MediaQuery.of(context).size.height;
     double containerWidth = screenWidth * 0.8;
 
-    Widget topImage = Container(
+    Widget topImage = SizedBox(
       width: screenHeight * 0.17 - 16,
       height: screenHeight * 0.17 - 16,
       child: Image.asset(

@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nansan_flutter/level_1/shared/widgets/question_box_String.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
-import 'package:nansan_flutter/level_1/shared/widgets/question_box.dart';
 import 'package:nansan_flutter/shared/controllers/timer_controller.dart';
 import 'package:nansan_flutter/shared/services/en_problem_service.dart';
 import 'package:nansan_flutter/shared/services/image_service.dart';
@@ -21,7 +20,7 @@ import 'package:nansan_flutter/shared/widgets/new_question_text.dart';
 import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
 import 'package:screenshot/screenshot.dart';
 
-import '../../../shared/provider/EnRiverPodProvider.dart';
+import '../../../shared/provider/en_riverpod_provider.dart';
 import '../../../shared/widgets/en_result_popup.dart';
 
 class LevelOneOneFourThink4 extends ConsumerStatefulWidget {

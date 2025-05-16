@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 
@@ -17,13 +16,13 @@ class MAnswerDivRemainder extends StatelessWidget {
   final VoidCallback? onCleared;
 
   const MAnswerDivRemainder({
-    Key? key,
+    super.key,
     required this.mathData,
     required this.userResponse,
     required this.answer,
     required this.isShowingUserInput,
     this.onCleared,
-  }) : super(key: key);
+  });
 
   void _clear() {
     onCleared?.call();
@@ -105,7 +104,7 @@ class MAnswerDivRemainder extends StatelessWidget {
           ),
           Row(
             children: [
-              Container(
+              SizedBox(
                 width: wSize,
                 height: hSize,
                 child: Center(child:Text(

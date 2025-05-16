@@ -85,16 +85,18 @@ class MProblemDisplayState extends State<MProblemDisplay> {
       if (!widget.userResponse.isAnswerValid(
         recognitionTotalResults[2][0][i],
         widget.correctResponse3DList[2][0][i],
-      ))
+      )) {
         return false;
+      }
     }
     //debugPrint("LET ME CHECK FINISH");
     if (widget.problemMetaData.matrixVolume[1] == 1) {
       if (!widget.userResponse.isAnswerValid(
         recognitionTotalResults[0][0][0],
         widget.correctResponse3DList[0][0][0],
-      ))
+      )) {
         return false;
+      }
     }
     return true;
   }

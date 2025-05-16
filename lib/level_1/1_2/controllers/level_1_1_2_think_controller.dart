@@ -6,12 +6,10 @@ import 'package:nansan_flutter/modules/drag_drop/controllers/drag_drop_controlle
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
 import 'package:nansan_flutter/shared/controllers/timer_controller.dart';
-import 'package:screenshot/screenshot.dart';
 import 'package:flutter/foundation.dart';
 
 class Level112ThinkController extends ChangeNotifier {
   final ProblemApiService _apiService = ProblemApiService();
-  final ScreenshotController _screenshotController = ScreenshotController();
   final TimerController _timerController = TimerController();
   final DragDropController _dragDropController = DragDropController();
   late int childId;

@@ -1,5 +1,3 @@
-import '../models/m_problem_metadata.dart';
-import 'dart:math';
 String getOperator(int categoryIndex){
 
   if (categoryIndex < 500 && categoryIndex % 2 == 1) return "PLUS";
@@ -26,12 +24,18 @@ List<int> getMatrixVolumes(int c, int num1, int num2){ //c = categoryIndex
   if (c == 602) return [2,4,2,4,1,4];
 
   if (c == 603) {
-    if (num1~/num2 >= 10 ) return [0, 0, 4, 2, 1, 2];
-    else return [0,0,2,2,1,2];
+    if (num1~/num2 >= 10 ) {
+      return [0, 0, 4, 2, 1, 2];
+    } else {
+      return [0,0,2,2,1,2];
+    }
   }
   if (c == 604) {
-    if (num1~/num2 >= 10 )return [1, 1, 4, 2, 1, 2];
-    else return [1,1,2,2,1,2];
+    if (num1~/num2 >= 10 ) {
+      return [1, 1, 4, 2, 1, 2];
+    } else {
+      return [1,1,2,2,1,2];
+    }
   }
     return [];
 }

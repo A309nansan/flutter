@@ -23,7 +23,7 @@ class MProblemDivRemainder extends StatelessWidget {
   final VoidCallback? onCleared;
 
   const MProblemDivRemainder({
-    Key? key,
+    super.key,
     required this.mathData,
     required this.onResultUpdated,
     required this.initialResult,
@@ -32,7 +32,7 @@ class MProblemDivRemainder extends StatelessWidget {
     required this.recognitionAnswerZoneKeys,
     required this.userResponse,
     this.onCleared,
-  }) : super(key: key);
+  });
 
   void _clearAll() {
     clearDrawingState([
@@ -56,8 +56,9 @@ class MProblemDivRemainder extends StatelessWidget {
     List<List<List<Stroke>>> progressStrokes = userResponse.progressStrokes;
     List<List<List<Stroke>>> answerStrokes = userResponse.answerStrokes;
     List<GlobalKey<HandwritingRecognitionZoneState>> CarryKeys = [];
-    if (recognitionCarryZoneKeys.isNotEmpty)
+    if (recognitionCarryZoneKeys.isNotEmpty) {
       CarryKeys = recognitionCarryZoneKeys[0];
+    }
     return Container(
       decoration: BoxDecoration(
         color: Colors.white, // 배경색 (필요에 따라 변경 가능)
@@ -120,7 +121,7 @@ class MProblemDivRemainder extends StatelessWidget {
               ),
               Row(
                 children: [
-                  Container(
+                  SizedBox(
                     width: wSize,
                     height: hSize,
                     child: Center(child:Text(

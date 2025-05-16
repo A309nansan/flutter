@@ -12,7 +12,6 @@ import '../../../shared/widgets/en_progress_bar_widget.dart';
 import '../../../shared/widgets/new_header_widget.dart';
 import '../../../shared/widgets/new_question_text.dart';
 import '../../../shared/widgets/successful_popup.dart';
-import '../../../shared/widgets/toase_message.dart';
 import '../controller/level_2_1_2_main2_controller.dart';
 import '../widgets/main2_sample_popup.dart';
 import '../widgets/stacked_block.dart';

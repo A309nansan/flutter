@@ -14,13 +14,13 @@ class MAnswerSingleline extends StatelessWidget {
   final VoidCallback? onCleared;
 
   const MAnswerSingleline({
-    Key? key,
+    super.key,
     required this.mathData,
     required this.userResponse,
     required this.answer,
     required this.isShowingUserInput,
     this.onCleared,
-  }) : super(key: key);
+  });
 
   void _clear() {
     onCleared?.call();

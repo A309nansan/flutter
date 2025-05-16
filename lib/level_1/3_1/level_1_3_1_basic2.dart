@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:nansan_flutter/level_1/3_1/widgets/apple_container.dart';
 import 'package:nansan_flutter/level_1/3_1/widgets/selection.dart';
@@ -23,7 +22,7 @@ import 'package:screenshot/screenshot.dart';
 import 'package:collection/collection.dart';
 
 import '../../shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
-import '../../shared/provider/EnRiverPodProvider.dart';
+import '../../shared/provider/en_riverpod_provider.dart';
 import '../../shared/widgets/en_result_popup.dart';
 
 class LevelOneThreeOneBasic2 extends ConsumerStatefulWidget {

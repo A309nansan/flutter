@@ -88,6 +88,7 @@ class MProblemStateModel extends ChangeNotifier {
 
   }
 
+  @override
   String toString() {
     return "hasAnswer: $_hasAnswer, isAnswerCorrect: $_isAnswerCorrect, isShowingUserInput: $isShowingUserInput, isWritingEnabled: $_isWritingEnabled";
   }

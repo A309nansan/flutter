@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:nansan_flutter/shared/digit_recognition/screen/digittestpage.dart';
 import '../../../../shared/services/secure_storage_service.dart';
 import '../../../../shared/widgets/toase_message.dart';
 import '../../../auth/src/services/auth_service.dart';
@@ -63,8 +64,8 @@ class ProfilePopupMenu extends StatelessWidget {
         } else {
           // 데이터 없음: 기본 아이콘이나 빈 원
           avatarChild = const CircleAvatar(
-            child: Icon(Icons.person, color: Colors.white),
             backgroundColor: Colors.grey,
+            child: Icon(Icons.person, color: Colors.white),
           );
         }
 
@@ -74,6 +75,7 @@ class ProfilePopupMenu extends StatelessWidget {
             onSelected: (value) {
               if (value == 'profile') {
                 ToastMessage.show("내 정보 클릭!");
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => DigitTestPage()));
               } else if (value == 'logout') {
                 authService.logout();
                 ToastMessage.show("로그아웃되었습니다.");
