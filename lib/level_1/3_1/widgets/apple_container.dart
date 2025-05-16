@@ -16,7 +16,7 @@ class AppleContainer extends StatelessWidget {
     double screenWidth = MediaQuery.of(context).size.width;
     double containerWidth = screenWidth * 0.4;
 
-    Widget topImage = Container(
+    Widget topImage = SizedBox(
       width: screenWidth * 0.4 - 166,
       height: screenWidth * 0.4 - 166,
       child: Image.asset(

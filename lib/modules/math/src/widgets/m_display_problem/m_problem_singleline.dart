@@ -21,14 +21,14 @@ class MProblemSingleline extends StatelessWidget {
   final MResponse userResponse;
 
   const MProblemSingleline({
-    Key? key,
+    super.key,
     required this.mathData,
     required this.onResultUpdated,
     required this.initialResult,
     required this.recognitionAnswerZoneKeys,
     required this.userResponse,
     this.onCleared,
-  }) : super(key: key);
+  });
 
   void _clearAll() {
     clearDrawingState([recognitionAnswerZoneKeys]);

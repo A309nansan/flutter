@@ -12,12 +12,12 @@ class MInputList extends StatefulWidget {
   final List<List<Stroke>> strokeList;
 
   const MInputList({
-    Key? key,
+    super.key,
     required this.itemCount,
     required this.recognitionZoneKeys, // GlobalKey 리스트를 받아서 상태 관리
     required this.strokeList,
     this.onAllRecognized,
-  }) : super(key: key);
+  });
   double get wSize => MathUIConstant.wSize;
   double get hSize => MathUIConstant.hSize;
   @override

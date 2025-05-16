@@ -2,8 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_digital_ink_recognition/google_mlkit_digital_ink_recognition.dart';
 import '../../../../shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
-import '../models/m_problem_metadata.dart';
-import '../_legacy_/recognition_state.dart';
 
 
 /// 메인 MProblemPractice 위젯에서 분리한 로직 모음
@@ -25,9 +23,9 @@ class MResponse {
 
   MResponse.initLite(List<List<List<String>>> storedResponse, List<int> matrixVolume){
     this.matrixVolume = matrixVolume;
-    this.recognitionCarryResults = storedResponse[0];
-    this.recognitionProgressResults = storedResponse[1];
-    this.recognitionAnswerResults = storedResponse[2];
+    recognitionCarryResults = storedResponse[0];
+    recognitionProgressResults = storedResponse[1];
+    recognitionAnswerResults = storedResponse[2];
   }
   MResponse.init(
     List<List<List<String>>> initialResults,
@@ -306,7 +304,7 @@ class MResponse {
             true);
       }
     }
-    print(matrixVolume.toString() + " MATRIXVOLUME");
+    print("$matrixVolume MATRIXVOLUME");
     if (matrixVolume[1] == 1){
       if (!isAnswerValid(recognitionCarryResults[0][0], answer[0][0][0])){
         recognitionCarryZoneKeys[0][0].currentState?.updateBackgroundColor(Colors.red.withOpacity(0.1));
@@ -377,7 +375,7 @@ List<List<GlobalKey<HandwritingRecognitionZoneState>>> generateGlobalKey2D(
     (i) => List.generate(
       y,
       (j) => GlobalKey<HandwritingRecognitionZoneState>(
-        debugLabel: 'problem${labelName}_col${i}_row${j}',
+        debugLabel: 'problem${labelName}_col${i}_row$j',
       ),
     ),
   );

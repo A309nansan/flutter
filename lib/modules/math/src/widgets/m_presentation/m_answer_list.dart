@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math'; // min() 함수 사용을 위해 추가
 
-import '../../../../../shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
 import '../../utils/math_ui_constant.dart';
 
 class MAnswerList extends StatelessWidget {
@@ -12,12 +11,12 @@ class MAnswerList extends StatelessWidget {
   final bool isShowingUserInput;
 
   const MAnswerList({
-    Key? key,
+    super.key,
     required this.itemCount,
     required this.recognizedResults, // GlobalKey 리스트를 받아서 상태 관리
     required this.expectedResults,
     required this.isShowingUserInput,
-  }) : super(key: key);
+  });
   double get wSize => MathUIConstant.wSize;
   double get hSize => MathUIConstant.hSize;
   double get fSize => MathUIConstant.fSize;

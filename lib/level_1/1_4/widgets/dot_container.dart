@@ -18,7 +18,7 @@ class DotContainer extends StatelessWidget {
     double containerWidth = screenWidth * 0.8;
 
     Widget buildImage(int ans) {
-      return Container(
+      return SizedBox(
         width: screenHeight * 0.17 - 16,
         height: screenHeight * 0.17 - 16,
         child: Image.asset(
@@ -36,7 +36,7 @@ class DotContainer extends StatelessWidget {
       );
     }
 
-    Widget topImage = Container(
+    Widget topImage = SizedBox(
       width: (screenHeight * 0.17 - 16) * 2, // Width for two images side by side
       height: screenHeight * 0.17 - 16,
       child: Row(

@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:nansan_flutter/modules/main/src/widgets/en_category_list_item.dart';
 import '../../../../shared/widgets/appbar_widget.dart';
 import '../../../../shared/widgets/en_list_splash_screen.dart';
-import '../../../../shared/widgets/toase_message.dart';
 import '../models/en_category_model.dart';
-import '../models/math_category_model.dart';
 import '../service/category_service.dart';
 import '../widgets/m_category_list_item.dart'; // ← 모델 경로에 맞게 조정
 

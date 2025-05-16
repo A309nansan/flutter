@@ -30,7 +30,7 @@ class _AppInitializerState extends State<AppInitializer> {
 
   String _dots = '';
   Timer? _dotTimer;
-  double _opacity = 1.0;
+  final double _opacity = 1.0;
   late final String _baseMessage;
 
   double _progress = 0.0;

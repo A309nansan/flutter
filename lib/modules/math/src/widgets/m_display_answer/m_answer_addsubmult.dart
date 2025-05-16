@@ -15,13 +15,13 @@ class MAnswerAddSubMult extends StatelessWidget {
   final bool isShowingUserInput;
   final VoidCallback? onCleared;
   const MAnswerAddSubMult({
-    Key? key,
+    super.key,
     required this.mathData,
     required this.userResponse,
     required this.answer,
     required this.isShowingUserInput,
     this.onCleared,
-  }) : super(key: key);
+  });
 
   void _clear(){
     onCleared?.call();

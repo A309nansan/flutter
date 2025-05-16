@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:nansan_flutter/modules/main/src/models/en_category_model.dart';
-import 'package:nansan_flutter/shared/widgets/toase_message.dart';
 
 class MainListItem extends StatelessWidget {
   final EnCategoryModel category;

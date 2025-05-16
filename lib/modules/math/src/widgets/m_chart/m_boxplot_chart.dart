@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class MBoxPlotChart extends StatelessWidget {
   final Map<String, dynamic> statsData;
 
-  const MBoxPlotChart({Key? key, required this.statsData}) : super(key: key);
+  const MBoxPlotChart({super.key, required this.statsData});
 
   @override
   Widget build(BuildContext context) {

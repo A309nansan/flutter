@@ -25,7 +25,7 @@ class MProblemAddSub extends StatelessWidget {
   final VoidCallback? onCleared;
 
   const MProblemAddSub({
-    Key? key,
+    super.key,
     required this.mathData,
     required this.onResultUpdated,
     required this.initialResult,
@@ -35,7 +35,7 @@ class MProblemAddSub extends StatelessWidget {
     required this.recognitionAnswerZoneKeys,
 
     this.onCleared,
-  }) : super(key: key);
+  });
 
   void _clearAll() {
     clearDrawingState([recognitionCarryZoneKeys, recognitionAnswerZoneKeys]);
@@ -56,8 +56,9 @@ class MProblemAddSub extends StatelessWidget {
         max(mathData.num1.toString().length, mathData.num2.toString().length) +
         1;
     List<GlobalKey<HandwritingRecognitionZoneState>> CarryKeys = [];
-    if (recognitionCarryZoneKeys.isNotEmpty)
+    if (recognitionCarryZoneKeys.isNotEmpty) {
       CarryKeys = recognitionCarryZoneKeys[0];
+    }
     List<List<List<Stroke>>> carryStrokes = userResponse.carryStrokes;
     List<List<List<Stroke>>> answerStrokes = userResponse.answerStrokes;
 

@@ -5,7 +5,7 @@ import 'package:nansan_flutter/shared/widgets/new_header_widget.dart';
 import 'package:nansan_flutter/shared/widgets/new_question_text.dart';
 import 'package:screenshot/screenshot.dart';
 import '../../../modules/level_api/services/problem_api_service.dart';
-import '../../../shared/provider/EnRiverPodProvider.dart';
+import '../../../shared/provider/en_riverpod_provider.dart';
 import '../../../shared/services/en_problem_service.dart';
 import '../../../shared/services/image_service.dart';
 import '../../../shared/widgets/appbar_widget.dart';

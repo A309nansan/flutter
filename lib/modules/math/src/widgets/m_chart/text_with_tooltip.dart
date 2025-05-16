@@ -6,11 +6,11 @@ class TextWithTooltip extends StatelessWidget {
   final String subtext;
 
   const TextWithTooltip({
-    Key? key,
+    super.key,
     required this.text,
     required this.title,
     required this.subtext,
-  }) : super(key: key);
+  });
 
   void _showBottomTooltip(BuildContext context) {
     showModalBottomSheet(
