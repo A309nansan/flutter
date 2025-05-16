@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:screenshot/screenshot.dart';
 import '../../../modules/level_api/services/problem_api_service.dart';
 import '../../../shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
-import '../../../shared/provider/EnRiverPodProvider.dart';
+import '../../../shared/provider/en_riverpod_provider.dart';
 import '../../../shared/services/en_problem_service.dart';
 import '../../../shared/services/image_service.dart';
 import '../../../shared/services/secure_storage_service.dart';
