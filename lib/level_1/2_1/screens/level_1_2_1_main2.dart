@@ -19,9 +19,9 @@ import 'package:nansan_flutter/shared/widgets/new_question_text.dart';
 import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:collection/collection.dart';
-import 'package:nansan_flutter/shared/provider/EnRiverPodProvider.dart';
 
 import '../../../shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
+import '../../../shared/provider/en_riverpod_provider.dart';
 import '../../../shared/widgets/en_result_popup.dart';
 
 // ✅ 상태변경 1. StatefulWidget -> ConsumerStatefulWidget
@@ -132,12 +132,23 @@ class LevelOneTwoOneMain2State extends ConsumerState<LevelOneTwoOneMain2>
         nextProblemCode = response.nextProblemCode;
         // problemData = response.problem;
         problemData = {
-          "p1": [ 1, 2, 3, 0, 5],
-          "p2": [ 4, 5, 0, 7, 8],
+          "p1": [ 1, 2, 3, 0, 5 ],
+          "t1": [ '첫째', '둘째', '셋째', '넷째', '다섯째' ],
+          "p2": [ 4, 0, 0, 7, 8 ],
+          "t2": [ '넷째', '다섯째', '여섯째', '일곱째', '여덟째' ],
+          "p3": [ 0, 6, 0, 0, 9 ],
+          "t3": [ '다섯째', '여섯째', '일곱째', '여덟째', '아홉째' ],
         };
-        answerData = response.answer;
+        // answerData = response.answer;
+        answerData = {
+          "p1": [ 1, 2, 3, 4, 5 ],
+          "p2": [ 4, 5, 6, 7, 8 ],
+          "p3": [ 5, 6, 7, 8, 9 ],
+        };
         current = response.current;
         total = response.total;
+        selectedAnswers = Map<String, List<dynamic>>.from(problemData)
+          ..removeWhere((key, value) => key.startsWith('t'));
       });
       _processProblemData(problemData);
     } catch (e) {
@@ -182,10 +193,36 @@ class LevelOneTwoOneMain2State extends ConsumerState<LevelOneTwoOneMain2>
   void _processProblemData(Map problemData) {}
 
   // 문제 푸는 로직 수행할때, seletedAnswers 데이터 넣는 로직
-  void _processInputData() {}
+  Future<void> _processInputData() async {
+    for (final entry in zoneKeys.entries) {
+      final key = entry.key; // e.g. "p1-2"
+      final zoneKey = entry.value;
+      final state = zoneKey.currentState;
+
+      // Skip the entry if state is null or the widget is unmounted
+      if (state == null) {
+        debugPrint("Skipping $key — state is null");
+        continue;
+      }
+
+      try {
+        final recognized = await state.recognize();
+        final parts = key.split('-');
+        final rowKey = parts[0];
+        final index = int.parse(parts[1]);
+
+        final row = List<int>.from(selectedAnswers[rowKey]);
+        row[index] = int.tryParse(recognized) ?? -1;
+        selectedAnswers[rowKey] = row;
+      } catch (e) {
+        debugPrint("Recognition failed for $key: $e");
+      }
+    }
+  }
 
   // 정답 여부 체크(보통은 이거쓰면됨)
   Future<void> checkAnswer() async {
+    await _processInputData();
     isCorrect = const DeepCollectionEquality().equals(
       answerData,
       selectedAnswers,
@@ -320,9 +357,10 @@ class LevelOneTwoOneMain2State extends ConsumerState<LevelOneTwoOneMain2>
                           // 여기에 문제 푸는 ui 및 삽입
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: List.generate(5, (index) {
+                            children: List.generate((problemData.length / 2).toInt(), (index) {
                               final key = 'p${index + 1}';
                               final data = problemData[key] ?? [];
+                              final text = problemData['t${index + 1}'] ?? [];
 
                               return Padding(
                                 padding: EdgeInsets.only(
@@ -331,8 +369,7 @@ class LevelOneTwoOneMain2State extends ConsumerState<LevelOneTwoOneMain2>
                                 child: Padding(
                                   padding: const EdgeInsets.only(left: 16.0),
                                   child: Column(
-                                    crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Container(
                                         alignment: Alignment.center,
@@ -354,6 +391,7 @@ class LevelOneTwoOneMain2State extends ConsumerState<LevelOneTwoOneMain2>
                                       CaterpillarWidget(
                                         rowId: key,
                                         data: data,
+                                        text: text,
                                         zoneKeys: zoneKeys,
                                       ),
                                     ],
@@ -397,17 +435,15 @@ class LevelOneTwoOneMain2State extends ConsumerState<LevelOneTwoOneMain2>
                                   buttonText: "제출하기",
                                   fontSize: screenWidth * 0.02,
                                   borderRadius: 10,
-                                  // TODO : 정답 체크 로직 구현 시 해당 부분 지우고 주석 활성화
-                                  onPressed: () => onNextPressed(),
-                                  // onPressed: () async {
-                                  //   if (isSubmitted) return;
-                                  //   await checkAnswer();
-                                  //   setState(() {
-                                  //     showSubmitPopup = true;
-                                  //   });
-                                  //   submitController.forward();
-                                  //   await submitActivity(context);
-                                  // },
+                                  onPressed: () async {
+                                    if (isSubmitted) return;
+                                    await checkAnswer();
+                                    setState(() {
+                                      showSubmitPopup = true;
+                                    });
+                                    submitController.forward();
+                                    await submitActivity(context);
+                                  },
                                 ),
 
                               if (isSubmitted && isCorrect == false) ...[
@@ -418,7 +454,7 @@ class LevelOneTwoOneMain2State extends ConsumerState<LevelOneTwoOneMain2>
                                   fontSize: screenWidth * 0.02,
                                   borderRadius: 10,
                                   onPressed: () async {
-                                    checkAnswer();
+                                    await checkAnswer();
                                     setState(() {
                                       showSubmitPopup = true;
                                     });

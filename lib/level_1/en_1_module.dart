@@ -20,6 +20,10 @@ import 'package:nansan_flutter/level_1/2_3/level_1_2_3_main3.dart';
 import 'package:nansan_flutter/level_1/2_3/level_1_2_3_main4.dart';
 import 'package:nansan_flutter/level_1/2_3/level_1_2_3_main5.dart';
 import 'package:nansan_flutter/level_1/3_1/level_1_3_1_basic1.dart';
+import 'package:nansan_flutter/level_1/3_2/screens/level_1_3_2_basic2.dart';
+import 'package:nansan_flutter/level_1/3_2/screens/level_1_3_2_main2.dart';
+import 'package:nansan_flutter/level_1/3_2/screens/level_1_3_2_main3.dart';
+import 'package:nansan_flutter/level_1/3_2/screens/level_1_3_2_main4.dart';
 import 'package:nansan_flutter/level_1/3_2/screens/level_1_3_2_pro1.dart';
 import 'package:nansan_flutter/level_1/3_1/level_1_3_1_basic2.dart';
 import 'package:nansan_flutter/level_1/3_1/level_1_3_1_main2.dart';
@@ -35,8 +39,8 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:provider/provider.dart';
 import '1_4/level_1_1_4_think1.dart';
 import '2_1/screens/level_1_2_1_main2.dart';
-import '3_2/screens/level_1_3_2_basic.dart';
-import '3_2/screens/level_1_3_2_main.dart';
+import '3_2/screens/level_1_3_2_basic1.dart';
+import '3_2/screens/level_1_3_2_main1.dart';
 import '3_1/level_1_3_1_main1.dart';
 import '4-2/screens/level_1_4_2_main.dart';
 import 'package:nansan_flutter/level_1/1_1/screens/level_1_1_1_main.dart';
@@ -344,7 +348,15 @@ class En1Module extends Module {
       '/enlv1s3c2kc1',
       child: (context) {
         final nextCode = r.args.data as String;
-        return LevelOneThreeTwoBasic(problemCode: nextCode);
+        return LevelOneThreeTwoBasic1(problemCode: nextCode);
+      },
+    );
+    // 3과 2차시 기초2
+    r.child(
+      '/enlv1s3c2kc2',
+      child: (context) {
+        final nextCode = r.args.data as String;
+        return LevelOneThreeTwoBasic2(problemCode: nextCode);
       },
     );
     // 3과 2차시 주요1
@@ -352,7 +364,31 @@ class En1Module extends Module {
       '/enlv1s3c2jy1',
       child: (context) {
         final nextCode = r.args.data as String;
-        return LevelOneThreeTwoMain(problemCode: nextCode);
+        return LevelOneThreeTwoMain1(problemCode: nextCode);
+      },
+    );
+    // 3과 2차시 주요2
+    r.child(
+      '/enlv1s3c2jy2',
+      child: (context) {
+        final nextCode = r.args.data as String;
+        return LevelOneThreeTwoMain2(problemCode: nextCode);
+      },
+    );
+    // 3과 2차시 주요3
+    r.child(
+      '/enlv1s3c2jy3',
+      child: (context) {
+        final nextCode = r.args.data as String;
+        return LevelOneThreeTwoMain3(problemCode: nextCode);
+      },
+    );
+    // 3과 2차시 주요4
+    r.child(
+      '/enlv1s3c2jy4',
+      child: (context) {
+        final nextCode = r.args.data as String;
+        return LevelOneThreeTwoMain4(problemCode: nextCode);
       },
     );
     // 3과 2차시 심화1

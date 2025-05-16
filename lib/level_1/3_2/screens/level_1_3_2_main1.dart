@@ -21,16 +21,16 @@ import '../../../shared/widgets/toase_message.dart';
 import '../controller/level_1_3_2_main_controller.dart';
 import '../widgets/main_sample_popup.dart';
 
-class LevelOneThreeTwoMain extends ConsumerStatefulWidget {
+class LevelOneThreeTwoMain1 extends ConsumerStatefulWidget {
   final String problemCode;
 
-  const LevelOneThreeTwoMain({super.key, required this.problemCode});
+  const LevelOneThreeTwoMain1({super.key, required this.problemCode});
 
   @override
-  ConsumerState<LevelOneThreeTwoMain> createState() => _LevelOneThreeTwoMainState();
+  ConsumerState<LevelOneThreeTwoMain1> createState() => _LevelOneThreeTwoMain1State();
 }
 
-class _LevelOneThreeTwoMainState extends ConsumerState<LevelOneThreeTwoMain>
+class _LevelOneThreeTwoMain1State extends ConsumerState<LevelOneThreeTwoMain1>
     with TickerProviderStateMixin {
   late final LevelOneThreeTwoMainController controller;
   final ScreenshotController screenshotController = ScreenshotController();
@@ -183,13 +183,14 @@ class _LevelOneThreeTwoMainState extends ConsumerState<LevelOneThreeTwoMain>
 
     final problem = controller.problemData;
     final options = problem["options"];
-    final images = problem["images"];
     final selected = problem["selectedValue"];
     final value = problem["value"];
     final type = problem["type"];
+    final object = problem["object"];
     final keys = problem["keys"];
     final nextCode = controller.originalProblem["next_problem_code"] as String?;
     final isEnd = nextCode == null || nextCode.isEmpty;
+    debugPrint(problem.toString());
 
     return Scaffold(
       appBar: AppbarWidget(
@@ -281,7 +282,7 @@ class _LevelOneThreeTwoMainState extends ConsumerState<LevelOneThreeTwoMain>
                             childAspectRatio: 0.4,
                             children: List.generate(options.length, (i) {
                               final opt = options[i];
-                              final image = images[i];
+                              final image = 'assets/images/number/$object/${options[i]}.png';
                               final key = keys[i];
                               final isTapped = selected == i;
 
@@ -312,7 +313,7 @@ class _LevelOneThreeTwoMainState extends ConsumerState<LevelOneThreeTwoMain>
                                         ),
                                         child:
                                             opt != null
-                                                ? Image.network(
+                                                ? Image.asset(
                                                   image,
                                                   fit: BoxFit.contain,
                                                 )
