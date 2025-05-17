@@ -60,25 +60,19 @@ class _LevelOneTwoThreeMain5State extends ConsumerState<LevelOneTwoThreeMain5> w
   List<Map<String, String>> candidates = [];
 
   //페이지 변수
-  List<List<String>> problemContents = [
-    ['9', '8', '7', '6'], // 1번째 문제
-    ['1', '2', '3', '4'], // 2번째 문제
-    ['6', '5', '4', '3'], // 3번째 문제
-    ['t', 'e', 's', 't'], // 4번째 문제
+  List<List<int>> problemContents = [
+    [9, 8, 7, 6],
+    [1, 2, 3, 4],
+    [6, 5, 4, 3],
+    [1, 0, 0, 4 ],
   ];
 
   int _selectedAnswer = -1;
 
   // 보기 항목을 반환하는 함수
   Widget _buildAnswerOption(int index, List<String> contents) {
-    final screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
-    final screenHeight = MediaQuery
-        .of(context)
-        .size
-        .height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
 
     return GestureDetector(
       onTap: () {
@@ -119,8 +113,7 @@ class _LevelOneTwoThreeMain5State extends ConsumerState<LevelOneTwoThreeMain5> w
               height: screenHeight * 0.12,
               width: screenWidth * 0.7,
               decoration: BoxDecoration(
-                color: _selectedAnswer == index ? Colors.blue[100] : Colors
-                    .yellow[100],
+                color: _selectedAnswer == index ? Colors.blue[100] : Colors.yellow[100],
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.black, width: 1),
               ),
@@ -140,8 +133,8 @@ class _LevelOneTwoThreeMain5State extends ConsumerState<LevelOneTwoThreeMain5> w
                         child: Text(
                           content,
                           style: TextStyle(
-                              fontSize: screenHeight * 0.03,
-                              fontWeight: FontWeight.bold
+                            fontSize: screenHeight * 0.03,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
@@ -155,6 +148,7 @@ class _LevelOneTwoThreeMain5State extends ConsumerState<LevelOneTwoThreeMain5> w
       ),
     );
   }
+
 
   // 페이지 실행 시 작동하는 함수. 수정 필요 x
   @override
@@ -268,20 +262,30 @@ class _LevelOneTwoThreeMain5State extends ConsumerState<LevelOneTwoThreeMain5> w
   }
 
   // 문제 데이터 받아온 후, 문제에 맞게 데이터 조작
+  // 문제 데이터 받아온 후, 문제에 맞게 데이터 조작
   void _processProblemData(Map problemData) {
-    if (problemData.containsKey('choices')) {
-      setState(() {
-        problemContents = List<List<String>>.from(
-          (problemData['choices'] as List).map((e) => List<String>.from(e)),
-        );
-      });
-    }
+    final choices = problemData['choices'] as List;
+
+    // `choices` 데이터를 problemContents 형식에 맞게 변환
+    setState(() {
+      problemContents = choices.map((choiceList) {
+        // 각 항목이 이미 int 타입이면, 바로 사용
+        if (choiceList is List<int>) {
+          return List<int>.from(choiceList);
+        }
+        // 각 항목이 String 타입이면, int로 변환
+        return List<int>.from(choiceList.map((e) => int.parse(e.toString())));
+      }).toList();
+    });
+
+    debugPrint('📦 problemContents: $problemContents');
   }
+
 
   // 문제 푸는 로직 수행할때, seletedAnswers 데이터 넣는 로직
   void _processInputData() {
     selectedAnswers = {
-      "selectedAnswer": _selectedAnswer,
+      "selectedAnswer": _selectedAnswer + 1,
     };
 
     debugPrint('$selectedAnswers');
@@ -429,13 +433,13 @@ class _LevelOneTwoThreeMain5State extends ConsumerState<LevelOneTwoThreeMain5> w
                         Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            _buildAnswerOption(0, problemContents[0]),
+                            _buildAnswerOption(0, problemContents[0].map((e) => e.toString()).toList()),
                             SizedBox(height: screenHeight * 0.02),
-                            _buildAnswerOption(1, problemContents[1]),
+                            _buildAnswerOption(1, problemContents[1].map((e) => e.toString()).toList()),
                             SizedBox(height: screenHeight * 0.02),
-                            _buildAnswerOption(2, problemContents[2]),
+                            _buildAnswerOption(2, problemContents[2].map((e) => e.toString()).toList()),
                             SizedBox(height: screenHeight * 0.02),
-                            _buildAnswerOption(3, problemContents[3]),
+                            _buildAnswerOption(3, problemContents[3].map((e) => e.toString()).toList()),
                           ],
                         ),
                       ],
@@ -547,19 +551,19 @@ class _LevelOneTwoThreeMain5State extends ConsumerState<LevelOneTwoThreeMain5> w
                         child: Material(
                           type: MaterialType.transparency,
                           child: SuccessfulPopup(
-                            scaleAnimation:
-                            const AlwaysStoppedAnimation(1.0),
-                            isCorrect: isCorrect,
-                            customMessage:
-                            isCorrect ? "🎉 정답이에요!" : "틀렸어요...",
-                            isEnd: isEnd,
-                            closePopup: closeSubmit,
-                            onClose:
-                            isCorrect
-                                ? () async => onNextPressed()
-                                : null,
-                            result: getResult(),
-                            end: () async => onNextPressed()
+                              scaleAnimation:
+                              const AlwaysStoppedAnimation(1.0),
+                              isCorrect: isCorrect,
+                              customMessage:
+                              isCorrect ? "🎉 정답이에요!" : "틀렸어요...",
+                              isEnd: isEnd,
+                              closePopup: closeSubmit,
+                              onClose:
+                              isCorrect
+                                  ? () async => onNextPressed()
+                                  : null,
+                              result: getResult(),
+                              end: () async => onNextPressed()
                           ),
                         ),
                       ),
