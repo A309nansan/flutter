@@ -131,7 +131,7 @@ class LevelOneOneOneThinkState extends State<LevelOneOneOneThink>
   }
 
   // 문제 데이터 처리 - 상대 좌표만 사용
-  void _processProblemData(Map<String, dynamic> problemData) {}
+  void _processProblemData(problemData) {}
 
   void checkAnswer() {
     isCorrect = const DeepCollectionEquality().equals(

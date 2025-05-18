@@ -156,6 +156,8 @@ flutter:
     - assets/images/number/person_high/
     - assets/images/number/person_mid/
     - assets/images/number/person_low/
+    - assets/images/number/star/
+    - assets/images/number/triangle/
     - assets/lottie/
     - assets/numbers/
     - assets/tflite/
