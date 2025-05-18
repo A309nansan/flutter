@@ -51,6 +51,7 @@ class AnswerGridItemWidget extends StatelessWidget {
                       return Icon(Icons.error, color: Colors.red);
                     },
                   ),
+                  // child: Image.asset('assets/images/number/${candidate.object}/${candidate.number}.png'),
                 ),
               ),
             ],
