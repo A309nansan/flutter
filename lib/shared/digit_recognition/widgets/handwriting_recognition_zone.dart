@@ -1,7 +1,9 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart' hide Ink;
 import 'package:google_mlkit_digital_ink_recognition/google_mlkit_digital_ink_recognition.dart';
+import 'package:nansan_flutter/shared/digit_recognition/models/handwriting_data.dart';
+import 'package:nansan_flutter/shared/digit_recognition/services/handwriting_data_service.dart';
+import 'package:nansan_flutter/shared/services/secure_storage_service.dart';
 import '../../../modules/math/src/utils/math_ui_constant.dart';
 import '../services/recognition_service.dart';
 
@@ -113,6 +115,18 @@ class HandwritingRecognitionZoneState
         _isRecognizing = false;
       });
 
+      final childProfileJson = await SecureStorageService.getChildProfile();
+      final childProfile = jsonDecode(childProfileJson!);
+      final childId = childProfile['id'];
+
+      final handWritingData = HandwritingData(
+        childId: childId,
+        answer: _recognizedText,
+        ink: _ink,
+      );
+
+      HandwritingDataService().sendHandwritingData(handWritingData);
+
       // 콜백 실행
       if (widget.onRecognized != null) {
         widget.onRecognized!(_recognizedText);
@@ -207,53 +221,6 @@ class HandwritingRecognitionZoneState
       ),
     );
   }
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Container(
-  //     width: widget.width,
-  //     height: widget.height,
-  //     decoration: BoxDecoration(
-  //       color:
-  //           _recognitionFailed
-  //               ? Colors.red.withOpacity(0.1)
-  //               : bgColor,
-  //       border: Border.all(
-  //         //color: _recognitionFailed ? Colors.red : Colors.grey,
-  //         //width: _recognitionFailed ? 3.0 : 1.0,
-  //         color: _recognitionFailed ? Colors.red : MathUIConstant.inputBoundaryColor,
-  //         width: _recognitionFailed ? 3.0 : 1.5,
-  //       ),
-  //       borderRadius: BorderRadius.circular(8.0),
-  //     ),
-  //     child: GestureDetector(
-  //       onPanStart: _onPanStart,
-  //       onPanUpdate: _onPanUpdate,
-  //       onPanEnd: _onPanEnd,
-  //
-  //       onLongPress: () {
-  //         clear(); // ✅ 롱프레스 시 모든 필기 초기화
-  //         updateBackgroundColor(Colors.transparent);
-  //       },
-  //
-  //       onPanDown: (_) {},
-  //
-  //       child: Stack(
-  //         children: [
-  //           CustomPaint(
-  //             size: Size(widget.width, widget.height),
-  //             painter: _InkPainter(
-  //               strokes: _strokes,
-  //               currentStroke: _currentStroke,
-  //               strokeColor: widget.strokeColor,
-  //               strokeWidth: widget.strokeWidth,
-  //             ),
-  //           ),
-  //           if (_isRecognizing && widget.displayLoadingstate) Center(child: CircularProgressIndicator()),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
 
   void _onPanStart(DragStartDetails details) {
     final RenderBox box = context.findRenderObject() as RenderBox;
