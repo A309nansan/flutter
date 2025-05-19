@@ -328,14 +328,14 @@ class _LevelOneTwoThreeMain3State extends ConsumerState<LevelOneTwoThreeMain3> w
                     child: Column(
                       children: [
                         NewHeaderWidget(
-                          headerText: '개념학습활동',
+                          headerText: '주요학습활동',
                           headerTextSize: screenWidth * 0.028,
                           subTextSize: screenWidth * 0.018,
                         ),
                         SizedBox(height: screenHeight * 0.01),
                         NewQuestionTextWidget(
                           questionText:
-                          '숫자 4가 들어갈 위치를 찾아 O표 하세요.',
+                          '3. 주어진 숫자가 들어갈 위치를 찾아 클릭 하세요.',
                           questionTextSize: screenWidth * 0.03,
                         ),
                         SizedBox(height: screenHeight * 0.25),

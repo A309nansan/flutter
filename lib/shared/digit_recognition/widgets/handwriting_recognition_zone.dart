@@ -167,7 +167,7 @@ class HandwritingRecognitionZoneState
           color:
               _enabled
                   ? (_recognitionFailed ? Colors.red.shade200 : _bgColor)
-                  : Colors.grey[300], // 비활성 상태일 때 배경 회색
+                  : Colors.grey,
           border: Border.all(
             color:
                 _recognitionFailed

@@ -229,7 +229,7 @@ class _LevelOneThreeTwoMain1State extends ConsumerState<LevelOneThreeTwoMain1>
                                   children: [
                                     Expanded(
                                       child: NewQuestionTextWidget(
-                                        questionText: "물체의 수를 세고 □ 안에 알맞은 숫자를 쓰고, 선택해 보세요.",
+                                        questionText: "1. 각자 그림이 나타내는 숫자를 아래 네모에 적고,\n$value보다 ${type == 0 ? '1 큰 수' : '1 작은 수'}를 나타내는 그림을 선택하세요.",
                                         questionTextSize: screenWidth * 0.03,
                                       ),
                                     ),
@@ -254,20 +254,7 @@ class _LevelOneThreeTwoMain1State extends ConsumerState<LevelOneThreeTwoMain1>
                             ),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 20.0,
-                            horizontal: 40,
-                          ),
-                          child: Text(
-                            "물체의 수를 세고, □ 안에 알맞은 숫자를 써 봅시다. "
-                            "$value보다 ${type == 0 ? '1 큰 수' : '1 작은 수'}에 선택하세요.",
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
+                        SizedBox(height: screenHeight * 0.1,),
                         Padding(
                           padding: const EdgeInsets.symmetric(
                             vertical: 12.0,

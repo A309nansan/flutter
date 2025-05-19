@@ -67,7 +67,7 @@ class DigitalInkRecognitionService {
 
       return numericCandidates.isNotEmpty ? numericCandidates : [];
     } catch (e) {
-      print('인식 오류: $e');
+      debugPrint('인식 오류: $e');
       return [];
     }
   }

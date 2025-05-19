@@ -324,48 +324,48 @@ class _LevelOneTwoTwoThink2State extends ConsumerState<LevelOneTwoTwoThink2>
                             ),
                             NewQuestionTextWidget(
                               questionText: '2. 순서에 맞게 알맞은 숫자를 빈칸에 써 보세요.',
-                              questionTextSize: screenWidth * 0.025,
+                              questionTextSize: screenWidth * 0.03,
                             ),
+                            SizedBox(height: screenHeight * 0.03,),
                             Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start
+                              ,
                               children: List.generate(5, (index) {
                                 final key = 'p${index + 1}';
                                 final data = problemData[key] ?? [];
 
                                 return Padding(
-                                  padding: EdgeInsets.only(
-                                    bottom: screenHeight * 0.02,
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 16.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          alignment: Alignment.center,
-                                          width: screenWidth * 0.05,
-                                          height: screenWidth * 0.05,
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(
-                                              50,
+                                  padding: EdgeInsets.only(left: screenWidth * 0.02),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Container(
+                                            alignment: Alignment.center,
+                                            width: screenWidth * 0.05,
+                                            height: screenWidth * 0.05,
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(
+                                                50,
+                                              ),
+                                              color: Colors.purple[100],
                                             ),
-                                            color: Colors.purple[100],
-                                          ),
-                                          child: Text(
-                                            '${index + 1}',
-                                            style: TextStyle(
-                                              fontSize: screenWidth * 0.035,
+                                            child: Text(
+                                              '${index + 1}',
+                                              style: TextStyle(
+                                                fontSize: screenWidth * 0.035,
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                        DynamicNumberRow(
-                                          rowId: key,
-                                          data: data,
-                                          zoneKeys: zoneKeys,
-                                        ),
-                                      ],
-                                    ),
+                                      DynamicNumberRow(
+                                        rowId: key,
+                                        data: data,
+                                        zoneKeys: zoneKeys,
+                                      ),
+                                        ],
+                                      ),
+                                      SizedBox(height: screenHeight * 0.05),
+                                    ],
                                   ),
                                 );
                               }),

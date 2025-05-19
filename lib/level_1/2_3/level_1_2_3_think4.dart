@@ -339,7 +339,7 @@ class LevelOneTwoThreeThink4State extends ConsumerState<LevelOneTwoThreeThink4> 
                         ),
                         SizedBox(height: screenHeight * 0.01),
                         NewQuestionTextWidget(
-                          questionText: '숫자가 순서대로 나열된 것을 찾아 O표 하세요.',
+                          questionText: '4. 숫자가 순서대로 나열된 것을 찾아 O표 하세요.',
                           questionTextSize: screenWidth * 0.03,
                         ),
                         SizedBox(height: screenHeight * 0.02),

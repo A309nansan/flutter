@@ -69,7 +69,7 @@ class LevelOneOneOneController extends ChangeNotifier {
               .where((entry) => entry.key.startsWith('candidate'))
               .map(
                 (entry) => {
-                  'image_url': entry.value['image_url'],
+                  'object' : entry.value['object'],
                   'number': entry.value['number'],
                   'key': entry.key,
                 },
@@ -108,7 +108,7 @@ class LevelOneOneOneController extends ChangeNotifier {
       final candidate = candidates.firstWhere(
         (c) => c.key == key,
         orElse:
-            () => AnswerCandidate(number: -1, key: 'invalid', imageUrl: null),
+            () => AnswerCandidate(number: -1, key: 'invalid', object: null),
       );
 
       if (candidate.number != targetNumber) {

@@ -336,7 +336,7 @@ class _LevelOneTwoThreeThink3State extends ConsumerState<LevelOneTwoThreeThink3>
                         SizedBox(height: screenHeight * 0.01),
                         NewQuestionTextWidget(
                           questionText:
-                          '숫자가 들어갈 알맞은 위치를 찾아 <보기>와 같이 O표 하세요.',
+                          '3. 숫자가 들어갈 알맞은 위치를 찾아 <보기>와 같이 O표 하세요.',
                           questionTextSize: screenWidth * 0.03,
                         ),
                         SizedBox(height: screenHeight * 0.02),

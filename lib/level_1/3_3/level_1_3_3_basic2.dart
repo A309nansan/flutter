@@ -67,7 +67,7 @@ class LevelOneThreeThreeBasic2State extends ConsumerState<LevelOneThreeThreeBasi
     List.filled(4, ''),
     List.filled(4, '')
   ];
-  List<String> problemNum = ['가', '나', '다', '라'];
+  List<String> problemNum = ['1', '2', '3', '4'];
 
   //가로 문제 위젯
   Widget buildProblemRow(int rowIndex) {
@@ -102,8 +102,7 @@ class LevelOneThreeThreeBasic2State extends ConsumerState<LevelOneThreeThreeBasi
               height: screenWidth * 0.07,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white,
-                border: Border.all(color: Colors.black, width: 2.0),
+                color: Colors.purple[100],
               ),
               alignment: Alignment.center,
               child: Text(
@@ -111,7 +110,7 @@ class LevelOneThreeThreeBasic2State extends ConsumerState<LevelOneThreeThreeBasi
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: screenWidth * 0.04,
-                  color: Colors.black,
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -443,7 +442,7 @@ class LevelOneThreeThreeBasic2State extends ConsumerState<LevelOneThreeThreeBasi
                         SizedBox(height: screenHeight * 0.01),
                         NewQuestionTextWidget(
                           questionText:
-                          '<보기>와 같은 규칙으로 수량을 순서대로 나열한 것을 찾아봅시다.',
+                          '2. 수량이 1씩 늘어나는 순서대로 나열한 것을 찾아 모두 클릭해 보세요.',
                           questionTextSize: screenWidth * 0.03,
                         ),
                         SizedBox(height: screenHeight * 0.02),

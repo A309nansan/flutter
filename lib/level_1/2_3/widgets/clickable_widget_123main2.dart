@@ -45,9 +45,8 @@ class _ClickableWidget123Main2State extends State<ClickableWidget123Main2> {
     // 기존 빌드 메서드 코드 (변경 없음)
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    return SizedBox(
-      width: screenWidth * 0.2,
-      height: screenHeight * 0.35,
+
+    return Container(
       child: Column(
         children: [
           Column(
@@ -55,8 +54,6 @@ class _ClickableWidget123Main2State extends State<ClickableWidget123Main2> {
             children: [
               Container(
                 alignment: Alignment.center,
-                width: screenHeight * 0.04,
-                height: screenHeight * 0.04,
                 child: Center(
                   child: Text(
                     widget.problemNum,
@@ -67,18 +64,18 @@ class _ClickableWidget123Main2State extends State<ClickableWidget123Main2> {
                   ),
                 ),
               ),
-              SizedBox(height: screenHeight * 0.01),
+              SizedBox(height: screenHeight * 0.005),
               Row(
-                children: List.generate(2, (colIndex) {
+                children: List.generate(3, (colIndex) {
                   return Column(
-                    children: List.generate(5, (rowIndex) {
-                      int index = colIndex * 5 + rowIndex; // 0~9 인덱스 계산
+                    children: List.generate(3, (rowIndex) {
+                      int index = colIndex * 3 + rowIndex; // 0~9 인덱스 계산
                       return GestureDetector(
                         onTap: () => handleContainerClick(index),
                         child: Container(
                           alignment: Alignment.center,
-                          width: screenWidth * 0.1,
-                          height: screenHeight * 0.06,
+                          width: screenWidth * 0.08,
+                          height: screenWidth * 0.08,
                           decoration: BoxDecoration(
                             color: containerStates[index] ? Color(0xFFFef1c4) : null, // ✅ 선택되면 빨간색 배경
                             border: Border.all(

@@ -320,167 +320,176 @@ class LevelOneTwoThreeMain1State extends ConsumerState<LevelOneTwoThreeMain1>
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                Screenshot(
-                  controller: screenshotController,
-                  child: Container(
-                    color: Colors.white,
-                    child: Column(
-                      children: [
-                        NewHeaderWidget(
-                          headerText: '주요학습활동',
-                          headerTextSize: screenWidth * 0.028,
-                          subTextSize: screenWidth * 0.018,
-                        ),
-                        SizedBox(height: screenHeight * 0.01),
-                        NewQuestionTextWidget(
-                          questionText:
-                          '1. 빠진 수를 바르게 적어 보세요.',
-                          questionTextSize: screenWidth * 0.03,
-                        ),
-                        SizedBox(height: screenHeight * 0.02),
-                        // 여기에 문제 푸는 ui 및 삽입
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: List.generate(3, (index) {
-                            final key = 'p${index + 1}';
-                            final data = problemData[key] ?? [];
+            child: Container(
+              color: Colors.white,
+              child: Column(
+                children: [
+                  Screenshot(
+                    controller: screenshotController,
+                    child: Container(
+                      color: Colors.white,
+                      child: Column(
+                        children: [
+                          NewHeaderWidget(
+                            headerText: '주요학습활동',
+                            headerTextSize: screenWidth * 0.028,
+                            subTextSize: screenWidth * 0.018,
+                          ),
+                          SizedBox(height: screenHeight * 0.01),
+                          NewQuestionTextWidget(
+                            questionText:
+                            '1. 빈 칸에 빠진 수를 바르게 적어 보세요.',
+                            questionTextSize: screenWidth * 0.03,
+                          ),
+                          SizedBox(height: screenHeight * 0.05),
+                          // 여기에 문제 푸는 ui 및 삽입
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: List.generate(3, (index) {
+                              final key = 'p${index + 1}';
+                              final data = problemData[key] ?? [];
 
-                            return Padding(
-                              padding: EdgeInsets.only(
-                                bottom: screenHeight * 0.02,
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 16.0),
-                                child: Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      alignment: Alignment.center,
-                                      width: screenWidth * 0.05,
-                                      height: screenWidth * 0.05,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(
-                                          50,
-                                        ),
-                                        color: Colors.purple[100],
-                                      ),
-                                      child: Text(
-                                        '${index + 1}',
-                                        style: TextStyle(
-                                          fontSize: screenWidth * 0.035,
-                                        ),
-                                      ),
-                                    ),
-                                    DynamicNumberRow(
-                                      rowId: key,
-                                      data: data,
-                                      zoneKeys: zoneKeys,
-                                    ),
-                                  ],
+                              return Padding(
+                                padding: EdgeInsets.only(
+                                  bottom: screenHeight * 0.02,
                                 ),
-                              ),
-                            );
-                          }),
-                        ),
-                      ],
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 16.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          Container(
+                                            alignment: Alignment.center,
+                                            width: screenWidth * 0.05,
+                                            height: screenWidth * 0.05,
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(
+                                                50,
+                                              ),
+                                              color: Colors.purple[100],
+                                            ),
+                                            child: Text(
+                                              '${index + 1}',
+                                              style: TextStyle(
+                                                fontSize: screenWidth * 0.035,
+                                              ),
+                                            ),
+                                          ),
+                                      DynamicNumberRow(
+                                        rowId: key,
+                                        data: data,
+                                        zoneKeys: zoneKeys,
+                                      ),
+                                        ],
+                                      ),
+                                      SizedBox(height: screenHeight * 0.05,)
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                Spacer(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    EnProgressBarWidget(current: current, total: total),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 30.0,
-                        vertical: screenHeight * 0.02,
-                      ),
-                      child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 300),
-                        transitionBuilder: (child, animation) {
-                          return FadeTransition(
-                            opacity: animation,
-                            child: child,
-                          );
-                        },
-                        child: Row(
-                          key: ValueKey<String>(
-                            '${isSubmitted}_$isCorrect',
-                          ),
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            if (!isSubmitted)
-                              ButtonWidget(
-                                height: screenHeight * 0.035,
-                                width: screenWidth * 0.18,
-                                buttonText: "제출하기",
-                                fontSize: screenWidth * 0.02,
-                                borderRadius: 10,
-                                onPressed: () async {
-                                  if (isSubmitted) return;
-                                  await checkAnswer();
-                                  setState(() {
-                                    showSubmitPopup = true;
-                                  });
-                                  submitController.forward();
-                                  await submitActivity(context);
-                                },
-                              ),
+                  Spacer(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      EnProgressBarWidget(current: current, total: total),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 30.0,
+                          vertical: screenHeight * 0.02,
+                        ),
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 300),
+                          transitionBuilder: (child, animation) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            );
+                          },
+                          child: Row(
+                            key: ValueKey<String>(
+                              '${isSubmitted}_$isCorrect',
+                            ),
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              if (!isSubmitted)
+                                ButtonWidget(
+                                  height: screenHeight * 0.035,
+                                  width: screenWidth * 0.18,
+                                  buttonText: "제출하기",
+                                  fontSize: screenWidth * 0.02,
+                                  borderRadius: 10,
+                                  onPressed: () async {
+                                    if (isSubmitted) return;
+                                    await checkAnswer();
+                                    setState(() {
+                                      showSubmitPopup = true;
+                                    });
+                                    submitController.forward();
+                                    await submitActivity(context);
+                                  },
+                                ),
 
-                            if (isSubmitted && isCorrect == false) ...[
-                              ButtonWidget(
-                                height: screenHeight * 0.035,
-                                width: screenWidth * 0.18,
-                                buttonText: "제출하기",
-                                fontSize: screenWidth * 0.02,
-                                borderRadius: 10,
-                                onPressed: () async {
-                                  await checkAnswer();
-                                  setState(() {
-                                    showSubmitPopup = true;
-                                  });
-                                  submitController.forward();
-                                },
-                              ),
-                              const SizedBox(width: 20),
-                              ButtonWidget(
-                                height: screenHeight * 0.035,
-                                width: screenWidth * 0.18,
-                                buttonText: isEnd ? "학습종료" : "다음문제",
-                                fontSize: screenWidth * 0.02,
-                                borderRadius: 10,
-                                // ✅ 결과 팝업에 따른 수정
-                                onPressed:
-                                isEnd
-                                    ? () => showResult()
-                                    : () => onNextPressed(),
-                              ),
+                              if (isSubmitted && isCorrect == false) ...[
+                                ButtonWidget(
+                                  height: screenHeight * 0.035,
+                                  width: screenWidth * 0.18,
+                                  buttonText: "제출하기",
+                                  fontSize: screenWidth * 0.02,
+                                  borderRadius: 10,
+                                  onPressed: () async {
+                                    await checkAnswer();
+                                    setState(() {
+                                      showSubmitPopup = true;
+                                    });
+                                    submitController.forward();
+                                  },
+                                ),
+                                const SizedBox(width: 20),
+                                ButtonWidget(
+                                  height: screenHeight * 0.035,
+                                  width: screenWidth * 0.18,
+                                  buttonText: isEnd ? "학습종료" : "다음문제",
+                                  fontSize: screenWidth * 0.02,
+                                  borderRadius: 10,
+                                  // ✅ 결과 팝업에 따른 수정
+                                  onPressed:
+                                  isEnd
+                                      ? () => showResult()
+                                      : () => onNextPressed(),
+                                ),
+                              ],
+
+                              if (isSubmitted && isCorrect == true)
+                                ButtonWidget(
+                                  height: screenHeight * 0.035,
+                                  width: screenWidth * 0.18,
+                                  buttonText: isEnd ? "학습종료" : "다음문제",
+                                  fontSize: screenWidth * 0.02,
+                                  borderRadius: 10,
+                                  // ✅ 결과 팝업에 따른 수정
+                                  onPressed:
+                                  isEnd
+                                      ? () => showResult()
+                                      : () => onNextPressed(),
+                                ),
                             ],
-
-                            if (isSubmitted && isCorrect == true)
-                              ButtonWidget(
-                                height: screenHeight * 0.035,
-                                width: screenWidth * 0.18,
-                                buttonText: isEnd ? "학습종료" : "다음문제",
-                                fontSize: screenWidth * 0.02,
-                                borderRadius: 10,
-                                // ✅ 결과 팝업에 따른 수정
-                                onPressed:
-                                isEnd
-                                    ? () => showResult()
-                                    : () => onNextPressed(),
-                              ),
-                          ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
           if (showSubmitPopup)
