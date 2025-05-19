@@ -130,7 +130,7 @@ class LevelOneThreeOneMain1State extends ConsumerState<LevelOneThreeOneMain1> wi
     EnProblemService.saveContinueProblem(problemCode, childId);
 
     setState(() {
-      nextProblemCode = "enlv1s2c3jy2";
+      nextProblemCode = "enlv1s3c1sh1";
       problemData  = {
         "p1": [ 2, 3, 4 ],
       };
@@ -375,15 +375,16 @@ class LevelOneThreeOneMain1State extends ConsumerState<LevelOneThreeOneMain1> wi
                                   buttonText: "제출하기",
                                   fontSize: screenWidth * 0.02,
                                   borderRadius: 10,
-                                  onPressed:
-                                  (isSubmitted)
-                                      ? null
-                                      : () => {
-                                    submitController.forward(),
-                                    showSubmitPopup = true,
-                                    // submitActivity(context),
-                                    checkAnswer(),
-                                  },
+                                  onPressed: () => onNextPressed(),
+                                  // onPressed:
+                                  // (isSubmitted)
+                                  //     ? null
+                                  //     : () => {
+                                  //   submitController.forward(),
+                                  //   showSubmitPopup = true,
+                                  //   // submitActivity(context),
+                                  //   checkAnswer(),
+                                  // },
                                 ),
 
                               if (isSubmitted &&

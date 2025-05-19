@@ -208,41 +208,21 @@ class _LevelOneTwoThreeMain2State extends ConsumerState<LevelOneTwoThreeMain2> w
 
   // 문제 데이터 받아온 후, 문제에 맞게 데이터 조작
   //json추가후 확인할것
-  // void _processProblemData(Map problemData) {
-  //   //9문항이므로 9개로 처리
-  //   problemTexts = List.generate(9, (index) {
-  //     final key = 'p${index + 1}';
-  //     return problemData[key] ?? '';
-  //   });
-  //
-  //   debugPrint('문제 텍스트 리스트: $problemTexts');
-  // }
-  void _processProblemData(problemData) {
-    exampleData = problemData['example'];
-    p1Data = problemData['p1'];
-    p2Data = problemData['p2'];
-    p3Data = problemData['p3'];
-    p4Data = problemData['p4'];
-    p5Data = problemData['p5'];
-    p6Data = problemData['p6'];
-    p7Data = problemData['p7'];
-    p8Data = problemData['p8'];
-    p9Data = problemData['p9'];
+  void _processProblemData(Map problemData) {}
 
-    debugPrint('문제 텍스트 리스트: $p1Data\n$p2Data\n$p3Data\n$p4Data\n$p5Data\n$p6Data\n$p7Data\n$p8Data\n$p9Data\n');
-  }
 
   // 문제 푸는 로직 수행할때, seletedAnswers 데이터 넣는 로직
   void _processInputData(String identifier, int count) {
     setState(() {
       selectedAnswers[identifier] = count;
     });
-    debugPrint('$selectedAnswers');
+    debugPrint('정답 : $answerData');
+    debugPrint('고른 답 : $selectedAnswers');
   }
 
   // 정답 여부 체크(보통은 이거쓰면됨)
   Future<void> checkAnswer() async {
-    isCorrect = const DeepCollectionEquality().equals(
+    isCorrect = DeepCollectionEquality().equals(
       answerData,
       selectedAnswers,
     );
@@ -364,33 +344,26 @@ class _LevelOneTwoThreeMain2State extends ConsumerState<LevelOneTwoThreeMain2> w
                     child: Column(
                       children: [
                         NewHeaderWidget(
-                          headerText: '개념학습활동',
+                          headerText: '주요학습활동',
                           headerTextSize: screenWidth * 0.028,
                           subTextSize: screenWidth * 0.018,
                         ),
                         SizedBox(height: screenHeight * 0.01),
                         NewQuestionTextWidget(
                           questionText:
-                          '숫자가 들어갈 알맞은 위치를 찾아 <보기>와 같이 O표 하세요.',
+                          '2. 숫자에 알맞게 네모 칸을 클릭하여 색칠해 보세요.',
                           questionTextSize: screenWidth * 0.03,
                         ),
-                        SizedBox(height: screenHeight * 0.02),
-                        SizedBox(
-                          height: screenHeight * 0.65,
-                          child: Scrollbar(
-                            thumbVisibility: true,
-                            child: SingleChildScrollView(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  _buildButtonRow(['p1', 'p2', 'p3'], screenWidth),
-                                  SizedBox(height: screenWidth * 0.02),
-                                  _buildButtonRow(['p4', 'p5', 'p6'], screenWidth),
-                                  SizedBox(height: screenWidth * 0.02),
-                                  _buildButtonRow(['p7', 'p8', 'p9'], screenWidth),
-                                ],
-                              ),
-                            ),
+                        Container(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _buildButtonRow(['p1', 'p2', 'p3'], screenWidth),
+                              SizedBox(height: screenWidth * 0.01),
+                              _buildButtonRow(['p4', 'p5', 'p6'], screenWidth),
+                              SizedBox(height: screenWidth * 0.02),
+                              _buildButtonRow(['p7', 'p8', 'p9'], screenWidth),
+                            ],
                           ),
                         )
                       ],

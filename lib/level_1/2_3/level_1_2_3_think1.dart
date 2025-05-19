@@ -299,10 +299,9 @@ class LevelOneTwoThreeThink1State extends ConsumerState<LevelOneTwoThreeThink1>
                                 ),
                                 SizedBox(height: screenHeight * 0.01),
                                 NewQuestionTextWidget(
-                                  questionText: '알맞은 수를 찾아보세요.',
+                                  questionText: '1. 알맞은 수를 찾아 빈칸에 적어 보세요.',
                                   questionTextSize: screenWidth * 0.03,
                                 ),
-                                SizedBox(height: screenHeight * 0.02),
                                 // 여기에 문제 푸는 ui 및 삽입
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -410,7 +409,7 @@ class LevelOneTwoThreeThink1State extends ConsumerState<LevelOneTwoThreeThink1>
                                               ),
                                               const SizedBox(width: 6),
                                               const Text(
-                                                '입니다',
+                                                '입니다.',
                                                 style: TextStyle(fontSize: 24),
                                               ),
                                             ],
