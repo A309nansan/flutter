@@ -66,22 +66,24 @@ class _BlankFillWidgetState extends State<BlankFillWidget> {
       key: zoneKey,
       width: screenWidth * 0.12,
       height: screenWidth * 0.12,
+      backgroundColor: Colors.white,
     )
         : Container(
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.black, width: 1),
+        color: Colors.white,
+        border: Border.all(color: Colors.black, width: 2),
         borderRadius: BorderRadius.circular(8),
       ),
       width: screenWidth * 0.12,
       height: screenWidth * 0.12,
       child: Text(
         widget.ans.toString(),
-        style: const TextStyle(fontSize: 60),
+        style: TextStyle(fontSize: containerWidth * 0.3),
       ),
     );
 
-    Widget blankGrid = SizedBox(
+    Widget blankGrid = Container(
       width: containerWidth - 32,
       height: gridMaxHeight,
       child: Table(
@@ -95,6 +97,7 @@ class _BlankFillWidgetState extends State<BlankFillWidget> {
                 child: InkWell(
                   onTap: isInteractive ? () => toggleCell(index) : null,
                   child: Container(
+                    color: Colors.white,
                     height: gridMaxHeight / rowCount,
                     alignment: Alignment.center,
                     child: selectedCells[index]
@@ -118,21 +121,27 @@ class _BlankFillWidgetState extends State<BlankFillWidget> {
 
     return Container(
       width: containerWidth,
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.black, width: 2),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            handwritingZone,
-            const SizedBox(height: 10),
-            blankGrid,
-          ],
-        ),
+      child: Column(
+        children: [
+          Row(mainAxisAlignment: MainAxisAlignment.end,children: [Text('1 큰 수', style: TextStyle(fontSize: containerWidth * 0.1, fontWeight: FontWeight.bold)), Icon(Icons.arrow_right_alt, size: containerWidth * 0.15,)],),
+          Container(
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.lightBlue[100],
+              border: Border.all(color: Colors.black, width: 2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                handwritingZone,
+                SizedBox(height: containerWidth * 0.05),
+                blankGrid,
+              ],
+            ),
+          ),
+          SizedBox(height: containerWidth * 0.05,)
+        ],
       ),
     );
   }

@@ -67,7 +67,7 @@ class _LevelOneThreeThreeBasic1State extends ConsumerState<LevelOneThreeThreeBas
     List.filled(4, ''), // 나
     List.filled(4, '')  // 다
   ];
-  List<String> problemNum = ['가', '나', '다'];
+  List<String> problemNum = ['1', '2', '3'];
 
   //가로 문제 위젯
   Widget buildProblemRow(int rowIndex) {
@@ -102,8 +102,7 @@ class _LevelOneThreeThreeBasic1State extends ConsumerState<LevelOneThreeThreeBas
               height: screenWidth * 0.07,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white,
-                border: Border.all(color: Colors.black, width: 2.0),
+                color: Colors.purple[100],
               ),
               alignment: Alignment.center,
               child: Text(
@@ -111,7 +110,7 @@ class _LevelOneThreeThreeBasic1State extends ConsumerState<LevelOneThreeThreeBas
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: screenWidth * 0.04,
-                  color: Colors.black,
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -443,79 +442,74 @@ class _LevelOneThreeThreeBasic1State extends ConsumerState<LevelOneThreeThreeBas
                         SizedBox(height: screenHeight * 0.01),
                         NewQuestionTextWidget(
                           questionText:
-                          '<보기>와 같은 규칙으로 수량을 순서대로 나열한 것을 찾아봅시다.',
-                          questionTextSize: screenWidth * 0.03,
+                          '1. <보기>와 같은 규칙으로 수량을 순서대로 나열한 것을 모두 찾아보세요.',
+                          questionTextSize: screenWidth * 0.028,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 20.0),
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              Container(
-                                height: screenHeight * 0.18,
-                                width: screenWidth * 0.85,
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Colors.orangeAccent,
-                                    width: 4,
-                                  ),
-                                  borderRadius: BorderRadius.circular(10),
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Container(
+                              height: screenHeight * 0.18,
+                              width: screenWidth * 0.85,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.orangeAccent,
+                                  width: 2,
                                 ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: List.generate(4, (index) {
-                                    final List<String> exampleImages = imageUrls.isNotEmpty ? imageUrls[0] : List.filled(4, '');
-                                    final imageUrl = exampleImages[index];
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: List.generate(4, (index) {
+                                  final List<String> exampleImages = imageUrls.isNotEmpty ? imageUrls[0] : List.filled(4, '');
+                                  final imageUrl = exampleImages[index];
 
-                                    return Container(
-                                      width: screenWidth * 0.16,
-                                      height: screenHeight * 0.12,
-                                      padding: const EdgeInsets.all(5.0),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(10.0),
-                                        border: Border.all(
-                                          color: Colors.lightBlue,
-                                          width: 2.0,
-                                        ),
+                                  return Container(
+                                    width: screenWidth * 0.16,
+                                    height: screenHeight * 0.12,
+                                    padding: const EdgeInsets.all(5.0),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      border: Border.all(
+                                        color: Colors.lightBlue,
+                                        width: 2.0,
                                       ),
-                                      child: Center(
-                                        child: imageUrl.isNotEmpty
-                                            ? Image.network(imageUrl, fit: BoxFit.contain)
-                                            : const Center(child: Text('No Img')),
-                                      ),
-                                    );
-                                  }),
-                                ),
-                              ),
-                              Positioned(
-                                top: 0,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 5,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.orangeAccent,
-                                    borderRadius: BorderRadius.circular(5),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black12,
-                                        blurRadius: 3,
-                                      ),
-                                    ],
-                                  ),
-                                  child: const Text(
-                                    "<보기>",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
                                     ),
+                                    child: Center(
+                                      child: imageUrl.isNotEmpty
+                                          ? Image.network(imageUrl, fit: BoxFit.contain)
+                                          : const Center(child: Text('No Img')),
+                                    ),
+                                  );
+                                }),
+                              ),
+                            ),
+                            Positioned(
+                              top: 0,
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: Colors.orangeAccent,
+                                  borderRadius: BorderRadius.circular(5),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 3,
+                                    ),
+                                  ],
+                                ),
+                                child: const Text(
+                                  "<보기>",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
+                        SizedBox(height: screenHeight * 0.02,),
                         Column(
                           children: List.generate(3, (index) => buildProblemRow(index)),
                         ),

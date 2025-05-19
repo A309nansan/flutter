@@ -194,7 +194,7 @@ class _LevelOneThreeTwoBasic1State extends ConsumerState<LevelOneThreeTwoBasic1>
                                     Expanded(
                                       child: NewQuestionTextWidget(
                                         questionText:
-                                            "다음 <보기>의 숫자가 들어가기 알맞은 곳을 선택해 봅시다.",
+                                            "1. 다음 <보기>의 숫자가 들어가기 알맞은 곳은 어디일까요?\n 두 개의 물음표 상자 중 선택해 보세요.",
                                         questionTextSize: screenWidth * 0.03,
                                       ),
                                     ),
@@ -219,7 +219,7 @@ class _LevelOneThreeTwoBasic1State extends ConsumerState<LevelOneThreeTwoBasic1>
                             ),
                           ),
                         ),
-                        SizedBox(height: screenHeight * 0.18),
+                        SizedBox(height: screenHeight * 0.1),
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 20.0),
                           child: Stack(

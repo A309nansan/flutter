@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:nansan_flutter/shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
 
-class GrapeContainer extends StatelessWidget {
+class ExampleAppleContainer extends StatelessWidget {
   final int ans;
   final GlobalKey<HandwritingRecognitionZoneState>? zoneKey;
 
-  const GrapeContainer({
+  const ExampleAppleContainer({
     super.key,
     required this.ans,
     this.zoneKey,
@@ -14,15 +14,13 @@ class GrapeContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
-    double containerWidth = screenWidth * 0.8;
+    double containerWidth = screenWidth * 0.4;
 
-    Widget topImage = Container(
-      decoration: BoxDecoration(color: Colors.white,border: Border.all(width: 2, color: Colors.black), borderRadius: BorderRadius.circular(10)),
-      width: screenHeight * 0.17 - 16,
-      height: screenHeight * 0.17 - 16,
+    Widget topImage = SizedBox(
+      width: screenWidth * 0.4 - 166,
+      height: screenWidth * 0.4 - 166,
       child: Image.asset(
-        'assets/images/number/grape/$ans.png',
+        'assets/images/number/apple/$ans.png',
         fit: BoxFit.scaleDown,
         errorBuilder: (context, error, stackTrace) {
           return Center(
@@ -52,8 +50,7 @@ class GrapeContainer extends StatelessWidget {
         child: Container(
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(color: Colors.black, width: 2),
+            border: Border.all(color: Colors.black, width: 1),
             borderRadius: BorderRadius.circular(8),
           ),
           width: 100,
@@ -68,14 +65,13 @@ class GrapeContainer extends StatelessWidget {
 
     return Container(
       width: containerWidth,
-      padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.lightBlue[100],
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.black, width: 2),
+        border: Border.all(color: Colors.orangeAccent, width: 2),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           topImage,

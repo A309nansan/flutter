@@ -45,13 +45,7 @@ class AnswerGridItemWidget extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Center(
-                  child: Image.network(
-                    candidate.imageUrl ?? '', // 기본값으로 빈 문자열 사용
-                    errorBuilder: (context, error, stackTrace) {
-                      return Icon(Icons.error, color: Colors.red);
-                    },
-                  ),
-                  // child: Image.asset('assets/images/number/${candidate.object}/${candidate.number}.png'),
+                  child: Image.asset('assets/images/number/${candidate.object}/${candidate.number}.png'),
                 ),
               ),
             ],

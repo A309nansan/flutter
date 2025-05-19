@@ -210,7 +210,6 @@ class _LevelOneFourTwoMainState extends ConsumerState<LevelOneFourTwoMain> with 
                 Screenshot(
                   controller: screenshotController,
                   child: Container(
-                    height: height * 0.85,
                     color: Colors.white,
                     child: Column(
                       children: [
@@ -227,7 +226,7 @@ class _LevelOneFourTwoMainState extends ConsumerState<LevelOneFourTwoMain> with 
                                 children: [
                                   Expanded(
                                     child: NewQuestionTextWidget(
-                                      questionText: "다음 수만큼 묶어 보고, 각 네모 칸에 알맞은 숫자를 적어봅시다.",
+                                      questionText: "1. 주어진 그림을 보고 문제를 풀어 보세요.",
                                       questionTextSize: width * 0.03,
                                     ),
                                   ),
@@ -251,61 +250,48 @@ class _LevelOneFourTwoMainState extends ConsumerState<LevelOneFourTwoMain> with 
                             ],
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 30),
+                        SizedBox(
+                          height: height * 0.16,
+                          width: width * 0.6,
+                          child: GridView.count(
+                            physics: const NeverScrollableScrollPhysics(),
+                            crossAxisCount: 5,
+                            crossAxisSpacing: 5,
+                            mainAxisSpacing: 5,
+                            childAspectRatio: 1,
+                            children: List.generate(10, (i) {
+                              final isLeft = i < problem["left"];
+                              final isRight = i >= 5 && (i - 5) < problem["right"];
+
+                              Color? color;
+                              if (i < 5) {
+                                color = isLeft ? Colors.yellow : Colors.grey[200];
+                              } else {
+                                color = isRight ? Colors.green : Colors.grey[200];
+                              }
+
+                              return Container(
+                                decoration: BoxDecoration(
+                                  color: color,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              );
+                            }),
+                          ),
+                        ),
+                        SizedBox(height: height * 0.01),
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: width * 0.05),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Text(
-                                "다음의 모양 ${problem["left"]}개를 묶어보고, 각 네모 칸에 알맞은 숫자를 써봅시다.",
-                                style: TextStyle(fontSize: width * 0.025, fontWeight: FontWeight.bold),
-                              ),
-                              IconButton(
-                                tooltip: "전체 초기화",
-                                onPressed: controller.clearAnswer,
-                                icon: Icon(Icons.refresh, size: width * 0.04),
-                              ),
+                              Text('1) 왼쪽 박스에는 노란색 네모의 개수를,\n     오른쪽에는 초록색 네모의 개수를 써 보세요.', style: TextStyle(fontWeight: FontWeight.bold, fontSize: width * 0.03),),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 10),
+                        SizedBox(height: height * 0.02,),
                         Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: SizedBox(
-                            height: height * 0.15,
-                            width: width * 0.6,
-                            child: GridView.count(
-                              physics: const NeverScrollableScrollPhysics(),
-                              crossAxisCount: 5,
-                              crossAxisSpacing: 5,
-                              mainAxisSpacing: 5,
-                              childAspectRatio: 1,
-                              children: List.generate(10, (i) {
-                                final isLeft = i < problem["left"];
-                                final isRight = i >= 5 && (i - 5) < problem["right"];
-
-                                Color? color;
-                                if (i < 5) {
-                                  color = isLeft ? Colors.yellow : Colors.grey[200];
-                                } else {
-                                  color = isRight ? Colors.green : Colors.grey[200];
-                                }
-
-                                return Container(
-                                  decoration: BoxDecoration(
-                                    color: color,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                );
-                              }),
-                            ),
-                          ),
-                        ),
-
-
-                        const SizedBox(height: 20),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: width * 0.1),
+                          padding: EdgeInsets.symmetric(horizontal: width * 0.05),
                           child: Column(
                             children: [
                               Row(
@@ -318,7 +304,7 @@ class _LevelOneFourTwoMainState extends ConsumerState<LevelOneFourTwoMain> with 
                                         HandwritingRecognitionZone(
                                           key: problem[key],
                                           width: width * 0.17,
-                                          height: height * 0.1,
+                                          height: width * 0.17,
                                         ),
                                         Positioned(
                                           right: -10,
@@ -333,48 +319,41 @@ class _LevelOneFourTwoMainState extends ConsumerState<LevelOneFourTwoMain> with 
                                   );
                                 }).toList(),
                               ),
-                              const SizedBox(height: 10),
+                              SizedBox(height: height * 0.05),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  Transform.rotate(
-                                    angle: pi / 4,
-                                    child: Icon(Icons.arrow_right_alt_rounded, size: height * 0.06, color: Colors.blueAccent),
-                                  ),
-                                  const SizedBox(width: 80),
-                                  Transform.rotate(
-                                    angle: pi / 1.35,
-                                    child: Icon(Icons.arrow_right_alt_rounded, size: height * 0.06, color: Colors.blueAccent),
+                                  Text('2) 적은 두 숫자를 더한 수를 오른쪽 빈칸에 적어보세요.\n     그 후 아래의 문장을 완성해보세요.', style: TextStyle(fontWeight: FontWeight.bold, fontSize: width * 0.03),),
+                                  SizedBox(width: width * 0.01,),
+                                  Stack(
+                                    children: [
+                                      HandwritingRecognitionZone(
+                                          key: problem["valueKey"],
+                                          width: width * 0.17,
+                                          height: width * 0.17
+                                      ),
+                                      Positioned(
+                                        right: -10,
+                                        top: -10,
+                                        child: IconButton(
+                                          icon: const Icon(Icons.clear, size: 20),
+                                          onPressed: () => controller.clearSingleField("value"),
+                                        ),
+                                      )
+                                    ],
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 10),
-                              Stack(
-                                children: [
-                                  HandwritingRecognitionZone(
-                                    key: problem["valueKey"],
-                                    width: width * 0.17,
-                                    height: height * 0.1,
-                                  ),
-                                  Positioned(
-                                    right: -10,
-                                    top: -10,
-                                    child: IconButton(
-                                      icon: const Icon(Icons.clear, size: 20),
-                                      onPressed: () => controller.clearSingleField("value"),
-                                    ),
-                                  )
-                                ],
-                              ),
+
                             ],
                           ),
                         ),
-                        const SizedBox(height: 40),
+                        SizedBox(height: height * 0.04),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "${problem["value"]}는 ${problem["left"]}와 ",
+                              "${problem["value"]}는 ${problem["left"]}, 그리고 ",
                               style: TextStyle(fontSize: width * 0.035, fontWeight: FontWeight.bold),
                             ),
                             Stack(
@@ -382,7 +361,7 @@ class _LevelOneFourTwoMainState extends ConsumerState<LevelOneFourTwoMain> with 
                                 HandwritingRecognitionZone(
                                   key: problem["resultKey"],
                                   width: width * 0.17,
-                                  height: height * 0.1,
+                                  height: width * 0.17,
                                 ),
                                 Positioned(
                                   right: -10,
@@ -409,7 +388,7 @@ class _LevelOneFourTwoMainState extends ConsumerState<LevelOneFourTwoMain> with 
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: height * 0.02),
+                      padding: EdgeInsets.symmetric(horizontal: 30.0),
                       child: EnProgressBarWidget(
                           current: controller.currentProblemNumber,
                           total: controller.totalProblemCount

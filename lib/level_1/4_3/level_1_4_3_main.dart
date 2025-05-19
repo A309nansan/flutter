@@ -321,14 +321,24 @@ class LevelOneFourThreeMainState extends ConsumerState<LevelOneFourThreeMain> wi
                         SizedBox(height: screenHeight * 0.01),
                         NewQuestionTextWidget(
                           questionText:
-                          '숫자 가르기를 해 봅시다.\n\n'
-                          '① 동그라미 개수를 세고, 알맞은 수를 위쪽 네모 칸에 적으세요.\n'
-                          '② 분홍색 동그라미는 몇 개인가요? 알맞은 수를 왼쪽 네모 칸에 적으세요.\n'
-                          '③ 초록색 동그라미는 몇 개인가요? 알맞은 수를 오른쪽 네모 칸에 적으세요.',
+                          '1. 숫자 가르기를 해 봅시다.',
                           questionTextSize: screenWidth * 0.03,
                         ),
                         SizedBox(height: screenHeight * 0.02),
                         // 여기에 문제 푸는 ui 및 삽입
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text('1) 동그라미 개수를 세고, 알맞은 수를 위쪽 네모 칸에 적으세요.\n\n'
+                                  '2) 분홍색 동그라미는 몇 개인가요?\n     알맞은 수를  아래쪽 왼쪽 네모 칸에 적으세요.\n\n'
+                                  '3) 초록색 동그라미는 몇 개인가요?\n     알맞은 수를 아래쪽 오른쪽 네모 칸에 적으세요.',
+                                style: TextStyle(fontSize: screenWidth * 0.028, fontWeight: FontWeight.bold),),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: screenHeight * 0.03,),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: List.generate(problemData.length, (index) {

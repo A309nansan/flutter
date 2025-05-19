@@ -94,7 +94,7 @@ class _LevelOneTwoThreeMain5State extends ConsumerState<LevelOneTwoThreeMain5> w
               height: screenHeight * 0.04,
               width: screenHeight * 0.04,
               decoration: BoxDecoration(
-                color: Colors.red[300],
+                color: Colors.purple[100],
                 borderRadius: BorderRadius.circular(25),
               ),
               child: Center(
@@ -419,14 +419,14 @@ class _LevelOneTwoThreeMain5State extends ConsumerState<LevelOneTwoThreeMain5> w
                     child: Column(
                       children: [
                         NewHeaderWidget(
-                          headerText: '개념학습활동',
+                          headerText: '주요학습활동',
                           headerTextSize: screenWidth * 0.028,
                           subTextSize: screenWidth * 0.018,
                         ),
                         SizedBox(height: screenHeight * 0.01),
                         NewQuestionTextWidget(
                           questionText:
-                          '숫자가 거꾸로 나열된 것이 아닌 것은 몇 번인가요?',
+                          '5. 숫자가 거꾸로 나열된 것이 아닌 것은 몇 번인가요?',
                           questionTextSize: screenWidth * 0.03,
                         ),
                         SizedBox(height: screenHeight * 0.08),

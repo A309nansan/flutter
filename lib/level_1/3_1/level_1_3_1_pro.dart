@@ -335,7 +335,7 @@ class LevelOneThreeOneProState extends ConsumerState<LevelOneThreeOnePro> with T
                           '동그라미를 세고, 수직선에 알맞은 숫자를 써 봅시다.',
                           questionTextSize: screenWidth * 0.03,
                         ),
-                        SizedBox(height: screenHeight * 0.02),
+                        SizedBox(height: screenHeight * 0.07),
                         // 여기에 문제 푸는 ui 및 삽입
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
