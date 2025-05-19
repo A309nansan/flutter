@@ -261,7 +261,7 @@ class _LevelOneThreeTwoMain1State extends ConsumerState<LevelOneThreeTwoMain1>
                           ),
                           child: Text(
                             "물체의 수를 세고, □ 안에 알맞은 숫자를 써 봅시다. "
-                            "$value보다 ${type == 0 ? '1 큰 수' : '1 작은 수'}에 선택하세요.",
+                            "그리고 $value보다 ${type == 0 ? '1 큰' : '1 작은'} 그림을 선택하세요.",
                             style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,

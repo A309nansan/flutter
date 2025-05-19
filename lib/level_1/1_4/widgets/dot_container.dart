@@ -22,12 +22,12 @@ class DotContainer extends StatelessWidget {
         width: screenHeight * 0.17 - 16,
         height: screenHeight * 0.17 - 16,
         child: Image.asset(
-          'assets/images/number/dot/${ans / 2}.png',
+          'assets/images/number/dot/$ans.png',
           fit: BoxFit.scaleDown,
           errorBuilder: (context, error, stackTrace) {
             return Center(
               child: Text(
-                'Image $ans',
+                'Image ${ans * 2}',
                 style: TextStyle(color: Colors.white),
               ),
             );
@@ -71,7 +71,7 @@ class DotContainer extends StatelessWidget {
           width: 100,
           height: 100,
           child: Text(
-            ans.toString(),
+              (ans * 2).toString(),
             style: const TextStyle(fontSize: 60),
           ),
         ),

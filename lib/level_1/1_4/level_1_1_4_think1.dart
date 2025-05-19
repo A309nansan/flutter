@@ -186,13 +186,13 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
   }
 
   // 정답 여부 체크(보통은 이거쓰면됨)
-  void checkAnswer() async {
+  Future<void> checkAnswer() async {
     await _processInputData();
     isCorrect = const DeepCollectionEquality().equals(
       answerData,
       selectedAnswers,
     );
-    // _submitAnswer();
+    _submitAnswer();
   }
 
   // 문제푸는 스크린 이미지 서버로 전송. 수정 필요 x
@@ -372,16 +372,15 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
                                   buttonText: "제출하기",
                                   fontSize: screenWidth * 0.02,
                                   borderRadius: 10,
-                                  onPressed: onNextPressed,
-                                  // onPressed:
-                                  // (isSubmitted)
-                                  //     ? null
-                                  //     : () => {
-                                  //   submitController.forward(),
-                                  //   showSubmitPopup = true,
-                                  //   // submitActivity(context),
-                                  //   checkAnswer(),
-                                  // },
+                                  onPressed: () async {
+                                    if (isSubmitted) return;
+                                    setState(() {
+                                      showSubmitPopup = true;
+                                    });
+                                    await checkAnswer();
+                                    await submitActivity(context);
+                                    submitController.forward();
+                                  },
                                 ),
 
                               if (isSubmitted &&
@@ -392,13 +391,12 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
                                   buttonText: "제출하기",
                                   fontSize: screenWidth * 0.02,
                                   borderRadius: 10,
-                                  onPressed:
-                                      () => {
+                                  onPressed: () async {
+                                    await checkAnswer();
                                     setState(() {
-                                      checkAnswer();
                                       showSubmitPopup = true;
-                                    }),
-                                    submitController.forward(),
+                                    });
+                                    submitController.forward();
                                   },
                                 ),
                                 const SizedBox(width: 20),
@@ -408,7 +406,8 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
                                   buttonText: isEnd ? "학습종료" : "다음문제",
                                   fontSize: screenWidth * 0.02,
                                   borderRadius: 10,
-                                  onPressed: () => onNextPressed(),
+                                  onPressed: isEnd ?
+                                      () => showResult() : () => onNextPressed(),
                                 ),
                               ],
 
@@ -419,7 +418,8 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
                                   buttonText: isEnd ? "학습종료" : "다음문제",
                                   fontSize: screenWidth * 0.02,
                                   borderRadius: 10,
-                                  onPressed: () => onNextPressed(),
+                                  onPressed: isEnd ?
+                                      () => showResult() : () => onNextPressed(),
                                 ),
                             ],
                           ),

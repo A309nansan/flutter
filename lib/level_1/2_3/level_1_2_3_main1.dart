@@ -343,7 +343,7 @@ class LevelOneTwoThreeMain1State extends ConsumerState<LevelOneTwoThreeMain1>
                         // 여기에 문제 푸는 ui 및 삽입
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: List.generate(3, (index) {
+                          children: List.generate(problemData.length, (index) {
                             final key = 'p${index + 1}';
                             final data = problemData[key] ?? [];
 
