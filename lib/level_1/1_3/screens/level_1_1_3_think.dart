@@ -123,7 +123,7 @@ class _LevelOneOneThreeThinkState extends ConsumerState<LevelOneOneThreeThink>
 
       setState(() {
         // nextProblemCode = response.nextProblemCode;
-        nextProblemCode = 'enlv1s1c3jy1';
+        nextProblemCode = 'enlv1s3c1jy2';
         problemCode = response.problemCode;
         problemData = response.problem;
         answerData = response.answer;

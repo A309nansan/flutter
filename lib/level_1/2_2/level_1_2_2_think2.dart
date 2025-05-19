@@ -425,7 +425,7 @@ class _LevelOneTwoTwoThink2State extends ConsumerState<LevelOneTwoTwoThink2>
                                             borderRadius: 10,
                                             onPressed: () async {
                                               await submitActivity(context);
-                                              checkAnswer();
+                                              await checkAnswer();
                                               setState(() {
                                                 showSubmitPopup = true;
                                               });
