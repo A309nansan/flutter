@@ -94,12 +94,11 @@ class _LevelOneOneThreeMain3State extends ConsumerState<LevelOneOneThreeMain3>
 
   @override
   void dispose() {
-    super.dispose();
     _timerController.dispose();
     submitController.dispose();
     resultController.dispose();
     isSubmitted = false;
-    isEnd = nextProblemCode.isEmpty;
+    super.dispose();
   }
 
   // problemcode에 따라 데이터 호출하는 함수
@@ -125,6 +124,7 @@ class _LevelOneOneThreeMain3State extends ConsumerState<LevelOneOneThreeMain3>
         answerData = response.answer;
         current = response.current;
         total = response.total;
+        nextProblemCode = response.nextProblemCode;
         _processProblemData(problemData);
       });
     } catch (e) {
