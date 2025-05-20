@@ -12,7 +12,7 @@ class NewQuestionTextWidget extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

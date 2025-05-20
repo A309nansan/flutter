@@ -44,7 +44,7 @@ class _LevelOneOneThreeThinkState extends ConsumerState<LevelOneOneThreeThink>
   int? elapsedSeconds;
   int current = 1;
   int total = 1;
-  String nextProblemCode = 'enlv1s1c4gn1';
+  String nextProblemCode = 'enlv1s1c3jy1';
   String problemCode = 'enlv1s1c3gn1';
   bool isSubmitted = false;
   bool isCorrect = false;
@@ -122,8 +122,7 @@ class _LevelOneOneThreeThinkState extends ConsumerState<LevelOneOneThreeThink>
       EnProblemService.saveContinueProblem(problemCode, childId);
 
       setState(() {
-        // nextProblemCode = response.nextProblemCode;
-        nextProblemCode = 'enlv1s3c1jy2';
+        nextProblemCode = response.nextProblemCode;
         problemCode = response.problemCode;
         problemData = response.problem;
         answerData = response.answer;
@@ -321,6 +320,7 @@ class _LevelOneOneThreeThinkState extends ConsumerState<LevelOneOneThreeThink>
                                         '<보기>와 같이 그림이 나타내는 수만큼 네모를 클릭해 보세요!',
                                     questionTextSize: screenWidth * 0.03,
                                   ),
+                                  SizedBox(height: screenHeight * 0.02),
                                   ExampleWidget113(width: screenWidth, height: screenHeight, object : object),
                                   SizedBox(height: screenHeight * 0.02),
                                   Row(
