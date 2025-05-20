@@ -72,6 +72,7 @@ class Level131main2State extends ConsumerState<Level131main2>
   List<Map<String, String>> candidates = [];
 
   // 문제별 변수
+  late AnimationController _menuAnimationController;
   final DragDrop2Controller dd2controller = DragDrop2Controller();
   late Draggable2DropZone bigZone;
   late Draggable2DropZone smallZone;
@@ -109,6 +110,11 @@ class Level131main2State extends ConsumerState<Level131main2>
       _timerController.start();
       isEnd = nextProblemCode.isEmpty;
     });
+
+    _menuAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
   }
 
   // 페이지를 나갈 때, 실행되는 함수. 수정 필요 x
@@ -377,295 +383,406 @@ class Level131main2State extends ConsumerState<Level131main2>
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        Screenshot(
-                          controller: screenshotController,
-                          child: Container(
-                            color: Colors.white,
-                            child: Column(
-                              children: [
-                                NewHeaderWidget(
-                                  headerText: '주요학습활동',
-                                  headerTextSize: screenWidth * 0.028,
-                                  subTextSize: screenWidth * 0.018,
-                                ),
-                                SizedBox(height: screenHeight * 0.01),
-                                NewQuestionTextWidget(
-                                  questionText:
-                                      "2. 흰색 네모칸에 주어진 숫자보다 1 작은 수나 1 큰 수를 적어보고,\n회색 네모칸에 그 수만큼 사과 그림을 옮겨보세요.",
-                                  questionTextSize: screenWidth * 0.03,
-                                ),
-                                SizedBox(height: screenHeight * 0.02),
-                                // 여기에 문제 푸는 ui 및 삽입
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Column(
-                                      children: [
-                                        HandwritingRecognitionZone(
-                                          width: screenWidth * 0.2,
-                                          height: screenWidth * 0.2,
-                                          key: zoneKeys['small'],
-                                        ),
-                                        SizedBox(
-                                          width: screenWidth * 0.2,
-                                          height: screenWidth * 0.2,
-                                          child: Center(
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              children: [
-                                                Icon(
-                                                  Icons.arrow_upward_outlined,
-                                                  color: Colors.red,
-                                                  size: screenWidth * 0.08,
-                                                ),
-                                                Text(
-                                                  '1 작은 수',
-                                                  style: TextStyle(
-                                                    fontSize:
-                                                        screenWidth * 0.03,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          alignment: Alignment.center,
-                                          width: screenWidth * 0.2,
-                                          height: screenWidth * 0.2,
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                              width: 1.5,
-                                              color:
-                                                  MathUIConstant
-                                                      .inputBoundaryColor,
-                                            ),
-                                            borderRadius: BorderRadius.circular(
-                                              10,
-                                            ),
-                                          ),
-                                          child: Text(
-                                            '$givenNumber',
-                                            style: TextStyle(
-                                              fontSize: screenWidth * 0.1,
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: screenWidth * 0.2,
-                                          height: screenWidth * 0.2,
-                                          child: Center(
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              children: [
-                                                Icon(
-                                                  Icons.arrow_downward_outlined,
-                                                  color: Colors.red,
-                                                  size: screenWidth * 0.08,
-                                                ),
-                                                Text(
-                                                  '1 큰 수',
-                                                  style: TextStyle(
-                                                    fontSize:
-                                                        screenWidth * 0.03,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        HandwritingRecognitionZone(
-                                          width: screenWidth * 0.2,
-                                          height: screenWidth * 0.2,
-                                          key: zoneKeys['big'],
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(width: screenWidth * 0.1),
-                                    Column(
-                                      children: [
-                                        SizedBox(
-                                          width: screenWidth * 0.6,
-                                          height: screenWidth * 0.3,
-                                          child: Draggable2DropzoneWidget(
-                                            zone: smallZone,
-                                            controller: dd2controller,
-                                            onReset: _resetState,
-                                            onCardRemoved: _onCardRemoved,
-                                            onCardAdded: _onCardAdded,
-                                            width: screenWidth * 0.6,
-                                            height: screenWidth * 0.3,
-                                            cardSize: screenWidth * 0.08,
-                                          ),
-                                        ),
-                                        SizedBox(height: screenWidth * 0.05),
-                                        Row(
-                                          children: [
-                                            Container(
-                                              alignment: Alignment.center,
-                                              width: screenWidth * 0.4,
-                                              height: screenWidth * 0.3,
-                                              decoration: BoxDecoration(
-                                                border: Border.all(
-                                                  width: 2,
-                                                  color: Colors.lightBlue,
-                                                ),
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
+                    child: Container(
+                      color: Colors.white,
+                      child: Column(
+                        children: [
+                          Screenshot(
+                            controller: screenshotController,
+                            child: Container(
+                              color: Colors.white,
+                              child: Stack(
+                                children: [
+                                  Column(
+                                    children: [
+                                      NewHeaderWidget(
+                                        headerText: '주요학습활동',
+                                        headerTextSize: screenWidth * 0.028,
+                                        subTextSize: screenWidth * 0.018,
+                                      ),
+                                      SizedBox(height: screenHeight * 0.01),
+                                      NewQuestionTextWidget(
+                                        questionText:
+                                            "2. 흰색 네모칸에 주어진 숫자보다 1 작은 수와 1 큰 수를",
+                                        questionTextSize: screenWidth * 0.03,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          Text('            적어보고, 회색 네모칸에 그 수만큼 사과 주머니를 열어\n            사과 그림을 옮겨보세요.', style: TextStyle(fontSize: screenWidth * 0.03, fontWeight: FontWeight.bold),),
+                                        ],
+                                      ),
+                                      SizedBox(height: screenHeight * 0.05),
+                                      // 여기에 문제 푸는 ui 및 삽입
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Column(
+                                            children: [
+                                              HandwritingRecognitionZone(
+                                                width: screenWidth * 0.2,
+                                                height: screenWidth * 0.2,
+                                                key: zoneKeys['small'],
                                               ),
-                                              child: Image.asset(
-                                                'assets/images/number/apple/$givenNumber.png',
-                                                fit: BoxFit.contain,
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: screenWidth * 0.2,
-                                              height: screenWidth * 0.2,
-                                              child: Draggable(
-                                                data: dd2controller.sourceCard,
-                                                feedback: Material(
-                                                  elevation: 4.0,
-                                                  color: Colors.transparent,
-                                                  child: Draggable2Card(
-                                                    imageUrl:
-                                                        'assets/images/number/apple/1.png',
-                                                    cardWidth:
-                                                        screenWidth * 0.2,
-                                                    cardHeight:
-                                                        screenWidth * 0.2,
-                                                    opacity: 0.7,
+                                              SizedBox(
+                                                width: screenWidth * 0.2,
+                                                height: screenWidth * 0.15,
+                                                child: Center(
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    children: [
+                                                      Icon(
+                                                        Icons.arrow_upward_outlined,
+                                                        color: Colors.red,
+                                                        size: screenWidth * 0.08,
+                                                      ),
+                                                      Text(
+                                                        '1 작은 수',
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              screenWidth * 0.03,
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
-                                                childWhenDragging: Draggable2Card(
-                                                  imageUrl:
-                                                      'assets/images/number/apple/1.png',
-                                                  cardWidth: screenWidth * 0.2,
-                                                  cardHeight: screenWidth * 0.2,
-                                                  opacity: 0.5,
+                                              ),
+                                              Container(
+                                                alignment: Alignment.center,
+                                                width: screenWidth * 0.2,
+                                                height: screenWidth * 0.2,
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                    width: 1.5,
+                                                    color:
+                                                        MathUIConstant
+                                                            .inputBoundaryColor,
+                                                  ),
+                                                  borderRadius: BorderRadius.circular(
+                                                    10,
+                                                  ),
                                                 ),
-                                                child: Draggable2Card(
-                                                  imageUrl:
-                                                      'assets/images/number/apple/1.png',
-                                                  cardWidth: screenWidth * 0.2,
-                                                  cardHeight: screenWidth * 0.2,
+                                                child: Text(
+                                                  '$givenNumber',
+                                                  style: TextStyle(
+                                                    fontSize: screenWidth * 0.1,
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: screenWidth * 0.2,
+                                                height: screenWidth * 0.15,
+                                                child: Center(
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    children: [
+                                                      Icon(
+                                                        Icons.arrow_downward_outlined,
+                                                        color: Colors.red,
+                                                        size: screenWidth * 0.08,
+                                                      ),
+                                                      Text(
+                                                        '1 큰 수',
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              screenWidth * 0.03,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                              HandwritingRecognitionZone(
+                                                width: screenWidth * 0.2,
+                                                height: screenWidth * 0.2,
+                                                key: zoneKeys['big'],
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(width: screenWidth * 0.1),
+                                          Column(
+                                            children: [
+                                              SizedBox(
+                                                width: screenWidth * 0.5,
+                                                height: screenWidth * 0.25,
+                                                child: Draggable2DropzoneWidget(
+                                                  zone: smallZone,
+                                                  controller: dd2controller,
+                                                  onReset: _resetState,
+                                                  onCardRemoved: _onCardRemoved,
+                                                  onCardAdded: _onCardAdded,
+                                                  width: screenWidth * 0.5,
+                                                  height: screenWidth * 0.3,
+                                                  cardSize: screenWidth * 0.06,
+                                                ),
+                                              ),
+                                              SizedBox(height: screenWidth * 0.05),
+                                              Container(
+                                                alignment: Alignment.center,
+                                                width: screenWidth * 0.4,
+                                                height: screenWidth * 0.3,
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                    width: 2,
+                                                    color: Colors.lightBlue,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                                child: Image.asset(
+                                                  'assets/images/number/apple/$givenNumber.png',
+                                                  fit: BoxFit.contain,
+                                                ),
+                                              ),
+                                              SizedBox(height: screenWidth * 0.05),
+                                              SizedBox(
+                                                width: screenWidth * 0.5,
+                                                height: screenWidth * 0.25,
+                                                child: Draggable2DropzoneWidget(
+                                                  zone: bigZone,
+                                                  controller: dd2controller,
+                                                  onReset: _resetState,
+                                                  onCardRemoved: _onCardRemoved,
+                                                  onCardAdded: _onCardAdded,
+                                                  width: screenWidth * 0.5,
+                                                  height: screenWidth * 0.3,
+                                                  cardSize: screenWidth * 0.06,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  Positioned(
+                                    top: screenHeight * 0.07,
+                                    right: screenWidth * 0.03,
+                                    child: StatefulBuilder(
+                                      builder: (context, setState) {
+                                        return MenuAnchor(
+                                          onOpen: () {
+                                            // 메뉴가 열릴 때 애니메이션 시작
+                                            _menuAnimationController
+                                                .forward();
+                                          },
+                                          onClose: () {
+                                            // 메뉴가 닫힐 때 애니메이션 리셋
+                                            _menuAnimationController
+                                                .reset();
+                                          },
+                                          builder: (
+                                              context,
+                                              controller,
+                                              child,
+                                              ) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                if (controller.isOpen) {
+                                                  controller.close();
+                                                } else {
+                                                  controller.open();
+                                                }
+                                              },
+                                              child: Container(
+                                                width: screenWidth * 0.1,
+                                                height: screenWidth * 0.1,
+                                                alignment: Alignment.center,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.purple[100],
+                                                  borderRadius:
+                                                  BorderRadius.circular(
+                                                    10,
+                                                  ),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.black54,
+                                                      blurRadius: 5,
+                                                      offset: Offset(0, 3),
+                                                    ),
+                                                  ],
+                                                ),
+                                                child: Image.asset(
+                                                  'assets/images/number/pouch/apple_pouch.webp',
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          menuChildren: [
+                                            FadeTransition(
+                                              opacity:
+                                              _menuAnimationController,
+                                              child: SlideTransition(
+                                                position: Tween<Offset>(
+                                                  begin: const Offset(
+                                                    0.0,
+                                                    -0.5,
+                                                  ),
+                                                  end: Offset.zero,
+                                                ).animate(
+                                                  CurvedAnimation(
+                                                    parent:
+                                                    _menuAnimationController,
+                                                    curve: Curves.easeOut,
+                                                  ),
+                                                ),
+                                                child: Padding(
+                                                  padding:
+                                                  const EdgeInsets.all(
+                                                    4.0,
+                                                  ),
+                                                  child: SizedBox(
+                                                    width:
+                                                    screenWidth * 0.1,
+                                                    height:
+                                                    screenWidth * 0.1,
+                                                    child: Draggable(
+                                                      data:
+                                                      dd2controller
+                                                          .sourceCard,
+                                                      feedback: Material(
+                                                        elevation: 4.0,
+                                                        color:
+                                                        Colors
+                                                            .transparent,
+                                                        child: Draggable2Card(
+                                                          imageUrl:
+                                                          'assets/images/number/bg_apple/1.webp',
+                                                          cardWidth:
+                                                          screenWidth *
+                                                              0.1,
+                                                          cardHeight:
+                                                          screenWidth *
+                                                              0.1,
+                                                          opacity: 0.7,
+                                                        ),
+                                                      ),
+                                                      childWhenDragging:
+                                                      Draggable2Card(
+                                                        imageUrl:
+                                                        'assets/images/number/bg_apple/1.webp',
+                                                        cardWidth:
+                                                        screenWidth *
+                                                            0.1,
+                                                        cardHeight:
+                                                        screenWidth *
+                                                            0.1,
+                                                        opacity: 0.5,
+                                                      ),
+                                                      child: Draggable2Card(
+                                                        imageUrl:
+                                                        'assets/images/number/bg_apple/1.webp',
+                                                        cardWidth:
+                                                        screenWidth *
+                                                            0.1,
+                                                        cardHeight:
+                                                        screenWidth *
+                                                            0.1,
+                                                      ),
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
                                             ),
                                           ],
-                                        ),
-                                        SizedBox(height: screenWidth * 0.05),
-                                        SizedBox(
-                                          width: screenWidth * 0.6,
-                                          height: screenWidth * 0.3,
-                                          child: Draggable2DropzoneWidget(
-                                            zone: bigZone,
-                                            controller: dd2controller,
-                                            onReset: _resetState,
-                                            onCardRemoved: _onCardRemoved,
-                                            onCardAdded: _onCardAdded,
-                                            width: screenWidth * 0.6,
-                                            height: screenWidth * 0.3,
-                                            cardSize: screenWidth * 0.08,
-                                          ),
-                                        ),
-                                      ],
+                                        );
+                                      },
                                     ),
-                                  ],
-                                ),
-                              ],
+                                  )
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        Spacer(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            EnProgressBarWidget(current: current, total: total),
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 30.0,
-                                vertical: screenHeight * 0.02,
-                              ),
-                              child: AnimatedSwitcher(
-                                duration: const Duration(milliseconds: 300),
-                                transitionBuilder: (child, animation) {
-                                  return FadeTransition(
-                                    opacity: animation,
-                                    child: child,
-                                  );
-                                },
-                                child: Row(
-                                  key: ValueKey<String>(
-                                    '${isSubmitted}_$isCorrect',
-                                  ),
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    if (!isSubmitted)
-                                      ButtonWidget(
-                                        height: screenHeight * 0.035,
-                                        width: screenWidth * 0.18,
-                                        buttonText: "제출하기",
-                                        fontSize: screenWidth * 0.02,
-                                        borderRadius: 10,
-                                        onPressed: () async {
-                                          if (isSubmitted) return;
-                                          await checkAnswer();
-                                          setState(() {
-                                            showSubmitPopup = true;
-                                          });
-                                          submitController.forward();
-                                          await submitActivity(context);
-                                        },
-                                      ),
+                          Spacer(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              EnProgressBarWidget(current: current, total: total),
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 30.0,
+                                  vertical: screenHeight * 0.02,
+                                ),
+                                child: AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 300),
+                                  transitionBuilder: (child, animation) {
+                                    return FadeTransition(
+                                      opacity: animation,
+                                      child: child,
+                                    );
+                                  },
+                                  child: Row(
+                                    key: ValueKey<String>(
+                                      '${isSubmitted}_$isCorrect',
+                                    ),
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      if (!isSubmitted)
+                                        ButtonWidget(
+                                          height: screenHeight * 0.035,
+                                          width: screenWidth * 0.18,
+                                          buttonText: "제출하기",
+                                          fontSize: screenWidth * 0.02,
+                                          borderRadius: 10,
+                                          onPressed: () async {
+                                            if (isSubmitted) return;
+                                            await checkAnswer();
+                                            setState(() {
+                                              showSubmitPopup = true;
+                                            });
+                                            submitController.forward();
+                                            await submitActivity(context);
+                                          },
+                                        ),
 
-                                    if (isSubmitted && isCorrect == false) ...[
-                                      ButtonWidget(
-                                        height: screenHeight * 0.035,
-                                        width: screenWidth * 0.18,
-                                        buttonText: "제출하기",
-                                        fontSize: screenWidth * 0.02,
-                                        borderRadius: 10,
-                                        onPressed: () async {
-                                          checkAnswer();
-                                          setState(() {
-                                            showSubmitPopup = true;
-                                          });
-                                          submitController.forward();
-                                        },
-                                      ),
-                                      const SizedBox(width: 20),
-                                      ButtonWidget(
-                                        height: screenHeight * 0.035,
-                                        width: screenWidth * 0.18,
-                                        buttonText: isEnd ? "학습종료" : "다음문제",
-                                        fontSize: screenWidth * 0.02,
-                                        borderRadius: 10,
-                                        onPressed: isEnd ?
-                                            () => showResult() : () => onNextPressed(),
-                                      ),
+                                      if (isSubmitted && isCorrect == false) ...[
+                                        ButtonWidget(
+                                          height: screenHeight * 0.035,
+                                          width: screenWidth * 0.18,
+                                          buttonText: "제출하기",
+                                          fontSize: screenWidth * 0.02,
+                                          borderRadius: 10,
+                                          onPressed: () async {
+                                            checkAnswer();
+                                            setState(() {
+                                              showSubmitPopup = true;
+                                            });
+                                            submitController.forward();
+                                          },
+                                        ),
+                                        const SizedBox(width: 20),
+                                        ButtonWidget(
+                                          height: screenHeight * 0.035,
+                                          width: screenWidth * 0.18,
+                                          buttonText: isEnd ? "학습종료" : "다음문제",
+                                          fontSize: screenWidth * 0.02,
+                                          borderRadius: 10,
+                                          onPressed: isEnd ?
+                                              () => showResult() : () => onNextPressed(),
+                                        ),
+                                      ],
+
+                                      if (isSubmitted && isCorrect == true)
+                                        ButtonWidget(
+                                          height: screenHeight * 0.035,
+                                          width: screenWidth * 0.18,
+                                          buttonText: isEnd ? "학습종료" : "다음문제",
+                                          fontSize: screenWidth * 0.02,
+                                          borderRadius: 10,
+                                          onPressed: isEnd ?
+                                              () => showResult() : () => onNextPressed(),
+                                        ),
                                     ],
-
-                                    if (isSubmitted && isCorrect == true)
-                                      ButtonWidget(
-                                        height: screenHeight * 0.035,
-                                        width: screenWidth * 0.18,
-                                        buttonText: isEnd ? "학습종료" : "다음문제",
-                                        fontSize: screenWidth * 0.02,
-                                        borderRadius: 10,
-                                        onPressed: isEnd ?
-                                            () => showResult() : () => onNextPressed(),
-                                      ),
-                                  ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   if (showSubmitPopup)

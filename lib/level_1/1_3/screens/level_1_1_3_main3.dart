@@ -292,190 +292,193 @@ class _LevelOneOneThreeMain3State extends ConsumerState<LevelOneOneThreeMain3>
                 children: [
                   Padding(
                     padding: EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        Screenshot(
-                          controller: screenshotController,
-                          child: Container(
-                            color: Colors.white,
-                            child: Column(
-                              children: [
-                                NewHeaderWidget(
-                                  headerText: '주요학습활동',
-                                  headerTextSize: screenWidth * 0.028,
-                                  subTextSize: screenWidth * 0.018,
-                                ),
-                                SizedBox(height: screenHeight * 0.01),
-                                NewQuestionTextWidget(
-                                  questionText:
-                                      '3. 그림의 수를 세고, 알맞은 숫자 이름을 클릭하세요.',
-                                  questionTextSize: screenWidth * 0.03,
-                                ),
-                                SizedBox(height: screenWidth * 0.03),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    QuestionBoxString(
-                                      width: screenWidth,
-                                      height: screenHeight,
-                                      object: problemData['object'],
-                                      number: problemData['p1']['number'],
-                                      options: problem1Option,
-                                      questionId: 0,
-                                      onAnswerSelected: (questionId, selected) {
-                                        setState(() {
-                                          selectedAnswers[questionId] = selected;
-                                        });
-                                      },
-                                      selectedAnswer: selectedAnswers[0],
-                                    ),
-                                    SizedBox(width: screenHeight * 0.03),
-                                    QuestionBoxString(
-                                      width: screenWidth,
-                                      height: screenHeight,
-                                      object: problemData['object'],
-                                      number: problemData['p2']['number'],
-                                      options: problem2Option,
-                                      questionId: 1,
-                                      onAnswerSelected: (questionId, selected) {
-                                        setState(() {
-                                          selectedAnswers[questionId] = selected;
-                                        });
-                                      },
-                                      selectedAnswer: selectedAnswers[1],
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: screenHeight * 0.03),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    QuestionBoxString(
-                                      width: screenWidth,
-                                      height: screenHeight,
-                                      object: problemData['object'],
-                                      number: problemData['p3']['number'],
-                                      options: problem3Option,
-                                      questionId: 2,
-                                      onAnswerSelected: (questionId, selected) {
-                                        setState(() {
-                                          selectedAnswers[questionId] = selected;
-                                        });
-                                      },
-                                      selectedAnswer: selectedAnswers[2],
-                                    ),
-                                    SizedBox(width: screenHeight * 0.03),
-                                    QuestionBoxString(
-                                      width: screenWidth,
-                                      height: screenHeight,
-                                      object: problemData['object'],
-                                      number: problemData['p4']['number'],
-                                      options: problem4Option,
-                                      questionId: 3,
-                                      onAnswerSelected: (questionId, selected) {
-                                        setState(() {
-                                          selectedAnswers[questionId] = selected;
-                                        });
-                                      },
-                                      selectedAnswer: selectedAnswers[3],
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Spacer(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            EnProgressBarWidget(current: current, total: total),
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 30.0,
-                                vertical: screenHeight * 0.02,
-                              ),
-                              child: AnimatedSwitcher(
-                                duration: const Duration(milliseconds: 300),
-                                transitionBuilder: (child, animation) {
-                                  return FadeTransition(
-                                    opacity: animation,
-                                    child: child,
-                                  );
-                                },
-                                child: Row(
-                                  key: ValueKey<String>(
-                                    '${isSubmitted}_$isCorrect',
+                    child: Container(
+                      color: Colors.white,
+                      child: Column(
+                        children: [
+                          Screenshot(
+                            controller: screenshotController,
+                            child: Container(
+                              color: Colors.white,
+                              child: Column(
+                                children: [
+                                  NewHeaderWidget(
+                                    headerText: '주요학습활동',
+                                    headerTextSize: screenWidth * 0.028,
+                                    subTextSize: screenWidth * 0.018,
                                   ),
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    if (!isSubmitted)
-                                      ButtonWidget(
-                                        height: screenHeight * 0.035,
-                                        width: screenWidth * 0.18,
-                                        buttonText: "제출하기",
-                                        fontSize: screenWidth * 0.02,
-                                        borderRadius: 10,
-                                        onPressed:
-                                            (isSubmitted)
-                                                ? null
-                                                : () => {
-                                                  submitController.forward(),
-                                                  showSubmitPopup = true,
-                                                  submitActivity(context),
-                                                  checkAnswer(),
-                                                },
+                                  SizedBox(height: screenHeight * 0.01),
+                                  NewQuestionTextWidget(
+                                    questionText:
+                                        '3. 그림의 수를 세고, 알맞은 숫자 이름을 클릭하세요.',
+                                    questionTextSize: screenWidth * 0.03,
+                                  ),
+                                  SizedBox(height: screenWidth * 0.05),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      QuestionBoxString(
+                                        width: screenWidth,
+                                        height: screenHeight,
+                                        object: problemData['object'],
+                                        number: problemData['p1']['number'],
+                                        options: problem1Option,
+                                        questionId: 0,
+                                        onAnswerSelected: (questionId, selected) {
+                                          setState(() {
+                                            selectedAnswers[questionId] = selected;
+                                          });
+                                        },
+                                        selectedAnswer: selectedAnswers[0],
                                       ),
-
-                                    if (isSubmitted && isCorrect == false) ...[
-                                      ButtonWidget(
-                                        height: screenHeight * 0.035,
-                                        width: screenWidth * 0.18,
-                                        buttonText: "제출하기",
-                                        fontSize: screenWidth * 0.02,
-                                        borderRadius: 10,
-                                        onPressed:
-                                            () => {
-                                              setState(() {
-                                                checkAnswer();
-                                                showSubmitPopup = true;
-                                              }),
-                                              submitController.forward(),
-                                            },
-                                      ),
-                                      const SizedBox(width: 20),
-                                      ButtonWidget(
-                                        height: screenHeight * 0.035,
-                                        width: screenWidth * 0.18,
-                                        buttonText: isEnd ? "학습종료" : "다음문제",
-                                        fontSize: screenWidth * 0.02,
-                                        borderRadius: 10,
-                                        onPressed:
-                                            isEnd
-                                                ? () => showResult()
-                                                : () => onNextPressed(),
+                                      SizedBox(width: screenHeight * 0.03),
+                                      QuestionBoxString(
+                                        width: screenWidth,
+                                        height: screenHeight,
+                                        object: problemData['object'],
+                                        number: problemData['p2']['number'],
+                                        options: problem2Option,
+                                        questionId: 1,
+                                        onAnswerSelected: (questionId, selected) {
+                                          setState(() {
+                                            selectedAnswers[questionId] = selected;
+                                          });
+                                        },
+                                        selectedAnswer: selectedAnswers[1],
                                       ),
                                     ],
-
-                                    if (isSubmitted && isCorrect == true)
-                                      ButtonWidget(
-                                        height: screenHeight * 0.035,
-                                        width: screenWidth * 0.18,
-                                        buttonText: isEnd ? "학습종료" : "다음문제",
-                                        fontSize: screenWidth * 0.02,
-                                        borderRadius: 10,
-                                        onPressed:
-                                            isEnd
-                                                ? () => showResult()
-                                                : () => onNextPressed(),
+                                  ),
+                                  SizedBox(height: screenHeight * 0.03),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      QuestionBoxString(
+                                        width: screenWidth,
+                                        height: screenHeight,
+                                        object: problemData['object'],
+                                        number: problemData['p3']['number'],
+                                        options: problem3Option,
+                                        questionId: 2,
+                                        onAnswerSelected: (questionId, selected) {
+                                          setState(() {
+                                            selectedAnswers[questionId] = selected;
+                                          });
+                                        },
+                                        selectedAnswer: selectedAnswers[2],
                                       ),
-                                  ],
-                                ),
+                                      SizedBox(width: screenHeight * 0.03),
+                                      QuestionBoxString(
+                                        width: screenWidth,
+                                        height: screenHeight,
+                                        object: problemData['object'],
+                                        number: problemData['p4']['number'],
+                                        options: problem4Option,
+                                        questionId: 3,
+                                        onAnswerSelected: (questionId, selected) {
+                                          setState(() {
+                                            selectedAnswers[questionId] = selected;
+                                          });
+                                        },
+                                        selectedAnswer: selectedAnswers[3],
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
-                      ],
+                          ),
+                          Spacer(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              EnProgressBarWidget(current: current, total: total),
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 30.0,
+                                  vertical: screenHeight * 0.02,
+                                ),
+                                child: AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 300),
+                                  transitionBuilder: (child, animation) {
+                                    return FadeTransition(
+                                      opacity: animation,
+                                      child: child,
+                                    );
+                                  },
+                                  child: Row(
+                                    key: ValueKey<String>(
+                                      '${isSubmitted}_$isCorrect',
+                                    ),
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      if (!isSubmitted)
+                                        ButtonWidget(
+                                          height: screenHeight * 0.035,
+                                          width: screenWidth * 0.18,
+                                          buttonText: "제출하기",
+                                          fontSize: screenWidth * 0.02,
+                                          borderRadius: 10,
+                                          onPressed:
+                                              (isSubmitted)
+                                                  ? null
+                                                  : () => {
+                                                    submitController.forward(),
+                                                    showSubmitPopup = true,
+                                                    submitActivity(context),
+                                                    checkAnswer(),
+                                                  },
+                                        ),
+
+                                      if (isSubmitted && isCorrect == false) ...[
+                                        ButtonWidget(
+                                          height: screenHeight * 0.035,
+                                          width: screenWidth * 0.18,
+                                          buttonText: "제출하기",
+                                          fontSize: screenWidth * 0.02,
+                                          borderRadius: 10,
+                                          onPressed:
+                                              () => {
+                                                setState(() {
+                                                  checkAnswer();
+                                                  showSubmitPopup = true;
+                                                }),
+                                                submitController.forward(),
+                                              },
+                                        ),
+                                        const SizedBox(width: 20),
+                                        ButtonWidget(
+                                          height: screenHeight * 0.035,
+                                          width: screenWidth * 0.18,
+                                          buttonText: isEnd ? "학습종료" : "다음문제",
+                                          fontSize: screenWidth * 0.02,
+                                          borderRadius: 10,
+                                          onPressed:
+                                              isEnd
+                                                  ? () => showResult()
+                                                  : () => onNextPressed(),
+                                        ),
+                                      ],
+
+                                      if (isSubmitted && isCorrect == true)
+                                        ButtonWidget(
+                                          height: screenHeight * 0.035,
+                                          width: screenWidth * 0.18,
+                                          buttonText: isEnd ? "학습종료" : "다음문제",
+                                          fontSize: screenWidth * 0.02,
+                                          borderRadius: 10,
+                                          onPressed:
+                                              isEnd
+                                                  ? () => showResult()
+                                                  : () => onNextPressed(),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   if (showSubmitPopup)

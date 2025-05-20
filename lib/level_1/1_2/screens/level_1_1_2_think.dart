@@ -422,6 +422,7 @@ class LevelOneOneTwoThinkState extends ConsumerState<LevelOneOneTwoThink>
                               questionText: '회색 빈칸에 알맞은 1 큰 수를 나타내는 그림은 무엇일까요?',
                               questionTextSize: screenWidth * 0.03,
                             ),
+                            SizedBox(height: screenHeight * 0.02),
                             _buildHeaderRow(),
                             ...List.generate(
                               4,
@@ -433,11 +434,12 @@ class LevelOneOneTwoThinkState extends ConsumerState<LevelOneOneTwoThink>
                                 ],
                               ),
                             ),
-                            SizedBox(height: screenHeight * 0.01),
+                            SizedBox(height: screenHeight * 0.02),
                             NewQuestionTextWidget(
                               questionText: '아래의 카드들을 알맞은 위치에 넣어보세요!',
                               questionTextSize: screenWidth * 0.03,
                             ),
+                            SizedBox(height: screenHeight * 0.02),
                             DraggableCardList(
                               showRemoveButton: true,
                               candidates: candidates,
