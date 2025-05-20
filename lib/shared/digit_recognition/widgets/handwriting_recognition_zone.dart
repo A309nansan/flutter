@@ -121,7 +121,7 @@ class HandwritingRecognitionZoneState
 
       final handWritingData = HandwritingData(
         childId: childId,
-        answer: _recognizedText,
+        answer: int.parse(_recognizedText),
         ink: _ink,
       );
 
@@ -257,9 +257,6 @@ class HandwritingRecognitionZoneState
       _ink.strokes.add(_currentStroke!);
       _currentStroke = null;
     });
-    // Ink를 JSON으로 변환 후 출력
-    final inkJsonString = jsonEncode(_ink.toJson());
-    debugPrint(inkJsonString, wrapWidth: 8000000); // 긴 로그도 잘림 없이 출력[2][6]
   }
 }
 

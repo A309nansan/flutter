@@ -234,6 +234,7 @@ class LevelOneOneTwoMainState extends ConsumerState<LevelOneOneTwoMain>
     width: 100,
     height: 30,
     child: Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisAlignment: MainAxisAlignment.start,
       children: const [Icon(Icons.arrow_left_sharp), Text('1 작은 수')],
     ),
@@ -419,6 +420,7 @@ class LevelOneOneTwoMainState extends ConsumerState<LevelOneOneTwoMain>
                               questionTextSize: screenWidth * 0.03,
                             ),
                             _buildHeaderRow(),
+                            SizedBox(height: screenHeight * 0.01),
                             ...List.generate(
                               4,
                               (i) => Column(
@@ -429,11 +431,12 @@ class LevelOneOneTwoMainState extends ConsumerState<LevelOneOneTwoMain>
                                 ],
                               ),
                             ),
-                            SizedBox(height: screenHeight * 0.01),
+                            SizedBox(height: screenHeight * 0.02),
                             NewQuestionTextWidget(
                               questionText: '아래의 카드들을 알맞은 위치에 넣어보세요!',
                               questionTextSize: screenWidth * 0.03,
                             ),
+                            SizedBox(height: screenHeight * 0.02),
                             DraggableCardList(
                               showRemoveButton: true,
                               candidates: candidates,

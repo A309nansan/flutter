@@ -100,7 +100,7 @@ class _LevelOneOneOneMainState extends State<LevelOneOneOneMain>
                                   '${controller.targetNumber}${controller.eulrul(controller.targetNumber)} 나타내는 모든 그림을 찾아 클릭하세요.',
                               questionTextSize: screenWidth * 0.03,
                             ),
-                            SizedBox(height: screenHeight * 0.01),
+                            SizedBox(height: screenHeight * 0.05),
                             Expanded(
                               flex: 8,
                               child: GridView.count(

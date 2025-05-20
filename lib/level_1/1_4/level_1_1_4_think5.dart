@@ -309,8 +309,43 @@ class Level114Think5State extends ConsumerState<Level114Think5>
                                         '5. 숫자를 완성하기 위해 몇 개가 더 필요할까요?',
                                     questionTextSize: screenWidth * 0.03,
                                   ),
-                                  SizedBox(height: screenHeight * 0.02),
+                                  SizedBox(height: screenHeight * 0.05),
                                   // 여기에 문제 푸는 ui 및 삽입
+                                  Container(
+                                    width: screenWidth * 0.9,
+                                    height: screenHeight * 0.2,
+                                    decoration: BoxDecoration(
+                                        border : Border.all(width: 2, color: Colors.orangeAccent,),
+                                        borderRadius: BorderRadius.circular(10)),
+                                    child: Column(crossAxisAlignment: CrossAxisAlignment.center,
+                                                  children: [Container(alignment: Alignment.center,
+                                                                       width: screenWidth * 0.07,
+                                                                       height: screenHeight * 0.025,
+                                                                       color: Colors.orangeAccent,
+                                                                       child: Text('<보기>', style: TextStyle(fontSize: screenWidth * 0.02, fontWeight: FontWeight.bold),),),
+                                                            SizedBox(height: screenHeight * 0.01,),
+                                                            Row(
+                                                              mainAxisAlignment: MainAxisAlignment.center,
+                                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                                              children: [
+                                                                Container(width: screenWidth * 0.25,
+                                                                  height: screenHeight *0.15,
+                                                                  decoration: BoxDecoration(
+                                                                      borderRadius: BorderRadius.circular(10),
+                                                                      border: Border.all(color: Colors.lightBlue, width: 2))
+                                                                  ),
+                                                                SizedBox(width: screenWidth * 0.05),
+                                                                Container(width: screenWidth * 0.3,
+                                                                  height: screenHeight * 0.1,
+                                                                  decoration: BoxDecoration(border: Border.all(width: 1, color: Colors.lightBlue)),),
+                                                                Icon(Icons.arrow_right_alt_outlined, size: screenWidth * 0.07,),
+                                                                Container(width: screenWidth * 0.1,
+                                                                height: screenHeight * 0.1,)
+                                                              ]
+                                                              )
+                                                  ]
+                                      )
+                                    )
                                 ],
                               ),
                             ),
