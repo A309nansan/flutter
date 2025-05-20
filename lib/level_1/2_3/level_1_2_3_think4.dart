@@ -214,7 +214,6 @@ class LevelOneTwoThreeThink4State extends ConsumerState<LevelOneTwoThreeThink4> 
               answerData['correct_indexes'],
               selectedAnswers['correct_indexes'],
             );
-    debugPrint("$answerData");
     _submitAnswer();
   }
 

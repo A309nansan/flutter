@@ -1,6 +1,7 @@
 import 'package:nansan_flutter/level_1/1_3/screens/level_1_1_3_main2.dart';
 import 'package:nansan_flutter/level_1/1_3/screens/level_1_1_3_main3.dart';
 import 'package:nansan_flutter/level_1/1_3/screens/level_1_1_3_think.dart';
+import 'package:nansan_flutter/level_1/1_3/screens/level_1_1_4_main4.dart';
 import 'package:nansan_flutter/level_1/1_4/level_1_1_4_think1.dart';
 import 'package:nansan_flutter/level_1/1_4/level_1_1_4_think2.dart';
 import 'package:nansan_flutter/level_1/1_4/level_1_1_4_think3.dart';
@@ -30,12 +31,14 @@ import 'package:nansan_flutter/level_1/3_1/level_1_3_1_main2.dart';
 import 'package:nansan_flutter/level_1/3_1/level_1_3_1_pro.dart';
 import 'package:nansan_flutter/level_1/3_3/level_1_3_3_basic1.dart';
 import 'package:nansan_flutter/level_1/3_3/level_1_3_3_basic2.dart';
+import 'package:nansan_flutter/level_1/3_3/level_1_3_3_main.dart';
 import 'package:nansan_flutter/level_1/3_3/level_1_3_3_pro.dart';
 import 'package:nansan_flutter/level_1/4_1/level_1_4_1_main1.dart';
 import 'package:nansan_flutter/level_1/4_1/level_1_4_1_main2.dart';
 import 'package:nansan_flutter/level_1/4_1/level_1_4_1_main3.dart';
 import 'package:nansan_flutter/level_1/4_1/level_1_4_1_main4.dart';
-import 'package:nansan_flutter/level_1/4_2/screens/level_1_4_2_main.dart';
+import 'package:nansan_flutter/level_1/4_2/screens/level_1_4_2_main1.dart';
+import 'package:nansan_flutter/level_1/4_2/screens/level_1_4_2_main2.dart';
 import 'package:nansan_flutter/modules/drag_drop/controllers/drag_drop_controller.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:provider/provider.dart';
@@ -135,6 +138,14 @@ class En1Module extends Module {
       child: (context) {
         final nextCode = r.args.data as String;
         return LevelOneOneThreeMain3(problemCode: nextCode);
+      },
+    );
+    // 1과 3차시 주요학습활동 4번
+    r.child(
+      '/enlv1s1c3jy4',
+      child: (context) {
+        final nextCode = r.args.data as String;
+        return Level113Main4(problemCode: nextCode);
       },
     );
     // 1과 4차시 개념학습활동 1번
@@ -415,6 +426,14 @@ class En1Module extends Module {
         return LevelOneThreeThreeBasic2(problemCode: nextCode);
       },
     );
+    // 3과 3차시 기초2
+    r.child(
+      '/enlv1s3c3jy1',
+      child: (context) {
+        final nextCode = r.args.data as String;
+        return Level133Main1(problemCode: nextCode);
+      },
+    );
     // 3과 3차시 심화
     r.child(
       '/enlv1s3c3sh1',
@@ -460,7 +479,15 @@ class En1Module extends Module {
       '/enlv1s4c2jy1',
       child: (context) {
         final nextCode = r.args.data as String;
-        return LevelOneFourTwoMain(problemCode: nextCode);
+        return LevelOneFourTwoMain1(problemCode: nextCode);
+      },
+    );
+    // 4과 2차시 주요2
+    r.child(
+      '/enlv1s4c2jy2',
+      child: (context) {
+        final nextCode = r.args.data as String;
+        return LevelOneFourTwoMain2(problemCode: nextCode);
       },
     );
     // 4과 3차시 주요1

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,16 +21,16 @@ import '../../../shared/widgets/toase_message.dart';
 import '../controller/level_1_4_2_main_controller.dart';
 import '../widgets/main_sample_popup.dart';
 
-class LevelOneFourTwoMain extends ConsumerStatefulWidget {
+class LevelOneFourTwoMain1 extends ConsumerStatefulWidget {
   final String problemCode;
 
-  const LevelOneFourTwoMain({super.key, required this.problemCode});
+  const LevelOneFourTwoMain1({super.key, required this.problemCode});
 
   @override
-  ConsumerState<LevelOneFourTwoMain> createState() => _LevelOneFourTwoMainState();
+  ConsumerState<LevelOneFourTwoMain1> createState() => _LevelOneFourTwoMain1State();
 }
 
-class _LevelOneFourTwoMainState extends ConsumerState<LevelOneFourTwoMain> with TickerProviderStateMixin {
+class _LevelOneFourTwoMain1State extends ConsumerState<LevelOneFourTwoMain1> with TickerProviderStateMixin {
   late final LevelOneFourTwoMainController controller;
   final ScreenshotController screenshotController = ScreenshotController();
   bool isSubmitted = false;

@@ -213,8 +213,6 @@ class LevelOneTwoThreeMain1State extends ConsumerState<LevelOneTwoThreeMain1>
       answerData,
       selectedAnswers,
     );
-    debugPrint(selectedAnswers.toString());
-    debugPrint(answerData.toString());
     _submitAnswer();
   }
 

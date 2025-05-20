@@ -206,7 +206,6 @@ class LevelOneThreeOneProState extends ConsumerState<LevelOneThreeOnePro> with T
   // 정답 여부 체크(보통은 이거쓰면됨)
   Future<void> checkAnswer() async {
     await _processInputData();
-    debugPrint(selectedAnswers.toString());
     isCorrect = const DeepCollectionEquality().equals(
       answerData,
       selectedAnswers,

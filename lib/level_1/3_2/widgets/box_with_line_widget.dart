@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:nansan_flutter/modules/drag_drop2/controllers/draggable2_controller.dart';
+import 'package:nansan_flutter/modules/drag_drop2/models/draggable2_drop_zone.dart';
+import 'package:nansan_flutter/modules/drag_drop2/models/draggable2_image_card.dart';
+import 'package:nansan_flutter/modules/drag_drop2/widgets/draggable2_drop_zone_widget.dart';
 
 class BoxWithLineWidget extends StatefulWidget {
   final void Function(int selectedValue)? onSelected;
   final double screenWidth;
   final double screenHeight;
   final List data;
+  final Draggable2DropZone leftZone;
+  final Draggable2DropZone rightZone;
+  final DragDrop2Controller controller;
 
   const BoxWithLineWidget({
     super.key,
@@ -12,13 +19,39 @@ class BoxWithLineWidget extends StatefulWidget {
     required this.screenHeight,
     required this.data,
     this.onSelected,
+    required this.leftZone,
+    required this.rightZone,
+    required this.controller
   });
 
   @override
   State<BoxWithLineWidget> createState() => _BoxWithLineWidgetState();
 }
 
+
+
 class _BoxWithLineWidgetState extends State<BoxWithLineWidget> {
+  int? _selectedIndex; // 선택된 인덱스 저장
+
+  //드래그 앤 드랍2 관련 로직
+  void _resetState(Draggable2DropZone zone) {
+    setState(() {
+      widget.controller.resetState(zone.id);
+    });
+  }
+
+  void _onCardRemoved(Draggable2DropZone zone, Draggable2ImageCard card) {
+    setState(() {
+      widget.controller.removeCardFromZone(zone, card);
+    });
+  }
+
+  void _onCardAdded(Draggable2DropZone zone) {
+    setState(() {
+      widget.controller.addCardToZone(zone);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -33,6 +66,20 @@ class _BoxWithLineWidgetState extends State<BoxWithLineWidget> {
                 border: Border.all(width: 2, color: Colors.lightBlue),
                 borderRadius: BorderRadius.circular(10),
               ),
+                child: SizedBox(
+                  width: widget.screenWidth * 0.3,
+                  height: widget.screenWidth * 0.15,
+                  child: Draggable2DropzoneWidget(
+                    zone: widget.leftZone,
+                    controller: widget.controller,
+                    onReset: _resetState,
+                    onCardRemoved: _onCardRemoved,
+                    onCardAdded: _onCardAdded,
+                    width: widget.screenWidth * 0.3,
+                    height: widget.screenWidth * 0.15,
+                    cardSize: widget.screenWidth * 0.05,
+                  ),
+                )
             ),
             SizedBox(width: widget.screenWidth * 0.1),
             Container(
@@ -42,6 +89,20 @@ class _BoxWithLineWidgetState extends State<BoxWithLineWidget> {
                 border: Border.all(width: 2, color: Colors.lightBlue),
                 borderRadius: BorderRadius.circular(10),
               ),
+                child: SizedBox(
+                  width: widget.screenWidth * 0.3,
+                  height: widget.screenWidth * 0.15,
+                  child: Draggable2DropzoneWidget(
+                    zone: widget.rightZone,
+                    controller: widget.controller,
+                    onReset: _resetState,
+                    onCardRemoved: _onCardRemoved,
+                    onCardAdded: _onCardAdded,
+                    width: widget.screenWidth * 0.3,
+                    height: widget.screenWidth * 0.15,
+                    cardSize: widget.screenWidth * 0.05,
+                  ),
+                )
             ),
           ],
         ),
@@ -119,28 +180,38 @@ class _BoxWithLineWidgetState extends State<BoxWithLineWidget> {
           children: [
             GestureDetector(
               onTap: () {
+                setState(() {
+                  _selectedIndex = 0;
+                });
                 if (widget.onSelected != null) {
                   widget.onSelected!(widget.data[0]);
                 }
-                // setState()로 상태 변경 가능
               },
               child: Container(
-                alignment: Alignment.center,
                 width: widget.screenWidth * 0.3,
                 height: widget.screenHeight * 0.1,
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.lightBlue),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Text(
-                  '${widget.data[0]}',
-                  style: TextStyle(fontSize: widget.screenHeight * 0.06),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Text(
+                      '${widget.data[0]}',
+                      style: TextStyle(fontSize: widget.screenHeight * 0.06),
+                    ),
+                    if (_selectedIndex == 0) Icon(Icons.circle_outlined, size: widget.screenWidth * 0.15, color: Colors.lightBlue,)
+                  ],
                 ),
               ),
             ),
             SizedBox(width: widget.screenWidth * 0.1),
             GestureDetector(
               onTap: () {
+                setState(() {
+                  _selectedIndex = 1;
+                });
                 if (widget.onSelected != null) {
                   widget.onSelected!(widget.data[1]);
                 }
@@ -154,10 +225,16 @@ class _BoxWithLineWidgetState extends State<BoxWithLineWidget> {
                   border: Border.all(color: Colors.lightBlue),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Text(
-                  '${widget.data[1]}',
-                  style: TextStyle(fontSize: widget.screenHeight * 0.06),
-                ),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Text(
+                        '${widget.data[1]}',
+                        style: TextStyle(fontSize: widget.screenHeight * 0.06),
+                      ),
+                      if (_selectedIndex == 1) Icon(Icons.circle_outlined, size: widget.screenWidth * 0.15, color: Colors.lightBlue,)
+                    ],
+                  ),
               ),
             ),
           ],

@@ -40,8 +40,8 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
   late Animation<double> submitAnimation;
   late Animation<double> resultAnimation;
   late int childId;
-  late int current;
-  late int total;
+  late int current = 1;
+  late int total = 5;
   late int elapsedSeconds;
   late String problemCode = widget.problemCode;
   late String nextProblemCode;
@@ -134,8 +134,8 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
       answerData = {
         "p1": [ 4, 6 ],
       };
-      current = 2;
-      total = 2;
+      current = 1;
+      total = 5;
       selectedAnswers = {
         "p1": [ 0, 0 ],
       };
@@ -305,7 +305,7 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
                     child: Column(
                       children: [
                         NewHeaderWidget(
-                          headerText: '주요학습활동',
+                          headerText: '개념학습활동',
                           headerTextSize: screenWidth * 0.028,
                           subTextSize: screenWidth * 0.018,
                         ),
@@ -315,7 +315,7 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
                           '1. 동그라미의 수를 세고, <보기>와 같이 알맞은 숫자를 적어 봅시다.',
                           questionTextSize: screenWidth * 0.03,
                         ),
-                        SizedBox(height: screenHeight * 0.02),
+                        SizedBox(height: screenHeight * 0.04),
                         // 여기에 문제 푸는 ui 및 삽입
                         Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -323,12 +323,12 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
                             DotContainer(
                               ans: problemData["p1"][0],
                             ),
-                            SizedBox(height: screenHeight * 0.02),
+                            SizedBox(height: screenHeight * 0.05),
                             DotContainer(
                               ans: problemData["p1"][1],
                               zoneKey: zoneKeys['first'],
                             ),
-                            SizedBox(height: screenHeight * 0.02),
+                            SizedBox(height: screenHeight * 0.05),
                             DotContainer(
                               ans: problemData["p1"][2],
                               zoneKey: zoneKeys['second'],
