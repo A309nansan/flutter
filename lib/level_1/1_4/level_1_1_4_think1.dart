@@ -40,8 +40,8 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
   late Animation<double> submitAnimation;
   late Animation<double> resultAnimation;
   late int childId;
-  late int current;
-  late int total;
+  late int current = 1;
+  late int total = 5;
   late int elapsedSeconds;
   late String problemCode = widget.problemCode;
   late String nextProblemCode;
@@ -134,8 +134,8 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
       answerData = {
         "p1": [ 4, 6 ],
       };
-      current = 2;
-      total = 2;
+      current = 1;
+      total = 5;
       selectedAnswers = {
         "p1": [ 0, 0 ],
       };
@@ -305,7 +305,7 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
                     child: Column(
                       children: [
                         NewHeaderWidget(
-                          headerText: '주요학습활동',
+                          headerText: '개념학습활동',
                           headerTextSize: screenWidth * 0.028,
                           subTextSize: screenWidth * 0.018,
                         ),

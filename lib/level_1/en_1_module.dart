@@ -1,6 +1,7 @@
 import 'package:nansan_flutter/level_1/1_3/screens/level_1_1_3_main2.dart';
 import 'package:nansan_flutter/level_1/1_3/screens/level_1_1_3_main3.dart';
 import 'package:nansan_flutter/level_1/1_3/screens/level_1_1_3_think.dart';
+import 'package:nansan_flutter/level_1/1_3/screens/level_1_1_4_main4.dart';
 import 'package:nansan_flutter/level_1/1_4/level_1_1_4_think1.dart';
 import 'package:nansan_flutter/level_1/1_4/level_1_1_4_think2.dart';
 import 'package:nansan_flutter/level_1/1_4/level_1_1_4_think3.dart';
@@ -135,6 +136,14 @@ class En1Module extends Module {
       child: (context) {
         final nextCode = r.args.data as String;
         return LevelOneOneThreeMain3(problemCode: nextCode);
+      },
+    );
+    // 1과 3차시 주요학습활동 4번
+    r.child(
+      '/enlv1s1c3jy4',
+      child: (context) {
+        final nextCode = r.args.data as String;
+        return Level113Main4(problemCode: nextCode);
       },
     );
     // 1과 4차시 개념학습활동 1번
