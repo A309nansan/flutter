@@ -20,15 +20,14 @@ class AppModule extends Module {
 
   @override
   void routes(r) {
-    // r.child('/', child: (context) => const SplashScreen());
     r.child('/', child: (context) => const AppInitializer());
     r.child('/login', child: (context) => const LoginScreen());
     r.child('/profile', child: (context) => const ProfileScreen());
     r.child('/draw', child: (context) => const DrawScreen());
+    // r.child('/handwritingtest', child: (context) => const );
+
+
     r.module('/math', module: MathModule());
-
-    // r.child('/digit', child: (context) => const LevelOneOneOneThink());
-
     r.module('/auth', module: AuthModule());
     r.module('/main', module: MainModule());
     r.module('/level1', module: En1Module());
