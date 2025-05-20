@@ -125,6 +125,7 @@ class _LevelOneThreeTwoMain1State extends ConsumerState<LevelOneThreeTwoMain1>
       setState(() {
         isSubmitting = true;
         controller.showSubmitPopup = true;
+        isCorrectAnswer = controller.isCorrect;
       });
       controller.submitController.forward();
 
@@ -190,7 +191,6 @@ class _LevelOneThreeTwoMain1State extends ConsumerState<LevelOneThreeTwoMain1>
     final keys = problem["keys"];
     final nextCode = controller.originalProblem["next_problem_code"] as String?;
     final isEnd = nextCode == null || nextCode.isEmpty;
-    debugPrint(problem.toString());
 
     return Scaffold(
       appBar: AppbarWidget(

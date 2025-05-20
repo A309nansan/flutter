@@ -125,6 +125,7 @@ class _LevelOneThreeTwoMain2State extends ConsumerState<LevelOneThreeTwoMain2>
       setState(() {
         isSubmitting = true;
         controller.showSubmitPopup = true;
+        isCorrectAnswer = controller.isCorrect;
       });
       controller.submitController.forward();
 

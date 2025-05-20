@@ -143,8 +143,6 @@ class _LevelOneOneFourThink2State extends ConsumerState<LevelOneOneFourThink2>
     problem2Option = List<int>.from(p2) ;
     problem3Option = List<int>.from(p3) ;
     problem4Option = List<int>.from(p4) ;
-
-    debugPrint('$answerData');
   }
 
   // 제출함수(제출하기 버튼 누를시 작동하도록 설정)
@@ -325,7 +323,6 @@ class _LevelOneOneFourThink2State extends ConsumerState<LevelOneOneFourThink2>
                                       onAnswerSelected: (questionId, selected) {
                                         setState(() {
                                           selectedAnswers[questionId] = selected;
-                                          debugPrint('$selectedAnswers');
                                         });
                                       },
                                       selectedAnswer: selectedAnswers[0],
@@ -341,7 +338,6 @@ class _LevelOneOneFourThink2State extends ConsumerState<LevelOneOneFourThink2>
                                       onAnswerSelected: (questionId, selected) {
                                         setState(() {
                                           selectedAnswers[questionId] = selected;
-                                          debugPrint('$selectedAnswers');
                                         });
                                       },
                                       selectedAnswer: selectedAnswers[1],
@@ -362,7 +358,6 @@ class _LevelOneOneFourThink2State extends ConsumerState<LevelOneOneFourThink2>
                                       onAnswerSelected: (questionId, selected) {
                                         setState(() {
                                           selectedAnswers[questionId] = selected;
-                                          debugPrint('$selectedAnswers');
                                         });
                                       },
                                       selectedAnswer: selectedAnswers[2],

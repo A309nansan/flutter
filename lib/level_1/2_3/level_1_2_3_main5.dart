@@ -262,7 +262,6 @@ class _LevelOneTwoThreeMain5State extends ConsumerState<LevelOneTwoThreeMain5> w
   }
 
   // 문제 데이터 받아온 후, 문제에 맞게 데이터 조작
-  // 문제 데이터 받아온 후, 문제에 맞게 데이터 조작
   void _processProblemData(Map problemData) {
     final choices = problemData['choices'] as List;
 
@@ -277,8 +276,6 @@ class _LevelOneTwoThreeMain5State extends ConsumerState<LevelOneTwoThreeMain5> w
         return List<int>.from(choiceList.map((e) => int.parse(e.toString())));
       }).toList();
     });
-
-    debugPrint('📦 problemContents: $problemContents');
   }
 
 
@@ -287,8 +284,6 @@ class _LevelOneTwoThreeMain5State extends ConsumerState<LevelOneTwoThreeMain5> w
     selectedAnswers = {
       "selectedAnswer": _selectedAnswer + 1,
     };
-
-    debugPrint('$selectedAnswers');
   }
 
   // 정답 여부 체크(보통은 이거쓰면됨)
@@ -299,7 +294,6 @@ class _LevelOneTwoThreeMain5State extends ConsumerState<LevelOneTwoThreeMain5> w
       answerData,
       selectedAnswers,
     );
-    debugPrint('$isCorrect');
 
     _submitAnswer();
   }

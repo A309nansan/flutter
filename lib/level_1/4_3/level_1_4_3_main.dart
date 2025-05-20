@@ -424,11 +424,11 @@ class LevelOneFourThreeMainState extends ConsumerState<LevelOneFourThreeMain> wi
                                   // TODO : 정답 체크 로직 구현 시 해당 부분 지우고 주석 활성화
                                   onPressed: () async {
                                     if (isSubmitted) return;
+                                    await checkAnswer();
+                                    await submitActivity(context);
                                     setState(() {
                                       showSubmitPopup = true;
                                     });
-                                    await checkAnswer();
-                                    await submitActivity(context);
                                     submitController.forward();
                                   },
                                 ),

@@ -182,9 +182,6 @@ class _LevelOneTwoThreeMain4State extends ConsumerState<LevelOneTwoThreeMain4> w
     numberList =
         (problemData['list'] as List<dynamic>).map((e) => e as int).toList();
     givenNumber = problemData['number'] as int;
-
-    debugPrint('$numberList');
-    debugPrint('$givenNumber');
   }
 
   // 문제 푸는 로직 수행할때, seletedAnswers 데이터 넣는 로직
@@ -196,8 +193,6 @@ class _LevelOneTwoThreeMain4State extends ConsumerState<LevelOneTwoThreeMain4> w
     } else if (selectedButton == 'right') {
       selectedAnswers["right"] = true;
     }
-
-    debugPrint('$selectedAnswers');
   }
 
   // 정답 여부 체크(보통은 이거쓰면됨)
@@ -208,7 +203,6 @@ class _LevelOneTwoThreeMain4State extends ConsumerState<LevelOneTwoThreeMain4> w
       answerData,
       selectedAnswers,
     );
-    debugPrint('$isCorrect');
 
     _submitAnswer();
   }

@@ -22,16 +22,16 @@ import '../../../shared/widgets/toase_message.dart';
 import '../controller/level_1_4_2_main_controller.dart';
 import '../widgets/main_sample_popup.dart';
 
-class LevelOneFourTwoMain1 extends ConsumerStatefulWidget {
+class LevelOneFourTwoMain2 extends ConsumerStatefulWidget {
   final String problemCode;
 
-  const LevelOneFourTwoMain1({super.key, required this.problemCode});
+  const LevelOneFourTwoMain2({super.key, required this.problemCode});
 
   @override
-  ConsumerState<LevelOneFourTwoMain1> createState() => _LevelOneFourTwoMain1State();
+  ConsumerState<LevelOneFourTwoMain2> createState() => _LevelOneFourTwoMain2State();
 }
 
-class _LevelOneFourTwoMain1State extends ConsumerState<LevelOneFourTwoMain1> with TickerProviderStateMixin {
+class _LevelOneFourTwoMain2State extends ConsumerState<LevelOneFourTwoMain2> with TickerProviderStateMixin {
   late final LevelOneFourTwoMainController controller;
   final ScreenshotController screenshotController = ScreenshotController();
   bool isSubmitted = false;
@@ -226,7 +226,7 @@ class _LevelOneFourTwoMain1State extends ConsumerState<LevelOneFourTwoMain1> wit
                                 children: [
                                   Expanded(
                                     child: NewQuestionTextWidget(
-                                      questionText: "1. 주어진 그림을 보고 문제를 풀어 보세요.",
+                                      questionText: "2. 주어진 그림을 보고 문제를 풀어 보세요.",
                                       questionTextSize: width * 0.03,
                                     ),
                                   ),
