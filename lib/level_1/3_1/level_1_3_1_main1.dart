@@ -1,12 +1,20 @@
 import 'dart:convert';
-import 'dart:typed_data';
+import 'dart:developer';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:nansan_flutter/level_1/3_1/widgets/grape_container.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:nansan_flutter/modules/drag_drop2/controllers/draggable2_controller.dart';
+import 'package:nansan_flutter/modules/drag_drop2/models/draggable2_drop_zone.dart';
+import 'package:nansan_flutter/modules/drag_drop2/models/draggable2_image_card.dart';
+import 'package:nansan_flutter/modules/drag_drop2/widgets/draggable2_card.dart';
+import 'package:nansan_flutter/modules/drag_drop2/widgets/draggable2_drop_zone_widget.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
+import 'package:nansan_flutter/modules/math/src/utils/math_ui_constant.dart';
 import 'package:nansan_flutter/shared/controllers/timer_controller.dart';
+import 'package:nansan_flutter/shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
 import 'package:nansan_flutter/shared/services/en_problem_service.dart';
 import 'package:nansan_flutter/shared/services/image_service.dart';
 import 'package:nansan_flutter/shared/services/secure_storage_service.dart';
@@ -19,19 +27,23 @@ import 'package:nansan_flutter/shared/widgets/new_question_text.dart';
 import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:collection/collection.dart';
+import 'package:nansan_flutter/shared/provider/en_riverpod_provider.dart';
 
-import '../../shared/digit_recognition/widgets/handwriting_recognition_zone.dart';
-import '../../shared/provider/en_riverpod_provider.dart';
+import '../../shared/widgets/en_result_popup.dart';
 
+// ✅ 상태변경 1. StatefulWidget -> ConsumerStatefulWidget
 class LevelOneThreeOneMain1 extends ConsumerStatefulWidget {
   final String problemCode;
   const LevelOneThreeOneMain1({super.key, required this.problemCode});
 
   @override
-  ConsumerState<LevelOneThreeOneMain1> createState() => LevelOneThreeOneMain1State();
+  // ✅ 상태변경 2. State -> ConsumerState
+  ConsumerState<LevelOneThreeOneMain1> createState() => Level131main1State();
 }
 
-class LevelOneThreeOneMain1State extends ConsumerState<LevelOneThreeOneMain1> with TickerProviderStateMixin {
+// ✅ 상태변경 3. State -> ConsumerState
+class Level131main1State extends ConsumerState<LevelOneThreeOneMain1>
+    with TickerProviderStateMixin {
   final ScreenshotController screenshotController = ScreenshotController();
   final TimerController _timerController = TimerController();
   final ProblemApiService _apiService = ProblemApiService();
@@ -53,13 +65,23 @@ class LevelOneThreeOneMain1State extends ConsumerState<LevelOneThreeOneMain1> wi
   bool isShowResult = false;
   Map problemData = {};
   Map answerData = {};
-  Map<String, dynamic> selectedAnswers = {};
+  Map<String, List<int>> selectedAnswers = {
+    'a1': [0, 0],
+  };
   List<List<String>> fixedImageUrls = [];
   List<Map<String, String>> candidates = [];
+
+  // 문제별 변수
+  late AnimationController _menuAnimationController;
+  final DragDrop2Controller dd2controller = DragDrop2Controller();
+  late Draggable2DropZone bigZone;
+  late Draggable2DropZone smallZone;
+  late int givenNumber;
   final Map<String, GlobalKey<HandwritingRecognitionZoneState>> zoneKeys = {
-    'first': GlobalKey<HandwritingRecognitionZoneState>(),
-    'second': GlobalKey<HandwritingRecognitionZoneState>(),
+    'small': GlobalKey<HandwritingRecognitionZoneState>(),
+    'big': GlobalKey<HandwritingRecognitionZoneState>(),
   };
+  List<int> writtenAnswer = [0, 0];
 
   // 페이지 실행 시 작동하는 함수. 수정 필요 x
   @override
@@ -88,6 +110,11 @@ class LevelOneThreeOneMain1State extends ConsumerState<LevelOneThreeOneMain1> wi
       _timerController.start();
       isEnd = nextProblemCode.isEmpty;
     });
+
+    _menuAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
   }
 
   // 페이지를 나갈 때, 실행되는 함수. 수정 필요 x
@@ -102,13 +129,36 @@ class LevelOneThreeOneMain1State extends ConsumerState<LevelOneThreeOneMain1> wi
 
   // 페이지 실행 시, 문제 데이터를 불러오는 함수. 수정 필요 x
   Future<void> _loadQuestionData() async {
-    /* api 생성후 살릴 것
     try {
       final response = await _apiService.loadProblemData(problemCode);
+
+      final childProfileJson = await SecureStorageService.getChildProfile();
+      final childProfile = jsonDecode(childProfileJson!);
+      childId = childProfile['id'];
+      // ✅ 저장된 문제 이어풀기 불러오기
+      final saved = await EnProblemService.loadProblemResults(
+        problemCode,
+        childId,
+      );
+      ref.read(problemProgressProvider.notifier).setFromStorage(saved);
+
+      // ✅ 저장된 이어풀기 기록 확인용(확인 완료 시 지우기)
+      final progress = ref.read(problemProgressProvider);
+      debugPrint("📦 불러온 문제 기록: $progress");
+
+      // ✅ 문제 이어풀기 기록 저장
+      EnProblemService.saveContinueProblem(problemCode, childId);
+
       setState(() {
         nextProblemCode = response.nextProblemCode;
-        problemData = response.problem;
-        answerData = response.answer;
+        // problemData = response.problem;
+        // answerData = response.answer;
+        problemData = {
+          "q1": 6
+        };
+        answerData = {
+          "a1": [5, 7]
+        };
         current = response.current;
         total = response.total;
       });
@@ -116,37 +166,14 @@ class LevelOneThreeOneMain1State extends ConsumerState<LevelOneThreeOneMain1> wi
     } catch (e) {
       debugPrint('Error loading question data: $e');
     }
-     */
-
-    final childProfileJson = await SecureStorageService.getChildProfile();
-    final childProfile = jsonDecode(childProfileJson!);
-    childId = childProfile['id'];
-
-    final saved = await EnProblemService.loadProblemResults(problemCode, childId);
-    ref.read(problemProgressProvider.notifier).setFromStorage(saved);
-    final progress = ref.read(problemProgressProvider);
-    debugPrint("📦 불러온 문제 기록: $progress");
-
-    EnProblemService.saveContinueProblem(problemCode, childId);
-
-    setState(() {
-      nextProblemCode = "enlv1s3c1jy2";
-      problemData  = {
-        "p1": [ 2, 3, 4 ],
-      };
-      answerData = {
-        "p1": [ 2, 4 ],
-      };
-      current = 2;
-      total = 2;
-      selectedAnswers = {
-        "p1": [ 0, 0 ],
-      };
-    });
   }
 
   // 문제 제출할때 함수. 수정 필요 x
   Future<void> _submitAnswer() async {
+    final childProfileJson = await SecureStorageService.getChildProfile();
+    final childProfile = jsonDecode(childProfileJson!);
+    final childId = childProfile['id'];
+
     if (isSubmitted) return;
     final submitRequest = SubmitRequest(
       childId: childId,
@@ -162,11 +189,10 @@ class LevelOneThreeOneMain1State extends ConsumerState<LevelOneThreeOneMain1> wi
     try {
       await _apiService.submitAnswer(jsonEncode(submitRequest.toJson()));
 
-      ref.read(problemProgressProvider.notifier).record(
-        problemCode,
-        isCorrect,
-      );
+      // ✅ 문제 제출 시 제출 결과 Riverpod(Provider)
+      ref.read(problemProgressProvider.notifier).record(problemCode, isCorrect);
 
+      // ✅ 문제 제출 시 제출 결과 storage에 저장
       await EnProblemService.saveProblemResults(
         ref.read(problemProgressProvider),
         problemCode,
@@ -180,22 +206,30 @@ class LevelOneThreeOneMain1State extends ConsumerState<LevelOneThreeOneMain1> wi
   }
 
   // 문제 데이터 받아온 후, 문제에 맞게 데이터 조작
-  void _processProblemData(Map problemData) {}
+  void _processProblemData(Map problemData) {
+    givenNumber = problemData["q1"];
+  }
 
   // 문제 푸는 로직 수행할때, seletedAnswers 데이터 넣는 로직
   Future<void> _processInputData() async {
-    selectedAnswers["p1"][0] = int.tryParse(await zoneKeys["first"]!.currentState!.recognize()) ?? 0;
-    selectedAnswers["p1"][1] = int.tryParse(await zoneKeys["second"]!.currentState!.recognize()) ?? 0;
+    selectedAnswers['a1']?[0] =
+        int.tryParse(await zoneKeys["small"]!.currentState!.recognize()) ?? 0;
+    selectedAnswers['a1']?[1] =
+        int.tryParse(await zoneKeys["big"]!.currentState!.recognize()) ?? 0;
   }
 
   // 정답 여부 체크(보통은 이거쓰면됨)
-  void checkAnswer() async {
+  Future<void> checkAnswer() async {
     await _processInputData();
-    isCorrect = const DeepCollectionEquality().equals(
+
+    bool isSelectedCorrect = const DeepCollectionEquality().equals(
       answerData,
       selectedAnswers,
     );
-    // _submitAnswer();
+
+    isCorrect = isSelectedCorrect;
+
+    _submitAnswer();
   }
 
   // 문제푸는 스크린 이미지 서버로 전송. 수정 필요 x
@@ -203,6 +237,10 @@ class LevelOneThreeOneMain1State extends ConsumerState<LevelOneThreeOneMain1> wi
     try {
       final imageBytes = await screenshotController.capture() as Uint8List;
       if (!context.mounted) return;
+
+      final childProfileJson = await SecureStorageService.getChildProfile();
+      final childProfile = jsonDecode(childProfileJson!);
+      final childId = childProfile['id'];
 
       await ImageService.uploadImage(
         imageBytes: imageBytes,
@@ -214,17 +252,14 @@ class LevelOneThreeOneMain1State extends ConsumerState<LevelOneThreeOneMain1> wi
     }
   }
 
+  // ✅ 이어풀기 추가 따른 다음 페이지로 가는 함수 변경
   // 다음페이지로 가는 함수. 수정 필요 x
   void onNextPressed() async {
     final nextCode = nextProblemCode;
     if (nextCode.isEmpty) {
       debugPrint("📌 다음 문제가 없습니다.");
       final progress = ref.read(problemProgressProvider);
-      await EnProblemService.saveProblemResults(
-        progress,
-        problemCode,
-        childId,
-      );
+      await EnProblemService.saveProblemResults(progress, problemCode, childId);
 
       await EnProblemService.clearChapterProblem(childId, problemCode);
       showResult();
@@ -278,6 +313,25 @@ class LevelOneThreeOneMain1State extends ConsumerState<LevelOneThreeOneMain1> wi
     Modular.to.pop();
   }
 
+  //드래그 앤 드랍2 관련 로직
+  void _resetState(Draggable2DropZone zone) {
+    setState(() {
+      dd2controller.resetState(zone.id);
+    });
+  }
+
+  void _onCardRemoved(Draggable2DropZone zone, Draggable2ImageCard card) {
+    setState(() {
+      dd2controller.removeCardFromZone(zone, card);
+    });
+  }
+
+  void _onCardAdded(Draggable2DropZone zone) {
+    setState(() {
+      dd2controller.addCardToZone(zone);
+    });
+  }
+
   // UI 담당
   @override
   Widget build(BuildContext context) {
@@ -305,50 +359,183 @@ class LevelOneThreeOneMain1State extends ConsumerState<LevelOneThreeOneMain1> wi
                 children: [
                   Screenshot(
                     controller: screenshotController,
-                    child: Column(
-                      children: [
-                        NewHeaderWidget(
-                          headerText: '주요학습활동',
-                          headerTextSize: screenWidth * 0.028,
-                          subTextSize: screenWidth * 0.018,
-                        ),
-                        SizedBox(height: screenHeight * 0.01),
-                        NewQuestionTextWidget(
-                          questionText:
-                          '1. 포도는 몇 개인가요? 네모 안에 알맞은 숫자를 써 봅시다.',
-                          questionTextSize: screenWidth * 0.03,
-                        ),
-                        SizedBox(height: screenHeight * 0.02),
-                        // 여기에 문제 푸는 ui 및 삽입
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            GrapeContainer(
-                              ans: problemData["p1"][0],
-                              zoneKey: zoneKeys['first'],
-                            ),
-                            SizedBox(height: screenHeight * 0.02),
-                            GrapeContainer(
-                              ans: problemData["p1"][1]
-                            ),
-                            SizedBox(height: screenHeight * 0.02),
-                            GrapeContainer(
-                              ans: problemData["p1"][2],
-                              zoneKey: zoneKeys['second'],
-                            ),
-                          ],
-                        ),
-                      ],
+                    child: Container(
+                      color: Colors.white,
+                      child: Stack(
+                        children: [
+                          Column(
+                            children: [
+                              NewHeaderWidget(
+                                headerText: '주요학습활동',
+                                headerTextSize: screenWidth * 0.028,
+                                subTextSize: screenWidth * 0.018,
+                              ),
+                              SizedBox(height: screenHeight * 0.01),
+                              NewQuestionTextWidget(
+                                questionText:
+                                "1. 사과는 몇 개인가요? 네모칸 안에 알맞은 숫자를 써 봅시다.",
+                                questionTextSize: screenWidth * 0.03,
+                              ),
+                              SizedBox(height: screenHeight * 0.05),
+                              // 여기에 문제 푸는 ui 및 삽입
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Column(
+                                    children: [
+                                      HandwritingRecognitionZone(
+                                        width: screenWidth * 0.22,
+                                        height: screenWidth * 0.2,
+                                        key: zoneKeys['small'],
+                                      ),
+                                      SizedBox(
+                                        width: screenWidth * 0.22,
+                                        height: screenWidth * 0.15,
+                                        child: Center(
+                                          child: Row(
+                                            mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                            children: [
+                                              Icon(
+                                                Icons.arrow_upward_outlined,
+                                                color: Colors.red,
+                                                size: screenWidth * 0.08,
+                                              ),
+                                              Text(
+                                                '1 작은 수',
+                                                style: TextStyle(
+                                                  fontSize:
+                                                  screenWidth * 0.03,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        alignment: Alignment.center,
+                                        width: screenWidth * 0.22,
+                                        height: screenWidth * 0.2,
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            width: 1.5,
+                                            color:
+                                            MathUIConstant
+                                                .inputBoundaryColor,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          '$givenNumber',
+                                          style: TextStyle(
+                                            fontSize: screenWidth * 0.1,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: screenWidth * 0.22,
+                                        height: screenWidth * 0.15,
+                                        child: Center(
+                                          child: Row(
+                                            mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                            children: [
+                                              Icon(
+                                                Icons.arrow_downward_outlined,
+                                                color: Colors.red,
+                                                size: screenWidth * 0.08,
+                                              ),
+                                              Text(
+                                                '1 큰 수',
+                                                style: TextStyle(
+                                                  fontSize:
+                                                  screenWidth * 0.03,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      HandwritingRecognitionZone(
+                                        width: screenWidth * 0.22,
+                                        height: screenWidth * 0.2,
+                                        key: zoneKeys['big'],
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(width: screenWidth * 0.1),
+                                  Column(
+                                    children: [
+                                      Container(
+                                        alignment: Alignment.center,
+                                        width: screenWidth * 0.4,
+                                        height: screenWidth * 0.3,
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            width: 2,
+                                            color: Colors.lightBlue,
+                                          ),
+                                          borderRadius:
+                                          BorderRadius.circular(10),
+                                        ),
+                                        child: Image.asset(
+                                          'assets/images/number/apple/${givenNumber - 1}.png',
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                      SizedBox(height: screenWidth * 0.05),
+                                      Container(
+                                        alignment: Alignment.center,
+                                        width: screenWidth * 0.4,
+                                        height: screenWidth * 0.3,
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            width: 2,
+                                            color: Colors.lightBlue,
+                                          ),
+                                          borderRadius:
+                                          BorderRadius.circular(10),
+                                        ),
+                                        child: Image.asset(
+                                          'assets/images/number/apple/$givenNumber.png',
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                      SizedBox(height: screenWidth * 0.05),
+                                      Container(
+                                        alignment: Alignment.center,
+                                        width: screenWidth * 0.4,
+                                        height: screenWidth * 0.3,
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            width: 2,
+                                            color: Colors.lightBlue,
+                                          ),
+                                          borderRadius:
+                                          BorderRadius.circular(10),
+                                        ),
+                                        child: Image.asset(
+                                          'assets/images/number/apple/${givenNumber + 1}.png',
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   Spacer(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      EnProgressBarWidget(
-                        current: current,
-                        total: total,
-                      ),
+                      EnProgressBarWidget(current: current, total: total),
                       Padding(
                         padding: EdgeInsets.symmetric(
                           horizontal: 30.0,
@@ -375,33 +562,30 @@ class LevelOneThreeOneMain1State extends ConsumerState<LevelOneThreeOneMain1> wi
                                   buttonText: "제출하기",
                                   fontSize: screenWidth * 0.02,
                                   borderRadius: 10,
-                                  onPressed: () => onNextPressed(),
-                                  // onPressed:
-                                  // (isSubmitted)
-                                  //     ? null
-                                  //     : () => {
-                                  //   submitController.forward(),
-                                  //   showSubmitPopup = true,
-                                  //   // submitActivity(context),
-                                  //   checkAnswer(),
-                                  // },
+                                  onPressed: () async {
+                                    if (isSubmitted) return;
+                                    await checkAnswer();
+                                    setState(() {
+                                      showSubmitPopup = true;
+                                    });
+                                    submitController.forward();
+                                    await submitActivity(context);
+                                  },
                                 ),
 
-                              if (isSubmitted &&
-                                  isCorrect == false) ...[
+                              if (isSubmitted && isCorrect == false) ...[
                                 ButtonWidget(
                                   height: screenHeight * 0.035,
                                   width: screenWidth * 0.18,
                                   buttonText: "제출하기",
                                   fontSize: screenWidth * 0.02,
                                   borderRadius: 10,
-                                  onPressed:
-                                      () => {
+                                  onPressed: () async {
+                                    await checkAnswer();
                                     setState(() {
-                                      checkAnswer();
                                       showSubmitPopup = true;
-                                    }),
-                                    submitController.forward(),
+                                    });
+                                    submitController.forward();
                                   },
                                 ),
                                 const SizedBox(width: 20),
@@ -411,7 +595,8 @@ class LevelOneThreeOneMain1State extends ConsumerState<LevelOneThreeOneMain1> wi
                                   buttonText: isEnd ? "학습종료" : "다음문제",
                                   fontSize: screenWidth * 0.02,
                                   borderRadius: 10,
-                                  onPressed: () => onNextPressed(),
+                                  onPressed: isEnd ?
+                                      () => showResult() : () => onNextPressed(),
                                 ),
                               ],
 
@@ -422,7 +607,8 @@ class LevelOneThreeOneMain1State extends ConsumerState<LevelOneThreeOneMain1> wi
                                   buttonText: isEnd ? "학습종료" : "다음문제",
                                   fontSize: screenWidth * 0.02,
                                   borderRadius: 10,
-                                  onPressed: () => onNextPressed(),
+                                  onPressed: isEnd ?
+                                      () => showResult() : () => onNextPressed(),
                                 ),
                             ],
                           ),
@@ -447,22 +633,49 @@ class LevelOneThreeOneMain1State extends ConsumerState<LevelOneThreeOneMain1> wi
                         child: Material(
                           type: MaterialType.transparency,
                           child: SuccessfulPopup(
-                            scaleAnimation:
-                            const AlwaysStoppedAnimation(1.0),
-                            isCorrect: isCorrect,
-                            customMessage:
-                            isCorrect ? "🎉 정답이에요!" : "틀렸어요...",
-                            isEnd: isEnd,
-                            closePopup: closeSubmit,
-                            onClose:
-                            isCorrect
-                                ? () async => onNextPressed()
-                                : null,
+                              scaleAnimation:
+                              const AlwaysStoppedAnimation(1.0),
+                              isCorrect: isCorrect,
+                              customMessage:
+                              isCorrect ? "🎉 정답이에요!" : "틀렸어요...",
+                              isEnd: isEnd,
+                              closePopup: closeSubmit,
+                              onClose:
+                              isCorrect
+                                  ? () async => onNextPressed()
+                                  : null,
+                              result: getResult(),
+                              end: () async => onNextPressed()
                           ),
                         ),
                       ),
                     ),
                   ),
+                ],
+              ),
+            ),
+
+          if(isShowResult)
+            Positioned.fill(
+              child: Stack(
+                children: [
+                  Container(color: Colors.black54),
+                  Center(
+                    child: FadeTransition(
+                      opacity: resultAnimation,
+                      child: ScaleTransition(
+                        scale: resultAnimation,
+                        child: Material(
+                          type: MaterialType.transparency,
+                          child: EnResultPopup(
+                              scaleAnimation: const AlwaysStoppedAnimation(1.0),
+                              result: getResult(),
+                              end: () async => end()
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),

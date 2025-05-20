@@ -420,12 +420,12 @@ class Level131main2State extends ConsumerState<Level131main2>
                                           Column(
                                             children: [
                                               HandwritingRecognitionZone(
-                                                width: screenWidth * 0.2,
+                                                width: screenWidth * 0.22,
                                                 height: screenWidth * 0.2,
                                                 key: zoneKeys['small'],
                                               ),
                                               SizedBox(
-                                                width: screenWidth * 0.2,
+                                                width: screenWidth * 0.22,
                                                 height: screenWidth * 0.15,
                                                 child: Center(
                                                   child: Row(
@@ -450,7 +450,7 @@ class Level131main2State extends ConsumerState<Level131main2>
                                               ),
                                               Container(
                                                 alignment: Alignment.center,
-                                                width: screenWidth * 0.2,
+                                                width: screenWidth * 0.22,
                                                 height: screenWidth * 0.2,
                                                 decoration: BoxDecoration(
                                                   border: Border.all(
@@ -471,7 +471,7 @@ class Level131main2State extends ConsumerState<Level131main2>
                                                 ),
                                               ),
                                               SizedBox(
-                                                width: screenWidth * 0.2,
+                                                width: screenWidth * 0.22,
                                                 height: screenWidth * 0.15,
                                                 child: Center(
                                                   child: Row(
@@ -495,7 +495,7 @@ class Level131main2State extends ConsumerState<Level131main2>
                                                 ),
                                               ),
                                               HandwritingRecognitionZone(
-                                                width: screenWidth * 0.2,
+                                                width: screenWidth * 0.22,
                                                 height: screenWidth * 0.2,
                                                 key: zoneKeys['big'],
                                               ),
