@@ -61,7 +61,10 @@ class EmptyZone extends StatelessWidget {
           height: 100,
           cardData: card,
           showRemoveButton: true,
-          onRemove: () => controller.handleCardRemoved(zoneKey),
+          onRemove: () {
+            controller.handleCardRemoved(zoneKey);
+            onDrop?.call();
+          },
         ),
       );
     }

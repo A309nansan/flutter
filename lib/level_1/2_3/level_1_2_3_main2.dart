@@ -216,8 +216,6 @@ class _LevelOneTwoThreeMain2State extends ConsumerState<LevelOneTwoThreeMain2> w
     setState(() {
       selectedAnswers[identifier] = count;
     });
-    debugPrint('정답 : $answerData');
-    debugPrint('고른 답 : $selectedAnswers');
   }
 
   // 정답 여부 체크(보통은 이거쓰면됨)

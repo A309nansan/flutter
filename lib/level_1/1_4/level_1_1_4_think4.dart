@@ -143,8 +143,6 @@ class _LevelOneOneFourThink4State extends ConsumerState<LevelOneOneFourThink4>
     problem2Option = List<String>.from(p2) ;
     problem3Option = List<String>.from(p3) ;
     problem4Option = List<String>.from(p4) ;
-
-    debugPrint('$problem1Option');
   }
 
   // 제출함수(제출하기 버튼 누를시 작동하도록 설정)

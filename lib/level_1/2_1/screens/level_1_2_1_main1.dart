@@ -199,8 +199,6 @@ class _LevelOneTwoOneMain1State extends ConsumerState<LevelOneTwoOneMain1>
           selectedAnswers[3] = candidate;
           break;
       }
-      debugPrint('answer : $answerData');
-      debugPrint('selected : $selectedAnswers');
     });
   }
 

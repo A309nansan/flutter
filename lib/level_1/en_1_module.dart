@@ -36,7 +36,8 @@ import 'package:nansan_flutter/level_1/4_1/level_1_4_1_main1.dart';
 import 'package:nansan_flutter/level_1/4_1/level_1_4_1_main2.dart';
 import 'package:nansan_flutter/level_1/4_1/level_1_4_1_main3.dart';
 import 'package:nansan_flutter/level_1/4_1/level_1_4_1_main4.dart';
-import 'package:nansan_flutter/level_1/4_2/screens/level_1_4_2_main.dart';
+import 'package:nansan_flutter/level_1/4_2/screens/level_1_4_2_main1.dart';
+import 'package:nansan_flutter/level_1/4_2/screens/level_1_4_2_main2.dart';
 import 'package:nansan_flutter/modules/drag_drop/controllers/drag_drop_controller.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:provider/provider.dart';
@@ -469,7 +470,15 @@ class En1Module extends Module {
       '/enlv1s4c2jy1',
       child: (context) {
         final nextCode = r.args.data as String;
-        return LevelOneFourTwoMain(problemCode: nextCode);
+        return LevelOneFourTwoMain1(problemCode: nextCode);
+      },
+    );
+    // 4과 2차시 주요2
+    r.child(
+      '/enlv1s4c2jy2',
+      child: (context) {
+        final nextCode = r.args.data as String;
+        return LevelOneFourTwoMain2(problemCode: nextCode);
       },
     );
     // 4과 3차시 주요1
