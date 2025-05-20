@@ -3,6 +3,11 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nansan_flutter/modules/drag_drop2/controllers/draggable2_controller.dart';
+import 'package:nansan_flutter/modules/drag_drop2/models/draggable2_drop_zone.dart';
+import 'package:nansan_flutter/modules/drag_drop2/models/draggable2_image_card.dart';
+import 'package:nansan_flutter/modules/drag_drop2/widgets/draggable2_card.dart';
+import 'package:nansan_flutter/modules/drag_drop2/widgets/draggable2_drop_zone_widget.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
 import 'package:nansan_flutter/shared/controllers/timer_controller.dart';
@@ -57,9 +62,20 @@ class Level114Think5State extends ConsumerState<Level114Think5>
   bool isShowResult = false; // ✅ result popup status
   Map problemData = {};
   Map answerData = {};
-  Map<String, dynamic> selectedAnswers = {};
+  Map<String, List<int>> selectedAnswers = {"answer" : []};
   List<List<String>> fixedImageUrls = [];
   List<Map<String, String>> candidates = [];
+
+  // 페이지별 함수
+  // 문제별 변수
+  late AnimationController _menuAnimationController;
+  final DragDrop2Controller dd2controller = DragDrop2Controller(
+    imageUrl: 'assets/images/number/dot/1.png',
+  );
+  late Draggable2DropZone q1Zone;
+  late Draggable2DropZone q2Zone;
+  late Draggable2DropZone q3Zone;
+  late Draggable2DropZone q4Zone;
 
   // 페이지 실행 시 작동하는 함수. 수정 필요 x
   @override
@@ -90,6 +106,11 @@ class Level114Think5State extends ConsumerState<Level114Think5>
       _timerController.start();
       isEnd = nextProblemCode.isEmpty;
     });
+
+    _menuAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
   }
 
   // 페이지를 나갈 때, 실행되는 함수. 수정 필요 x
@@ -175,10 +196,21 @@ class Level114Think5State extends ConsumerState<Level114Think5>
   void _processProblemData(Map problemData) {}
 
   // 문제 푸는 로직 수행할때, seletedAnswers 데이터 넣는 로직
-  void _processInputData() {}
+  Future<void> _processInputData() async {
+    List<int> inputData = [0,0,0,0];
+    inputData[0] = q1Zone.cards.length;
+    inputData[1] = q2Zone.cards.length;
+    inputData[2] = q3Zone.cards.length;
+    inputData[3] = q4Zone.cards.length;
+
+    selectedAnswers["answer"] = inputData;
+  }
 
   // 정답 여부 체크(보통은 이거쓰면됨)
   Future<void> checkAnswer() async {
+
+    await _processInputData();
+
     isCorrect = const DeepCollectionEquality().equals(
       answerData,
       selectedAnswers,
@@ -267,11 +299,62 @@ class Level114Think5State extends ConsumerState<Level114Think5>
     resultController.forward(from: 0);
   }
 
+
+  //드래그 앤 드랍2 관련 로직
+  void _resetState(Draggable2DropZone zone) {
+    setState(() {
+      dd2controller.resetState(zone.id);
+    });
+  }
+
+  void _onCardRemoved(Draggable2DropZone zone, Draggable2ImageCard card) {
+    setState(() {
+      dd2controller.removeCardFromZone(zone, card);
+    });
+  }
+
+  void _onCardAdded(Draggable2DropZone zone) {
+    setState(() {
+      dd2controller.addCardToZone(zone);
+    });
+  }
+
+
   // UI 담당
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+
+    // 드롭존 초기화 또는 업데이트
+    if (dd2controller.dropZones.isEmpty) {
+      q1Zone = Draggable2DropZone(
+        id: 1,
+        width: screenWidth * 0.3,
+        height: screenWidth * 0.15,
+      );
+      q2Zone = Draggable2DropZone(
+        id: 2,
+        width: screenWidth * 0.3,
+        height: screenWidth * 0.15,
+      );
+      q3Zone = Draggable2DropZone(
+        id: 3,
+        width: screenWidth * 0.3,
+        height: screenWidth * 0.15,
+      );
+      q4Zone = Draggable2DropZone(
+        id: 4,
+        width: screenWidth * 0.3,
+        height: screenWidth * 0.15,
+      );
+
+      dd2controller.dropZones.add(q1Zone);
+      dd2controller.dropZones.add(q2Zone);
+      dd2controller.dropZones.add(q3Zone);
+      dd2controller.dropZones.add(q4Zone);
+    }
+
 
     return Scaffold(
       appBar: AppbarWidget(
@@ -296,56 +379,356 @@ class Level114Think5State extends ConsumerState<Level114Think5>
                             controller: screenshotController,
                             child: Container(
                               color: Colors.white,
-                              child: Column(
+                              child: Stack(
                                 children: [
-                                  NewHeaderWidget(
-                                    headerText: '주요학습활동',
-                                    headerTextSize: screenWidth * 0.028,
-                                    subTextSize: screenWidth * 0.018,
-                                  ),
-                                  SizedBox(height: screenHeight * 0.01),
-                                  NewQuestionTextWidget(
-                                    questionText:
-                                        '5. 숫자를 완성하기 위해 몇 개가 더 필요할까요?',
-                                    questionTextSize: screenWidth * 0.03,
-                                  ),
-                                  SizedBox(height: screenHeight * 0.05),
-                                  // 여기에 문제 푸는 ui 및 삽입
-                                  Container(
-                                    width: screenWidth * 0.9,
-                                    height: screenHeight * 0.2,
-                                    decoration: BoxDecoration(
-                                        border : Border.all(width: 2, color: Colors.orangeAccent,),
-                                        borderRadius: BorderRadius.circular(10)),
-                                    child: Column(crossAxisAlignment: CrossAxisAlignment.center,
-                                                  children: [Container(alignment: Alignment.center,
-                                                                       width: screenWidth * 0.07,
-                                                                       height: screenHeight * 0.025,
-                                                                       color: Colors.orangeAccent,
-                                                                       child: Text('<보기>', style: TextStyle(fontSize: screenWidth * 0.02, fontWeight: FontWeight.bold),),),
-                                                            SizedBox(height: screenHeight * 0.01,),
-                                                            Row(
-                                                              mainAxisAlignment: MainAxisAlignment.center,
-                                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                                              children: [
-                                                                Container(width: screenWidth * 0.25,
-                                                                  height: screenHeight *0.15,
-                                                                  decoration: BoxDecoration(
-                                                                      borderRadius: BorderRadius.circular(10),
-                                                                      border: Border.all(color: Colors.lightBlue, width: 2))
-                                                                  ),
-                                                                SizedBox(width: screenWidth * 0.05),
-                                                                Container(width: screenWidth * 0.3,
-                                                                  height: screenHeight * 0.1,
-                                                                  decoration: BoxDecoration(border: Border.all(width: 1, color: Colors.lightBlue)),),
-                                                                Icon(Icons.arrow_right_alt_outlined, size: screenWidth * 0.07,),
-                                                                Container(width: screenWidth * 0.1,
-                                                                height: screenHeight * 0.1,)
-                                                              ]
-                                                              )
-                                                  ]
+                                  Column(
+                                    children: [
+                                      NewHeaderWidget(
+                                        headerText: '개념학습활동',
+                                        headerTextSize: screenWidth * 0.028,
+                                        subTextSize: screenWidth * 0.018,
+                                      ),
+                                      SizedBox(height: screenHeight * 0.01),
+                                      NewQuestionTextWidget(
+                                        questionText:
+                                            '5. 숫자를 완성하기 위해 몇 개가 더 필요할까요?',
+                                        questionTextSize: screenWidth * 0.03,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          Text('            <보기>와 같이 알맞은 동그라미의 개수를 오른쪽의',
+                                            style: TextStyle(fontSize: screenWidth * 0.03, fontWeight: FontWeight.bold),),
+                                        ],
+                                      ),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          Text('            주머니를 열어 빈칸에 넣어 보세요.',
+                                            style: TextStyle(fontSize: screenWidth * 0.03, fontWeight: FontWeight.bold),),
+                                        ],
+                                      ),
+                                      SizedBox(height: screenHeight * 0.02),
+                                      // 여기에 문제 푸는 ui 및 삽입
+                                      Container(
+                                        width: screenWidth * 0.9,
+                                        height: screenHeight * 0.15,
+                                        decoration: BoxDecoration(
+                                            border : Border.all(width: 2, color: Colors.orangeAccent,),
+                                            borderRadius: BorderRadius.circular(10)),
+                                        child: Column(crossAxisAlignment: CrossAxisAlignment.center,
+                                                      children: [Container(
+                                                        alignment: Alignment.center,
+                                                        width: screenWidth * 0.07,
+                                                        height: screenHeight * 0.025,
+                                                        color: Colors.orangeAccent,
+                                                        child: Text('<보기>', style: TextStyle(fontSize: screenWidth * 0.02, fontWeight: FontWeight.bold),),),
+                                                                SizedBox(height: screenHeight * 0.01,),
+                                                                Row(
+                                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                                  children: [
+                                                                    Container(width: screenWidth * 0.25,
+                                                                      height: screenHeight *0.1,
+                                                                      decoration: BoxDecoration(
+                                                                          borderRadius: BorderRadius.circular(10),
+                                                                          border: Border.all(color: Colors.lightBlue, width: 2)),
+                                                                        child: Image.asset('assets/images/number/dot/1.png'),
+                                                                      ),
+                                                                    SizedBox(width: screenWidth * 0.05),
+                                                                    Container(width: screenWidth * 0.3,
+                                                                      height: screenHeight * 0.1,
+                                                                      decoration: BoxDecoration(border: Border.all(width: 1, color: Colors.lightBlue)),
+                                                                      child: Image.asset('assets/images/number/dot/4.png'),)
+                                                                    ,
+                                                                    Icon(Icons.arrow_right_alt_outlined, size: screenWidth * 0.07,),
+                                                                    Container(width: screenWidth * 0.13,
+                                                                              height: screenHeight * 0.1,
+                                                                              decoration: BoxDecoration(border: Border.all(width: 1, color: Colors.lightBlue)),
+                                                                    child: Image.asset('assets/images/number/numeric1/5.png'),)
+                                                                  ]
+                                                                  )
+                                                      ]
+                                          )
+                                        ),
+                                      SizedBox(height: screenHeight * 0.02,),
+                                      Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Container(width: screenWidth * 0.28,
+                                                height: screenHeight *0.1,
+                                                decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(10),
+                                                    border: Border.all(color: Colors.lightBlue, width: 2)),
+                                                child: Image.asset('assets/images/number/dot/5.png')
+                                            ),
+                                            SizedBox(width: screenWidth * 0.05),
+                                            Container(width: screenWidth * 0.35,
+                                              height: screenHeight * 0.1,
+                                              decoration: BoxDecoration(border: Border.all(width: 1, color: Colors.lightBlue)),
+                                            child: SizedBox(
+                                              width: screenWidth * 0.3,
+                                              height: screenWidth * 0.15,
+                                              child: Draggable2DropzoneWidget(
+                                                zone: q1Zone,
+                                                controller: dd2controller,
+                                                onReset: _resetState,
+                                                onCardRemoved: _onCardRemoved,
+                                                onCardAdded: _onCardAdded,
+                                                width: screenWidth * 0.3,
+                                                height: screenWidth * 0.15,
+                                                cardSize: screenWidth * 0.05,
+                                              ),
+                                            ),),
+                                            Icon(Icons.arrow_right_alt_outlined, size: screenWidth * 0.07,),
+                                            Container(width: screenWidth * 0.13,
+                                              height: screenHeight * 0.1,
+                                              decoration: BoxDecoration(border: Border.all(width: 1, color: Colors.lightBlue)),child: Image.asset('assets/images/number/numeric1/6.png'))
+                                          ]
+                                      ),
+                                      SizedBox(height: screenHeight * 0.02,),
+                                      Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Container(width: screenWidth * 0.28,
+                                                height: screenHeight *0.1,
+                                                decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(10),
+                                                    border: Border.all(color: Colors.lightBlue, width: 2)),
+                                                child: Image.asset('assets/images/number/dot/5.png')
+                                            ),
+                                            SizedBox(width: screenWidth * 0.05),
+                                            Container(width: screenWidth * 0.35,
+                                              height: screenHeight * 0.1,
+                                              decoration: BoxDecoration(border: Border.all(width: 1, color: Colors.lightBlue)),
+                                              child: SizedBox(
+                                                width: screenWidth * 0.3,
+                                                height: screenWidth * 0.15,
+                                                child: Draggable2DropzoneWidget(
+                                                  zone: q2Zone,
+                                                  controller: dd2controller,
+                                                  onReset: _resetState,
+                                                  onCardRemoved: _onCardRemoved,
+                                                  onCardAdded: _onCardAdded,
+                                                  width: screenWidth * 0.3,
+                                                  height: screenWidth * 0.15,
+                                                  cardSize: screenWidth * 0.05,
+                                                ),
+                                              ),),
+                                            Icon(Icons.arrow_right_alt_outlined, size: screenWidth * 0.07,),
+                                            Container(width: screenWidth * 0.13,
+                                                height: screenHeight * 0.1,
+                                                decoration: BoxDecoration(border: Border.all(width: 1, color: Colors.lightBlue)),child: Image.asset('assets/images/number/numeric1/7.png'))
+                                          ]
+                                      ),
+                                      SizedBox(height: screenHeight * 0.02,),
+                                      Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Container(width: screenWidth * 0.28,
+                                                height: screenHeight *0.1,
+                                                decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(10),
+                                                    border: Border.all(color: Colors.lightBlue, width: 2)),
+                                                child: Image.asset('assets/images/number/dot/5.png')
+                                            ),
+                                            SizedBox(width: screenWidth * 0.05),
+                                            Container(width: screenWidth * 0.35,
+                                              height: screenHeight * 0.1,
+                                              decoration: BoxDecoration(border: Border.all(width: 1, color: Colors.lightBlue)),
+                                              child: SizedBox(
+                                                width: screenWidth * 0.3,
+                                                height: screenWidth * 0.15,
+                                                child: Draggable2DropzoneWidget(
+                                                  zone: q3Zone,
+                                                  controller: dd2controller,
+                                                  onReset: _resetState,
+                                                  onCardRemoved: _onCardRemoved,
+                                                  onCardAdded: _onCardAdded,
+                                                  width: screenWidth * 0.3,
+                                                  height: screenWidth * 0.15,
+                                                  cardSize: screenWidth * 0.05,
+                                                ),
+                                              ),),
+                                            Icon(Icons.arrow_right_alt_outlined, size: screenWidth * 0.07,),
+                                            Container(width: screenWidth * 0.13,
+                                                height: screenHeight * 0.1,
+                                                decoration: BoxDecoration(border: Border.all(width: 1, color: Colors.lightBlue)),child: Image.asset('assets/images/number/numeric1/8.png'))
+                                          ]
+                                      ),
+                                      SizedBox(height: screenHeight * 0.02,),
+                                      Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Container(width: screenWidth * 0.28,
+                                                height: screenHeight *0.1,
+                                                decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(10),
+                                                    border: Border.all(color: Colors.lightBlue, width: 2)),
+                                                child: Image.asset('assets/images/number/dot/5.png')
+                                            ),
+                                            SizedBox(width: screenWidth * 0.05),
+                                            Container(width: screenWidth * 0.35,
+                                              height: screenHeight * 0.1,
+                                              decoration: BoxDecoration(border: Border.all(width: 1, color: Colors.lightBlue)),
+                                              child: SizedBox(
+                                                width: screenWidth * 0.3,
+                                                height: screenWidth * 0.15,
+                                                child: Draggable2DropzoneWidget(
+                                                  zone: q4Zone,
+                                                  controller: dd2controller,
+                                                  onReset: _resetState,
+                                                  onCardRemoved: _onCardRemoved,
+                                                  onCardAdded: _onCardAdded,
+                                                  width: screenWidth * 0.3,
+                                                  height: screenWidth * 0.15,
+                                                  cardSize: screenWidth * 0.05,
+                                                ),
+                                              ),),
+                                            Icon(Icons.arrow_right_alt_outlined, size: screenWidth * 0.07,),
+                                            Container(width: screenWidth * 0.13,
+                                                height: screenHeight * 0.1,
+                                                decoration: BoxDecoration(border: Border.all(width: 1, color: Colors.lightBlue)),child: Image.asset('assets/images/number/numeric1/9.png'))
+                                          ]
                                       )
-                                    )
+                                    ],
+                                  ),
+                                  Positioned(
+                                    top: screenHeight * 0.06,
+                                    right: screenWidth * 0.04,
+                                    child: StatefulBuilder(
+                                      builder: (context, setState) {
+                                        return MenuAnchor(
+                                          onOpen: () {
+                                            // 메뉴가 열릴 때 애니메이션 시작
+                                            _menuAnimationController
+                                                .forward();
+                                          },
+                                          onClose: () {
+                                            // 메뉴가 닫힐 때 애니메이션 리셋
+                                            _menuAnimationController
+                                                .reset();
+                                          },
+                                          builder: (
+                                              context,
+                                              controller,
+                                              child,
+                                              ) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                if (controller.isOpen) {
+                                                  controller.close();
+                                                } else {
+                                                  controller.open();
+                                                }
+                                              },
+                                              child: Container(
+                                                width: screenWidth * 0.1,
+                                                height: screenWidth * 0.1,
+                                                alignment: Alignment.center,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.purple[100],
+                                                  borderRadius:
+                                                  BorderRadius.circular(
+                                                    10,
+                                                  ),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.black54,
+                                                      blurRadius: 5,
+                                                      offset: Offset(0, 3),
+                                                    ),
+                                                  ],
+                                                ),
+                                                child: Image.asset(
+                                                  'assets/images/number/pouch/apple_pouch.webp',
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          menuChildren: [
+                                            FadeTransition(
+                                              opacity:
+                                              _menuAnimationController,
+                                              child: SlideTransition(
+                                                position: Tween<Offset>(
+                                                  begin: const Offset(
+                                                    0.0,
+                                                    -0.5,
+                                                  ),
+                                                  end: Offset.zero,
+                                                ).animate(
+                                                  CurvedAnimation(
+                                                    parent:
+                                                    _menuAnimationController,
+                                                    curve: Curves.easeOut,
+                                                  ),
+                                                ),
+                                                child: Padding(
+                                                  padding:
+                                                  const EdgeInsets.all(
+                                                    4.0,
+                                                  ),
+                                                  child: SizedBox(
+                                                    width:
+                                                    screenWidth * 0.1,
+                                                    height:
+                                                    screenWidth * 0.1,
+                                                    child: Draggable(
+                                                      data:
+                                                      dd2controller
+                                                          .sourceCard,
+                                                      feedback: Material(
+                                                        elevation: 4.0,
+                                                        color:
+                                                        Colors
+                                                            .transparent,
+                                                        child: Draggable2Card(
+                                                          imageUrl:
+                                                          'assets/images/number/dot/1.png',
+                                                          cardWidth:
+                                                          screenWidth *
+                                                              0.1,
+                                                          cardHeight:
+                                                          screenWidth *
+                                                              0.1,
+                                                          opacity: 0.7,
+                                                        ),
+                                                      ),
+                                                      childWhenDragging:
+                                                      Draggable2Card(
+                                                        imageUrl:
+                                                        'assets/images/number/dot/1.png',
+                                                        cardWidth:
+                                                        screenWidth *
+                                                            0.1,
+                                                        cardHeight:
+                                                        screenWidth *
+                                                            0.1,
+                                                        opacity: 0.5,
+                                                      ),
+                                                      child: Draggable2Card(
+                                                        imageUrl:
+                                                        'assets/images/number/dot/1.png',
+                                                        cardWidth:
+                                                        screenWidth *
+                                                            0.1,
+                                                        cardHeight:
+                                                        screenWidth *
+                                                            0.1,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                  ),
+
                                 ],
                               ),
                             ),
@@ -381,17 +764,15 @@ class Level114Think5State extends ConsumerState<Level114Think5>
                                           buttonText: "제출하기",
                                           fontSize: screenWidth * 0.02,
                                           borderRadius: 10,
-                                          // TODO : 정답 체크 로직 구현 시 해당 부분 지우고 주석 활성화
-                                          onPressed: () => onNextPressed(),
-                                          // onPressed: () async {
-                                          //   if (isSubmitted) return;
-                                          //   await checkAnswer();
-                                          //   setState(() {
-                                          //     showSubmitPopup = true;
-                                          //   });
-                                          //   submitController.forward();
-                                          //   await submitActivity(context);
-                                          // },
+                                          onPressed: () async {
+                                            if (isSubmitted) return;
+                                            await checkAnswer();
+                                            setState(() {
+                                              showSubmitPopup = true;
+                                            });
+                                            submitController.forward();
+                                            await submitActivity(context);
+                                          },
                                         ),
 
                                       if (isSubmitted && isCorrect == false) ...[

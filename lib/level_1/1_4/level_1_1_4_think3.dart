@@ -303,7 +303,7 @@ class _LevelOneOneFourThink3State extends ConsumerState<LevelOneOneFourThink3>
                               child: Column(
                                 children: [
                                   NewHeaderWidget(
-                                    headerText: '주요학습활동',
+                                    headerText: '개념학습활동',
                                     headerTextSize: screenWidth * 0.028,
                                     subTextSize: screenWidth * 0.018,
                                   ),
