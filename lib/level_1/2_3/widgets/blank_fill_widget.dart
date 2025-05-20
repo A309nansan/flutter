@@ -83,7 +83,7 @@ class _BlankFillWidgetState extends State<BlankFillWidget> {
       ),
     );
 
-    Widget blankGrid = Container(
+    Widget blankGrid = SizedBox(
       width: containerWidth - 32,
       height: gridMaxHeight,
       child: Table(
@@ -119,7 +119,7 @@ class _BlankFillWidgetState extends State<BlankFillWidget> {
       ),
     );
 
-    return Container(
+    return SizedBox(
       width: containerWidth,
       child: Column(
         children: [
