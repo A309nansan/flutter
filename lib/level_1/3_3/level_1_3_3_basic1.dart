@@ -67,7 +67,8 @@ class _LevelOneThreeThreeBasic1State extends ConsumerState<LevelOneThreeThreeBas
     List.filled(4, ''), // 나
     List.filled(4, '')  // 다
   ];
-  List<String> problemNum = ['1', '2', '3'];
+
+  List<String> problemNum = ['가', '나', '다'];
 
   //가로 문제 위젯
   Widget buildProblemRow(int rowIndex) {
@@ -102,7 +103,8 @@ class _LevelOneThreeThreeBasic1State extends ConsumerState<LevelOneThreeThreeBas
               height: screenWidth * 0.07,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.purple[100],
+                color: Colors.white,
+                border: Border.all(color: Colors.black, width: 2.0),
               ),
               alignment: Alignment.center,
               child: Text(
@@ -110,7 +112,7 @@ class _LevelOneThreeThreeBasic1State extends ConsumerState<LevelOneThreeThreeBas
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: screenWidth * 0.04,
-                  color: Colors.white,
+                  color: Colors.black,
                 ),
               ),
             ),
@@ -153,7 +155,7 @@ class _LevelOneThreeThreeBasic1State extends ConsumerState<LevelOneThreeThreeBas
                       ],
                     ),
                     child: imageUrl.isNotEmpty
-                        ? Image.network(imageUrl, fit: BoxFit.contain)
+                        ? Image.asset(imageUrl, fit: BoxFit.contain)
                         : const Center(child: Text('No Img')),
                   );
                 }),
@@ -278,25 +280,52 @@ class _LevelOneThreeThreeBasic1State extends ConsumerState<LevelOneThreeThreeBas
 
   // 문제 데이터 받아온 후, 문제에 맞게 데이터 조작
   void _processProblemData(Map problemData) {
-    final List<List<String>> loadedImages = [
-      List<String>.from(problemData['images_example'] ?? []).length == 4
-          ? List<String>.from(problemData['images_example'])
-          : List.filled(4, ''),
-      List<String>.from(problemData['images_row1'] ?? []).length == 4
-          ? List<String>.from(problemData['images_row1'])
-          : List.filled(4, ''),
-      List<String>.from(problemData['images_row2'] ?? []).length == 4
-          ? List<String>.from(problemData['images_row2'])
-          : List.filled(4, ''),
-      List<String>.from(problemData['images_row3'] ?? []).length == 4
-          ? List<String>.from(problemData['images_row3'])
-          : List.filled(4, ''),
-    ];
+    // imageUrls = [
+    //   [
+    //     '',
+    //     'assets/images/number/numeric1/2.png',
+    //     'assets/images/number/apple/3.png',
+    //     'assets/images/number/hangeul1/4.png',
+    //   ],
+    //   [
+    //     'assets/images/number/apple/3.png',
+    //     'assets/images/number/numeric1/4.png',
+    //     '',
+    //     'assets/images/number/hangeul1/6.png',
+    //   ],
+    //   [
+    //     'assets/images/number/numeric1/6.png',
+    //     'assets/images/number/apple/7.png',
+    //     '',
+    //     'assets/images/number/hangeul1/9.png',
+    //   ],
+    //   [
+    //     '',
+    //     'assets/images/number/numeric1/5.png',
+    //     'assets/images/number/apple/6.png',
+    //     'assets/images/number/hangeul1/7.png',
+    //   ],
+    // ];
+
+    final List<String> rowKeys = ['images_row1', 'images_row2', 'images_row3', 'images_row4'];
+    List<List<String>> parsedImagePaths = [];
+
+    for (String key in rowKeys) {
+      final List<Map<String, dynamic>> imageList = List<Map<String, dynamic>>.from(problemData[key] ?? []);
+      final List<String> pathList = imageList.map((item) {
+        final object = item['object'] ?? 'all';
+        final number = item['number'] ?? 0;
+        return 'assets/images/number/$object/$number.png';
+      }).toList();
+
+      parsedImagePaths.add(pathList.length == 4 ? pathList : List.filled(4, ''));
+    }
 
     setState(() {
-      imageUrls = loadedImages;
+      imageUrls = parsedImagePaths;
     });
   }
+
 
   // 문제 푸는 로직 수행할때, seletedAnswers 데이터 넣는 로직
   void _processInputData() {
@@ -442,74 +471,79 @@ class _LevelOneThreeThreeBasic1State extends ConsumerState<LevelOneThreeThreeBas
                         SizedBox(height: screenHeight * 0.01),
                         NewQuestionTextWidget(
                           questionText:
-                          '1. <보기>와 같은 규칙으로 수량을 순서대로 나열한 것을 모두 찾아보세요.',
-                          questionTextSize: screenWidth * 0.028,
+                          '<보기>와 같은 규칙으로 수량을 순서대로 나열한 것을 찾아봅시다.',
+                          questionTextSize: screenWidth * 0.03,
                         ),
-                        Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Container(
-                              height: screenHeight * 0.18,
-                              width: screenWidth * 0.85,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.orangeAccent,
-                                  width: 2,
-                                ),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: List.generate(4, (index) {
-                                  final List<String> exampleImages = imageUrls.isNotEmpty ? imageUrls[0] : List.filled(4, '');
-                                  final imageUrl = exampleImages[index];
-
-                                  return Container(
-                                    width: screenWidth * 0.16,
-                                    height: screenHeight * 0.12,
-                                    padding: const EdgeInsets.all(5.0),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(10.0),
-                                      border: Border.all(
-                                        color: Colors.lightBlue,
-                                        width: 2.0,
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: imageUrl.isNotEmpty
-                                          ? Image.network(imageUrl, fit: BoxFit.contain)
-                                          : const Center(child: Text('No Img')),
-                                    ),
-                                  );
-                                }),
-                              ),
-                            ),
-                            Positioned(
-                              top: 0,
-                              child: Container(
-                                padding: const EdgeInsets.all(4),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 20.0),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Container(
+                                height: screenHeight * 0.18,
+                                width: screenWidth * 0.85,
                                 decoration: BoxDecoration(
-                                  color: Colors.orangeAccent,
-                                  borderRadius: BorderRadius.circular(5),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black12,
-                                      blurRadius: 3,
-                                    ),
-                                  ],
+                                  border: Border.all(
+                                    color: Colors.orangeAccent,
+                                    width: 4,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                child: const Text(
-                                  "<보기>",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: List.generate(4, (index) {
+                                    final List<String> exampleImages = imageUrls.isNotEmpty ? imageUrls[0] : List.filled(4, '');
+                                    final imageUrl = exampleImages[index];
+
+                                    return Container(
+                                      width: screenWidth * 0.16,
+                                      height: screenHeight * 0.12,
+                                      padding: const EdgeInsets.all(5.0),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(10.0),
+                                        border: Border.all(
+                                          color: Colors.lightBlue,
+                                          width: 2.0,
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: imageUrl.isNotEmpty
+                                            ? Image.asset(imageUrl, fit: BoxFit.contain)
+                                            : const Center(child: Text('No Img')),
+                                      ),
+                                    );
+                                  }),
+                                ),
+                              ),
+                              Positioned(
+                                top: 0,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 5,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.orangeAccent,
+                                    borderRadius: BorderRadius.circular(5),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        blurRadius: 3,
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Text(
+                                    "<보기>",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                        SizedBox(height: screenHeight * 0.02,),
                         Column(
                           children: List.generate(3, (index) => buildProblemRow(index)),
                         ),
