@@ -21,7 +21,6 @@ import 'package:collection/collection.dart';
 import 'package:nansan_flutter/shared/provider/en_riverpod_provider.dart';
 
 import '../../shared/widgets/en_result_popup.dart';
-import '../shared/widgets/en_result_popup.dart';
 
 // ✅ 상태변경 1. StatefulWidget -> ConsumerStatefulWidget
 class LevelOneThreeThreePro extends ConsumerStatefulWidget {

@@ -28,11 +28,13 @@ class _MChapterListScreenState extends State<MChapterListScreen> {
   List<EnCategoryModel> chapterList = [];
   bool isLoading = false;
   int childId = 0;
+
   Future<void> _prepareChildID() async{
     final childProfileJson = await SecureStorageService.getChildProfile();
     final childProfile = jsonDecode(childProfileJson!);
     childId = childProfile['id'];
   }
+
   @override
   void initState() {
     super.initState();

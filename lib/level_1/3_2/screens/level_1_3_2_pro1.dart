@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nansan_flutter/level_1/3_2/widgets/box_with_line_widget.dart';
 import 'package:nansan_flutter/modules/drag_drop2/controllers/draggable2_controller.dart';
 import 'package:nansan_flutter/modules/drag_drop2/models/draggable2_drop_zone.dart';
-import 'package:nansan_flutter/modules/drag_drop2/models/draggable2_image_card.dart';
 import 'package:nansan_flutter/modules/drag_drop2/widgets/draggable2_card.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
@@ -347,7 +346,7 @@ class LevelOneThreeTwoPro1State extends ConsumerState<LevelOneThreeTwoPro1>
       dd2controller.dropZones.add(q3Zone);
       dd2controller.dropZones.add(q4Zone);
     }
-
+    //TODO : 나중에 뭐 하기
     return Scaffold(
       appBar: AppbarWidget(
         title: null,

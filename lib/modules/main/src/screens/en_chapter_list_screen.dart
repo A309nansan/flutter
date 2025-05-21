@@ -31,21 +31,22 @@ class _EnChapterListScreenState extends State<EnChapterListScreen> {
   @override
   void initState() {
     super.initState();
-    setState(() => isLoading = true);
-    init();
     _loadChapters();
+    setState(() => isLoading = true);
   }
 
   Future<void> _loadChapters() async {
     final result = await CategoryService.fetchCategories(widget.categoryIndex);
+    await init();
     setState(() {
       chapterList = result;
       isLoading = false;
     });
   }
 
-  void init() async {
+  Future<void> init() async {
     childId = await EnProblemService.getChildId();
+    debugPrint('child : $childId');
   }
 
   @override
