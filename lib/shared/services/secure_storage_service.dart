@@ -1,10 +1,14 @@
 import 'dart:convert';
-
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:nansan_flutter/modules/auth/src/models/user_model.dart';
 
 class SecureStorageService {
-  static const _storage = FlutterSecureStorage();
+  static const _storage = FlutterSecureStorage(
+    aOptions: AndroidOptions(
+        encryptedSharedPreferences: true,
+        storageCipherAlgorithm: StorageCipherAlgorithm.AES_GCM_NoPadding
+    ),
+  );
 
   // Access Token 저장
   static Future<void> saveAccessToken(String token) async {

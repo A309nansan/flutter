@@ -3,7 +3,10 @@
     <application
         android:label="수나무"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:fullBackupContent="false"
+        android:allowBackup="false">
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

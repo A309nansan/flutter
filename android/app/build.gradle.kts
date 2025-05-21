@@ -55,7 +55,7 @@ android {
         applicationId = "com.ssafy.soonamu"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = 23
+        minSdk = 29
         targetSdk = flutter.targetSdkVersion
         versionCode = 31
         versionName = "1.1.31"
