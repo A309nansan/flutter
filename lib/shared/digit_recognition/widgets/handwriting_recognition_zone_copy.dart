@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:nansan_flutter/shared/services/secure_storage_service.dart';
 import 'package:screenshot/screenshot.dart';
 import '../../../modules/math/src/utils/math_ui_constant.dart';
-import '../services/recognition_service.dart';
 
 // ML Kit 클래스 대체를 위한 커스텀 스트로크 구현
 class StrokePoint {
