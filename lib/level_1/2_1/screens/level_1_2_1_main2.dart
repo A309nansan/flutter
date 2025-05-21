@@ -130,21 +130,8 @@ class LevelOneTwoOneMain2State extends ConsumerState<LevelOneTwoOneMain2>
 
       setState(() {
         nextProblemCode = response.nextProblemCode;
-        // problemData = response.problem;
-        problemData = {
-          "p1": [ 1, 2, 3, 0, 5 ],
-          "t1": [ '첫째', '둘째', '셋째', '넷째', '다섯째' ],
-          "p2": [ 4, 0, 0, 7, 8 ],
-          "t2": [ '넷째', '다섯째', '여섯째', '일곱째', '여덟째' ],
-          "p3": [ 0, 6, 0, 0, 9 ],
-          "t3": [ '다섯째', '여섯째', '일곱째', '여덟째', '아홉째' ],
-        };
-        // answerData = response.answer;
-        answerData = {
-          "p1": [ 1, 2, 3, 4, 5 ],
-          "p2": [ 4, 5, 6, 7, 8 ],
-          "p3": [ 5, 6, 7, 8, 9 ],
-        };
+        problemData = response.problem;
+        answerData = response.answer;
         current = response.current;
         total = response.total;
         selectedAnswers = Map<String, List<dynamic>>.from(problemData)

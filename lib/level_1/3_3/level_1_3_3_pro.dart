@@ -128,11 +128,7 @@ class LevelOneThreeThreeProState extends ConsumerState<LevelOneThreeThreePro>
 
       setState(() {
         nextProblemCode = response.nextProblemCode;
-        // problemData = response.problem;
-        problemData = {
-          "type": [ "apple", "hangeul1", "grape", "dot" ],
-          "number": [ 2, 4, 1, 3 ],
-        };
+        problemData = response.problem;
         answerData = response.answer;
         current = response.current;
         total = response.total;
@@ -184,10 +180,7 @@ class LevelOneThreeThreeProState extends ConsumerState<LevelOneThreeThreePro>
 
   // 정답 여부 체크(보통은 이거쓰면됨)
   Future<void> checkAnswer() async {
-    isCorrect = const DeepCollectionEquality().equals(
-      answerData,
-      selectedAnswers,
-    );
+    isCorrect = true;
     _submitAnswer();
   }
 
@@ -424,17 +417,15 @@ class LevelOneThreeThreeProState extends ConsumerState<LevelOneThreeThreePro>
                                   buttonText: "제출하기",
                                   fontSize: screenWidth * 0.02,
                                   borderRadius: 10,
-                                  // TODO : 정답 체크 로직 구현 시 해당 부분 지우고 주석 활성화
-                                  onPressed: () => onNextPressed(),
-                                  // onPressed: () async {
-                                  //   if (isSubmitted) return;
-                                  //   await checkAnswer();
-                                  //   setState(() {
-                                  //     showSubmitPopup = true;
-                                  //   });
-                                  //   submitController.forward();
-                                  //   await submitActivity(context);
-                                  // },
+                                  onPressed: () async {
+                                    if (isSubmitted) return;
+                                    await checkAnswer();
+                                    setState(() {
+                                      showSubmitPopup = true;
+                                    });
+                                    submitController.forward();
+                                    await submitActivity(context);
+                                  },
                                 ),
 
                               if (isSubmitted && isCorrect == false) ...[
