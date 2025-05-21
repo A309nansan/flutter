@@ -151,14 +151,8 @@ class Level131main1State extends ConsumerState<LevelOneThreeOneMain1>
 
       setState(() {
         nextProblemCode = response.nextProblemCode;
-        // problemData = response.problem;
-        // answerData = response.answer;
-        problemData = {
-          "q1": 6
-        };
-        answerData = {
-          "a1": [5, 7]
-        };
+        problemData = response.problem;
+        answerData = response.answer;
         current = response.current;
         total = response.total;
       });

@@ -110,6 +110,9 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
         answerData = response.answer;
         current = response.current;
         total = response.total;
+        selectedAnswers = {
+          "p1": [ 0, 0 ],
+        };
       });
       _processProblemData(problemData);
     } catch (e) {
@@ -126,20 +129,6 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
     debugPrint("📦 불러온 문제 기록: $progress");
 
     EnProblemService.saveContinueProblem(problemCode, childId);
-
-    setState(() {
-      problemData  = {
-        "p1": [ 1, 2, 3 ],
-      };
-      answerData = {
-        "p1": [ 4, 6 ],
-      };
-      current = 1;
-      total = 5;
-      selectedAnswers = {
-        "p1": [ 0, 0 ],
-      };
-    });
   }
 
   // 문제 제출할때 함수. 수정 필요 x
