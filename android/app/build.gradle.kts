@@ -29,12 +29,12 @@ val facebookAppId = dotenv.getProperty("FACEBOOK_APP_ID") ?: ""
 val fbLoginProtocolScheme = dotenv.getProperty("FB_LOGIN_PROTOCOL_SCHEME") ?: ""
 val facebookClientToken = dotenv.getProperty("FACEBOOK_CLIENT_TOKEN") ?: ""
 
-val keystoreProperties = Properties().apply {
-    val keystoreFile = rootProject.file("app/key.properties")
-    if (keystoreFile.exists()) {
-        load(FileInputStream(keystoreFile))
-    }
-}
+//val keystoreProperties = Properties().apply {
+//    val keystoreFile = rootProject.file("app/key.properties")
+//    if (keystoreFile.exists()) {
+//        load(FileInputStream(keystoreFile))
+//    }
+//}
 
 android {
     namespace = "com.ssafy.soonamu"
@@ -80,10 +80,10 @@ android {
 
     signingConfigs {
         create("release") {
-            keyAlias = keystoreProperties["keyAlias"] as String?
-            keyPassword = keystoreProperties["keyPassword"] as String?
-            storeFile = file(keystoreProperties["storeFile"] as String?)
-            storePassword = keystoreProperties["storePassword"] as String?
+//            keyAlias = keystoreProperties["keyAlias"] as String?
+//            keyPassword = keystoreProperties["keyPassword"] as String?
+//            storeFile = file(keystoreProperties["storeFile"] as String?)
+//            storePassword = keystoreProperties["storePassword"] as String?
         }
     }
 

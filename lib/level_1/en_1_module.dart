@@ -44,6 +44,7 @@ import 'package:nansan_flutter/level_1/4_2/screens/level_1_4_2_main4.dart';
 import 'package:nansan_flutter/modules/drag_drop/controllers/drag_drop_controller.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:provider/provider.dart';
+import '1_1/screens/level_1_1_1_think.dart';
 import '2_1/screens/level_1_2_1_main2.dart';
 import '3_2/screens/level_1_3_2_basic1.dart';
 import '3_2/screens/level_1_3_2_main1.dart';
@@ -65,13 +66,13 @@ class En1Module extends Module {
   @override
   void routes(RouteManager r) {
     // level1 1과 1차시 개념학습활동
-    // r.child(
-    //   '/enlv1s1c1gn1',
-    //   child: (context) {
-    //     final nextCode = r.args.data as String;
-    //     return LevelOneOneOneThink(problemCode: nextCode);
-    //   },
-    // );
+    r.child(
+      '/enlv1s1c1gn1',
+      child: (context) {
+        final nextCode = r.args.data as String;
+        return LevelOneOneOneThink(problemCode: nextCode);
+      },
+    );
     // level1 1과 1차시 주요학습활동
     r.child(
       '/enlv1s1c1jy1',
