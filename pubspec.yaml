@@ -81,7 +81,11 @@ dependencies:
   connectivity_plus: ^6.0.3
   internet_connection_checker_plus: ^2.0.0  
   tflite_flutter: ^0.11.0
-  
+  easy_pdf_viewer: ^1.0.8
+  animated_text_kit: ^4.2.3
+  liquid_progress_indicator_v2: ^0.5.0
+  flutter_cache_manager: ^3.4.1
+  flutter_animation_progress_bar: ^2.3.1
 
 dev_dependencies:
   flutter_test:
@@ -111,6 +115,8 @@ flutter:
   assets:
     - assets/fonts/
     - assets/images/
+#    - assets/images/pen.png
+#    - assets/images/eraser.png
     - assets/images/basa_math/
     - assets/images/category/
     - assets/images/category/en/
