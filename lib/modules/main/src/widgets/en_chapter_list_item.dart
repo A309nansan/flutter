@@ -116,8 +116,8 @@ class EnChapterListItem extends StatelessWidget {
                               height: screenHeight * 0.03,
                               child: ElevatedButton(
                                 onPressed: () {
-                                  final chapterCode = listItem.problemCode;
-
+                                  final path = listItem.imagePath.split("/");
+                                  final chapterCode = "${path[3]}lv${level}s${path[5]}c${path[6].split(".")[0]}";
                                   Modular.to.pushNamed("/together", arguments: chapterCode);
                                   // ToastMessage.show("문제집 준비중입니다!");
                                 },

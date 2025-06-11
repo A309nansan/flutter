@@ -44,12 +44,16 @@ class EnTogetherState extends State<EnTogetherScreen> {
   bool _isDownloading = false;
   bool _isLoaded = false;
 
-  String pdfUrl = 'https://minio.nansan.site/nansan/4차시_교사.pdf';
+
+  String pdfUrlPrefix = 'https://minio.nansan.site/nansan/pdf/';
+  late String chapterCode;
+  late String pdfUrl;
 
   @override
   void initState() {
     super.initState();
-    loadDocument();
+    setPdfUrl();
+    if(pdfUrl.isNotEmpty) loadDocument();
     // clearPdfCache(pdfUrl).then((_) {
     //   loadDocument();
     // });
@@ -58,6 +62,11 @@ class EnTogetherState extends State<EnTogetherScreen> {
   Future<void> clearPdfCache(String pdfUrl) async {
     final cacheManager = DefaultCacheManager();
     await cacheManager.removeFile(pdfUrl);
+  }
+
+  void setPdfUrl() {
+    chapterCode = widget.chapterCode;
+    pdfUrl = "$pdfUrlPrefix$chapterCode.pdf";
   }
 
   Future<void> loadDocument() async {
