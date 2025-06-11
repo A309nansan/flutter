@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
 
 class EnListSplashScreen extends StatefulWidget {
   const EnListSplashScreen({super.key});
@@ -74,6 +75,9 @@ class _EnListSplashScreenState extends State<EnListSplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    var screenWidth = MediaQuery.of(context).size.width;
+    var screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       body: AnimatedOpacity(
         opacity: _opacity,
@@ -91,26 +95,61 @@ class _EnListSplashScreenState extends State<EnListSplashScreen>
                 '$_baseMessage$_dots',
                 style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
               Container(
-                width: MediaQuery.of(context).size.width * 0.35,
-                height: 12,
+                margin: const EdgeInsets.symmetric(vertical: 20),
+                width: screenWidth * 0.45,
+                height: 30,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withAlpha(40),
+                      spreadRadius: 2,
+                      blurRadius: 4,
+                      offset: Offset(2, 4),
+                    ),
+                  ],
                 ),
-                alignment: Alignment.centerLeft,
-                child: FractionallySizedBox(
-                  widthFactor: _progressAnimation.value,
-                  child: Container(
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: Color(0xFF9c6a17),
-                      borderRadius: BorderRadius.circular(8),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: LiquidLinearProgressIndicator(
+                    value: _progressAnimation.value,
+                    valueColor: AlwaysStoppedAnimation(Color(0xFF9c6a17)),
+                    backgroundColor: Color(0xffffeed2),
+                    borderColor: Colors.blueAccent.withAlpha(0),
+                    borderWidth: 0.0,
+                    direction: Axis.horizontal,
+                    center: Text(
+                      "${(_progressAnimation.value * 100).toStringAsFixed(0)}%",
+                      style: TextStyle(
+                        fontSize: screenWidth * 0.02,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
               ),
+              // Container(
+              //   width: MediaQuery.of(context).size.width * 0.35,
+              //   height: 12,
+              //   decoration: BoxDecoration(
+              //     color: Colors.grey[300],
+              //     borderRadius: BorderRadius.circular(8),
+              //   ),
+              //   alignment: Alignment.centerLeft,
+              //   child: FractionallySizedBox(
+              //     widthFactor: _progressAnimation.value,
+              //     child: Container(
+              //       height: 8,
+              //       decoration: BoxDecoration(
+              //         color: Color(0xFF9c6a17),
+              //         borderRadius: BorderRadius.circular(8),
+              //       ),
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),
