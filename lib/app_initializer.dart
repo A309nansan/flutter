@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
 import 'package:nansan_flutter/shared/digit_recognition/services/recognition_service.dart';
 import 'package:nansan_flutter/shared/services/secure_storage_service.dart';
 import 'package:nansan_flutter/shared/services/token_storage.dart';
@@ -143,6 +144,9 @@ class _AppInitializerState extends State<AppInitializer> {
 
   @override
   Widget build(BuildContext context) {
+    var screenWidth = MediaQuery.of(context).size.width;
+    var screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       body: AnimatedOpacity(
         opacity: _opacity,
@@ -154,28 +158,63 @@ class _AppInitializerState extends State<AppInitializer> {
             children: [
               Text(
                 '$_baseMessage$_dots',
-                style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w600),
+                style: TextStyle(fontSize: screenWidth * 0.032, fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
               Container(
-                width: MediaQuery.of(context).size.width * 0.35,
-                height: 12,
+                margin: const EdgeInsets.symmetric(vertical: 20),
+                width: screenWidth * 0.45,
+                height: 30,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withAlpha(40),
+                      spreadRadius: 2,
+                      blurRadius: 4,
+                      offset: Offset(2, 4),
+                    ),
+                  ],
                 ),
-                alignment: Alignment.centerLeft,
-                child: FractionallySizedBox(
-                  widthFactor: _progress.clamp(0.0, 1.0),
-                  child: Container(
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF9c6a17),
-                      borderRadius: BorderRadius.circular(8),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: LiquidLinearProgressIndicator(
+                    value: _progress,
+                    valueColor: AlwaysStoppedAnimation(Color(0xFF9c6a17)),
+                    backgroundColor: Color(0xffffeed2),
+                    borderColor: Colors.blueAccent.withAlpha(0),
+                    borderWidth: 0.0,
+                    direction: Axis.horizontal,
+                    center: Text(
+                      "${(_progress * 100).toStringAsFixed(0)}%",
+                      style: TextStyle(
+                        fontSize: screenWidth * 0.02,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
               ),
+              // Container(
+              //   width: MediaQuery.of(context).size.width * 0.35,
+              //   height: 12,
+              //   decoration: BoxDecoration(
+              //     color: Colors.grey[300],
+              //     borderRadius: BorderRadius.circular(8),
+              //   ),
+              //   alignment: Alignment.centerLeft,
+              //   child: FractionallySizedBox(
+              //     widthFactor: _progress.clamp(0.0, 1.0),
+              //     child: Container(
+              //       height: 8,
+              //       decoration: BoxDecoration(
+              //         color: const Color(0xFF9c6a17),
+              //         borderRadius: BorderRadius.circular(8),
+              //       ),
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),

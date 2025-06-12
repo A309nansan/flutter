@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:nansan_flutter/shared/widgets/toase_message.dart';
 
 import '../../../../shared/widgets/problem_dialog.dart';
@@ -115,7 +116,10 @@ class EnChapterListItem extends StatelessWidget {
                               height: screenHeight * 0.03,
                               child: ElevatedButton(
                                 onPressed: () {
-                                  ToastMessage.show("문제집 준비중입니다!");
+                                  final path = listItem.imagePath.split("/");
+                                  final chapterCode = "${path[3]}lv${level}s${path[5]}c${path[6].split(".")[0]}";
+                                  Modular.to.pushNamed("/together", arguments: chapterCode);
+                                  // ToastMessage.show("문제집 준비중입니다!");
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFFFFFAE1),

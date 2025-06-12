@@ -4,6 +4,7 @@ import 'package:nansan_flutter/level_1/en_1_module.dart';
 import 'package:nansan_flutter/level_2/en_2_module.dart';
 import 'package:nansan_flutter/modules/auth/src/auth_module.dart';
 import 'package:nansan_flutter/modules/auth/src/services/auth_service.dart';
+import 'package:nansan_flutter/modules/en_together/src/screens/en_together_screen.dart';
 import 'package:nansan_flutter/modules/main/src/main_module.dart';
 import 'package:nansan_flutter/modules/math/src/math_module.dart';
 import 'package:nansan_flutter/modules/auth/src/models/user_model.dart';
@@ -23,6 +24,10 @@ class AppModule extends Module {
     r.child('/', child: (context) => const AppInitializer());
     r.child('/login', child: (context) => const LoginScreen());
     r.child('/profile', child: (context) => const ProfileScreen());
+    r.child('/together', child: (context) {
+      final chapterCode = r.args.data as String;
+      return EnTogetherScreen(chapterCode: chapterCode);
+    });
     r.child('/draw', child: (context) => const DrawScreen());
     // r.child('/handwritingtest', child: (context) => const );
 
