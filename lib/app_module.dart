@@ -5,6 +5,7 @@ import 'package:nansan_flutter/level_2/en_2_module.dart';
 import 'package:nansan_flutter/modules/auth/src/auth_module.dart';
 import 'package:nansan_flutter/modules/auth/src/services/auth_service.dart';
 import 'package:nansan_flutter/modules/en_together/src/screens/en_together_screen.dart';
+import 'package:nansan_flutter/modules/interaction/src/interaction_module.dart';
 import 'package:nansan_flutter/modules/main/src/main_module.dart';
 import 'package:nansan_flutter/modules/math/src/math_module.dart';
 import 'package:nansan_flutter/modules/auth/src/models/user_model.dart';
@@ -37,6 +38,7 @@ class AppModule extends Module {
     r.module('/main', module: MainModule());
     r.module('/level1', module: En1Module());
     r.module('/level2', module: En2Module());
+    r.module('/interaction', module: InteractionModule());
   }
 }
 
