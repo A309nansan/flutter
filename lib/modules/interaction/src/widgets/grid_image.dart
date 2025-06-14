@@ -32,7 +32,7 @@ class GridImage extends StatelessWidget {
                 Opacity(
                   opacity: 0.3,
                   child: Image.asset(
-                    "assets/empty_rabbit.png",
+                    "assets/images/freelayout_assets/empty_rabbit.png",
                     scale: screenWidth * 0.003,
                     color: Colors.black
                   )
@@ -41,7 +41,7 @@ class GridImage extends StatelessWidget {
                   child: BackdropFilter(
                     filter: ui.ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
                     child: Image.asset(
-                      "assets/empty_rabbit.png",
+                      "assets/images/freelayout_assets/empty_rabbit.png",
                       scale: screenWidth * 0.003,
                     )
                   )

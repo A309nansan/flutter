@@ -1,8 +1,10 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:scribble/scribble.dart';
 import 'package:value_notifier_tools/value_notifier_tools.dart';
+import '../../../../shared/widgets/appbar_widget.dart';
 import '../models/placed_image.dart';
 import '../widgets/background_selector.dart';
 import '../widgets/color_button.dart';
@@ -79,6 +81,13 @@ class DrawingPlaygroundScreenState extends State<DrawingPlaygroundScreen> with T
   }
 
   @override
+  void dispose() {
+    _tabController.dispose();
+    notifier.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
@@ -86,7 +95,19 @@ class DrawingPlaygroundScreenState extends State<DrawingPlaygroundScreen> with T
     final GlobalKey stackKey = GlobalKey();
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Interaction Screen")),
+      appBar: AppbarWidget(
+        title: Text(
+          "Interaction",
+          style: TextStyle(
+              fontSize: screenWidth * 0.02,
+              fontWeight: FontWeight.bold
+          ),
+        ),
+        leading: IconButton(
+          icon: Icon(Icons.chevron_left, size: screenWidth * 0.05),
+          onPressed: () => Modular.to.pop(),
+        ),
+      ),
       floatingActionButton: currentTabIndex == 0 ?
       FloatingActionButton(
         onPressed: () => showDrawingPopup(
