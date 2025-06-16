@@ -97,12 +97,13 @@ class DrawingPlaygroundScreenState extends State<DrawingPlaygroundScreen> with T
     return Scaffold(
       appBar: AppbarWidget(
         title: Text(
-          "Interaction",
+          "나만의 그림판",
           style: TextStyle(
               fontSize: screenWidth * 0.02,
               fontWeight: FontWeight.bold
           ),
         ),
+        isCenter: true,
         leading: IconButton(
           icon: Icon(Icons.chevron_left, size: screenWidth * 0.05),
           onPressed: () => Modular.to.pop(),

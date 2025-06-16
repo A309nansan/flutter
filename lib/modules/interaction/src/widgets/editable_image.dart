@@ -51,7 +51,7 @@ class _EditableImageState extends State<EditableImage> {
       widget.placedImage.rotation = _rotation;
 
       // 스케일
-      _scale = (_initialScale * details.scale).clamp(0.5, 3.0);
+      _scale = (_initialScale * details.scale).clamp(0.5, 2.0);
       widget.placedImage.scale = _scale;
     });
   }
@@ -94,21 +94,21 @@ class _EditableImageState extends State<EditableImage> {
                 ],
               ),
             ),
-
             Positioned(
               top: -16,
               right: -16,
-              child: GestureDetector(
-                onTap: widget.onDelete,
-                behavior: HitTestBehavior.opaque,
-                child: Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: Colors.redAccent,
-                    shape: BoxShape.circle,
+              child: SizedBox(
+                width: 40,
+                height: 40,
+                child: IconButton(
+                  icon: Icon(Icons.close, size: 16, color: Colors.white),
+                  onPressed: widget.onDelete,
+                  style: IconButton.styleFrom(
+                      backgroundColor: Colors.redAccent,
+                      elevation: 2.0,
+                    padding: EdgeInsets.zero, // 👈 눌림 영역 정확하게 설정
+                    minimumSize: const Size(32, 32), // 👈 실제 터치 영역 보장
                   ),
-                  child: const Icon(Icons.close, size: 16, color: Colors.white),
                 ),
               ),
             ),
