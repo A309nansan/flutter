@@ -3,7 +3,6 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:speech_balloon/speech_balloon.dart';
 import '../../../../shared/services/secure_storage_service.dart';
-import '../services/facebook_sign_in_service.dart';
 import '../services/kakao_sign_in_service.dart';
 import '../services/google_sign_in_service.dart';
 
@@ -32,7 +31,6 @@ class _LoginScreenState extends State<LoginScreen>
   Widget build(BuildContext context) {
     final kakaoSignInService = Modular.get<KakaoSignInService>();
     final googleSignInService = Modular.get<GoogleSignInService>();
-    final facebookSignInService = Modular.get<FacebookSignInService>();
 
     var screenWidth = MediaQuery.of(context).size.width;
     var screenHeight = MediaQuery.of(context).size.height;
@@ -105,23 +103,6 @@ class _LoginScreenState extends State<LoginScreen>
                               if (agreed != true) return;
                             }
                             await googleSignInService.signInWithGoogle();
-                          },
-                        ),
-                        const SizedBox(width: 40),
-                        _buildLoginButton(
-                          Colors.white,
-                          Colors.black87,
-                          "assets/images/facebook_logo.svg",
-                          1,
-                          context,
-                          () async {
-                            final alreadyAgreed = await SecureStorageService.getPrivacyAgreementStatus();
-                            if (!alreadyAgreed) {
-                              final agreed = await Modular.to.pushNamed<bool>('/auth/privacy-agreement');
-
-                              if (agreed != true) return;
-                            }
-                            await facebookSignInService.signInWithFacebook();
                           },
                         ),
                       ],

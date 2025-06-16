@@ -27,12 +27,14 @@
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string></string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>kakao${KAKAO_NATIVE_APP_KEY}</string>
 				<string>${DEFAULT_WEB_CLIENT_ID}</string>
 				<string>nansan</string>
-				<string>fbAPP-ID</string>
+				<string>com.googleusercontent.apps.820351599163-1fg7sgmf692dcrm88rs00lh89jbg98hc</string>
 			</array>
 		</dict>
 	</array>
