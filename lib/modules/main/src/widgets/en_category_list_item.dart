@@ -9,12 +9,14 @@ class EnCategoryListItem extends StatelessWidget {
   final EnCategoryModel listItem;
   final double scale;
   final int level;
+  final VoidCallback? onTap;
 
   const EnCategoryListItem({
     super.key,
     required this.listItem,
     required this.scale,
     required this.level,
+    this.onTap
   });
 
   @override
@@ -24,7 +26,7 @@ class EnCategoryListItem extends StatelessWidget {
 
     return InkWell(
       borderRadius: BorderRadius.circular(20),
-      onTap: () {
+      onTap: onTap ?? () {
         Modular.to.pushNamed(
           '/main/chapter-list',
           arguments: {

@@ -15,15 +15,36 @@ class EnCategoryListScreen extends StatefulWidget {
   State<EnCategoryListScreen> createState() => _EnCategoryListScreenState();
 }
 
-class _EnCategoryListScreenState extends State<EnCategoryListScreen> {
+class _EnCategoryListScreenState extends State<EnCategoryListScreen> with TickerProviderStateMixin {
   int selectedLevel = 1;
   List<EnCategoryModel> fullCategoryList = [];
   bool isLoading = false;
+  late TabController _tabController;
+  int selectedTabIndex = 0;
+  final togetherCategoryList = [
+    EnCategoryModel(
+      id: 1000,
+      name: "나만의 그림판",
+      imagePath: "assets/images/freelayout_background/farm.png",
+      description: "원하는 배경 위에 내가 그린 그림, 귀여운 스티커를 \n자유롭게 배치해 보세요!",
+    ),
+  ];
+
+  final Map<int, String> togetherRoutes = {
+    1000: "/interaction/drawing_playground"
+  };
+
 
   @override
   void initState() {
     super.initState();
     setState(() => isLoading = true);
+    _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(() {
+      setState(() {
+        selectedTabIndex = _tabController.index;
+      });
+    });
     _loadCategories();
   }
 
@@ -56,7 +77,8 @@ class _EnCategoryListScreenState extends State<EnCategoryListScreen> {
       ),
       body: isLoading
           ? EnListSplashScreen()
-          : Center(
+          : DefaultTabController(
+        length: 3,
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -77,84 +99,75 @@ class _EnCategoryListScreenState extends State<EnCategoryListScreen> {
                   ),
                 ),
               ),
-              SizedBox(
-                width: screenWidth * 0.98,
-                height: screenHeight * 0.06,
-                child: Stack(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: List.generate(2, (index) {
-                        final level = index + 1;
-                        final isSelected = selectedLevel == level;
+              Align(
+                alignment: Alignment.centerLeft,
+                child: SizedBox(
+                  width: screenWidth * 0.8,
+                  child: TabBar(
+                    controller: _tabController,
+                    labelColor: Color(0xFF9C6A17),
+                    unselectedLabelColor: Colors.grey,
+                    indicatorColor: Color(0xFF9C6A17),
+                    indicatorWeight: 6,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    splashBorderRadius: BorderRadius.circular(20),
+                      labelStyle: TextStyle(
+                        fontFamily: "SingleDay",
+                        fontSize: screenHeight * 0.026,
+                        fontWeight: FontWeight.bold
+                      ),
+                      labelPadding: const EdgeInsets.symmetric(vertical: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      unselectedLabelStyle: TextStyle(
+                          fontFamily: "SingleDay",
+                          fontSize: screenHeight * 0.023,
+                          fontWeight: FontWeight.bold
+                      ),
+                      dividerColor: Colors.transparent,
+                    tabs: List.generate(3, (index) {
+                      final isSelected = selectedTabIndex == index;
+                      final level = index + 1;
 
-                        return InkWell(
-                          onTap: () {
-                            setState(() {
-                              selectedLevel = level;
-                            });
-                          },
-                          borderRadius: BorderRadius.circular(30),
-                          child: AnimatedScale(
-                            scale: isSelected ? 1.1 : 1.0, // 선택 시 약간 커짐
-                            duration: const Duration(milliseconds: 250),
-                            curve: Curves.easeInOut,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                  width: screenWidth * 0.25,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        'Level $level',
-                                        style: TextStyle(
-                                          fontFamily: "SingleDay",
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: screenHeight * 0.023,
-                                          color: isSelected ? const Color(0xFF9C6A17) : Colors.black26,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 6),
-                                      ...List.generate(level, (i) => Icon(
-                                        Icons.star,
-                                        color: isSelected ? Colors.amber : Colors.grey[300],
-                                        size: screenWidth * 0.032,
-                                        shadows: const [Shadow(color: Colors.black45, blurRadius: 5.0)],
-                                      )),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                AnimatedContainer(
-                                  duration: const Duration(milliseconds: 300),
-                                  height: 5,
-                                  width: isSelected ? screenWidth * 0.2 : 0,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF9C6A17),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                              ],
+                      return Tab(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              index < 2 ? 'Level $level' : '함께해요',
                             ),
-                          ),
-                        );
-
-                      }),
-                    ),
+                            if (index < 2)
+                              Row(
+                                children: List.generate(level, (i) => Padding(
+                                  padding: const EdgeInsets.only(left: 3),
+                                  child: Icon(
+                                    Icons.star,
+                                    size: screenWidth * 0.032,
+                                    color: isSelected ? Colors.amber : Colors.grey[300],
+                                    shadows: isSelected
+                                        ? [const Shadow(color: Colors.black26, blurRadius: 2)]
+                                        : [],
+                                  ),
+                                )),
+                              ),
+                          ],
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: screenHeight * 0.8,
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildTabContent(0),
+                    _buildTabContent(1),
+                    _buildTabContent(2),
                   ],
                 ),
               ),
-              const SizedBox(height: 10),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 400),
-                child: Column(
-                  key: ValueKey<int>(selectedLevel),
-                  children: _buildLevelGroup(filteredList, selectedLevel - 1),
-                ),
-              ),
-              const SizedBox(height: 80),
+              const SizedBox(height: 40),
             ],
           ),
         ),
@@ -162,7 +175,46 @@ class _EnCategoryListScreenState extends State<EnCategoryListScreen> {
     );
   }
 
-  List<Widget> _buildLevelGroup(List<EnCategoryModel> chunk, int chunkIndex) {
+  Widget _buildTabContent(int levelIndex) {
+    final List<EnCategoryModel> chunk;
+    final int chunkLevel;
+    void Function(EnCategoryModel item) routeBuilder;
+
+    if (levelIndex == 2) {
+      chunk = togetherCategoryList;
+      chunkLevel = 0;
+
+      routeBuilder = (item) {
+        final route = togetherRoutes[item.id];
+        if (route != null) {
+          Modular.to.pushNamed(route);
+        }
+      };
+    } else {
+      final start = levelIndex * 4;
+      final end = min(start + 4, fullCategoryList.length);
+      chunk = fullCategoryList.sublist(start, end);
+      chunkLevel = levelIndex + 1;
+      routeBuilder = (item) => Modular.to.pushNamed(
+        '/main/chapter-list',
+        arguments: {
+          "categoryIndex": item.id,
+          "categoryName": item.name,
+          "categoryLevel": chunkLevel,
+        },
+      );
+    }
+
+    return Column(
+      children: _buildLevelGroup(chunk, chunkLevel, routeBuilder),
+    );
+  }
+
+  List<Widget> _buildLevelGroup(
+      List<EnCategoryModel> chunk,
+      int chunkIndex,
+      void Function(EnCategoryModel item) routeBuilder,
+      ) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
@@ -183,7 +235,8 @@ class _EnCategoryListScreenState extends State<EnCategoryListScreen> {
                       child: EnCategoryListItem(
                         listItem: chunk[firstIndex],
                         scale: 1.3,
-                        level: chunkIndex + 1,
+                        level: chunkIndex,
+                        onTap: () => routeBuilder(chunk[firstIndex]),
                       ),
                     ),
                     const SizedBox(width: 20),
@@ -192,7 +245,8 @@ class _EnCategoryListScreenState extends State<EnCategoryListScreen> {
                         child: EnCategoryListItem(
                           listItem: chunk[secondIndex],
                           scale: 1.3,
-                          level: chunkIndex + 1,
+                          level: chunkIndex,
+                          onTap: () => routeBuilder(chunk[secondIndex]),
                         ),
                       )
                     else

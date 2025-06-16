@@ -58,55 +58,61 @@ class _EditableImageState extends State<EditableImage> {
 
   @override
   Widget build(BuildContext context) {
+    final imageWidth = (widget.placedImage.image.width.toDouble() / 3) * _scale;
+    final imageHeight = (widget.placedImage.image.height.toDouble() / 3) * _scale;
+
     return Positioned(
       left: _offset.dx,
       top: _offset.dy,
       child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
         onScaleStart: _onScaleStart,
         onScaleUpdate: _onScaleUpdate,
-        child: Transform(
-          alignment: Alignment.center,
-          transform: Matrix4.identity()
-            ..rotateZ(_rotation)
-            ..scale(_scale),
-            child: Stack(
-              children: [
-                // 아래에 흰색 테두리용 이미지 (약간 확대, 밝은 색)
-                Transform.scale(
-                  scale: 1.0,
-                  child: RawImage(
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Transform(
+              alignment: Alignment.center,
+              transform: Matrix4.identity()
+                ..rotateZ(_rotation)
+                ..scale(_scale),
+              child: Stack(
+                children: [
+                  RawImage(
                     image: widget.placedImage.image,
                     color: Colors.white.withAlpha(150),
                     fit: BoxFit.contain,
-                    width: widget.placedImage.image.width.toDouble() / 3 + 3,
-                    height: widget.placedImage.image.height.toDouble() / 3 + 3,
+                    width: imageWidth + 3,
+                    height: imageHeight + 3,
                   ),
-                ),
-                // 실제 이미지
-                RawImage(
-                  image: widget.placedImage.image,
-                  fit: BoxFit.contain,
-                  width: widget.placedImage.image.width.toDouble() / 3,
-                  height: widget.placedImage.image.height.toDouble() / 3,
-                ),
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: SizedBox(
-                    width: 32,
-                    height: 32,
-                    child: IconButton(
-                      icon: Icon(Icons.close, size: 16, color: Colors.white),
-                      onPressed: widget.onDelete,
-                      style: IconButton.styleFrom(
-                        backgroundColor: Colors.redAccent,
-                        elevation: 2.0
-                      ),
-                    ),
+                  RawImage(
+                    image: widget.placedImage.image,
+                    fit: BoxFit.contain,
+                    width: imageWidth,
+                    height: imageHeight,
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
+
+            Positioned(
+              top: -16,
+              right: -16,
+              child: GestureDetector(
+                onTap: widget.onDelete,
+                behavior: HitTestBehavior.opaque,
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: Colors.redAccent,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.close, size: 16, color: Colors.white),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
