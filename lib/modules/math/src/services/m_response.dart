@@ -32,7 +32,6 @@ class MResponse {
     List<int> matrixVolume,
   ) {
     this.matrixVolume = matrixVolume;
-    print("${this.matrixVolume}믿는다");
     recognitionCarryResults = List.generate(
       matrixVolume[0],
       (_) => List.generate(matrixVolume[1], (_) => ''),

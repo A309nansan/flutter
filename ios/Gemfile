@@ -1,0 +1,7 @@
+source 'https://rubygems.org'
+
+# CocoaPods를 명시합니다.
+gem 'cocoapods'
+
+# 문제의 원인인 concurrent-ruby 버전을 1.3.4로 고정합니다.
+gem 'concurrent-ruby', '1.3.4'
