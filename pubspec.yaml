@@ -87,6 +87,7 @@ dependencies:
   flutter_animation_progress_bar: ^2.3.1
   scribble: ^0.10.0+1
   value_notifier_tools: ^0.1.2
+  material_dialogs: ^1.1.5
 
 dev_dependencies:
   flutter_test:
@@ -136,15 +137,18 @@ flutter:
     - assets/images/category/m/4/
     - assets/images/category/m/5/
     - assets/images/category/m/6/
+    - assets/images/freelayout_assets/
+    - assets/images/freelayout_background/
     - assets/images/image3d/
     - assets/images/number/
     - assets/images/number/apple/
     - assets/images/number/apple_card/
     - assets/images/number/banana_card/
+    - assets/images/number/bg_apple/
     - assets/images/number/carrot/
     - assets/images/number/corn/
-    - assets/images/number/dot/
     - assets/images/number/dice/
+    - assets/images/number/dot/
     - assets/images/number/fish/
     - assets/images/number/grape/
     - assets/images/number/grape_card/
@@ -152,17 +156,16 @@ flutter:
     - assets/images/number/hangeul2/
     - assets/images/number/numeric1/
     - assets/images/number/numeric2/
-    - assets/images/number/soccerball/
-    - assets/images/number/turtle/
-    - assets/images/number/unit/
-    - assets/images/number/pouch/
-    - assets/images/number/zodiac/
-    - assets/images/number/bg_apple/
     - assets/images/number/person_high/
-    - assets/images/number/person_mid/
     - assets/images/number/person_low/
+    - assets/images/number/person_mid/
+    - assets/images/number/pouch/
+    - assets/images/number/soccerball/
     - assets/images/number/star/
     - assets/images/number/triangle/
+    - assets/images/number/turtle/
+    - assets/images/number/unit/
+    - assets/images/number/zodiac/
     - assets/lottie/
     - assets/numbers/
     - assets/tflite/
