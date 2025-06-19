@@ -26,7 +26,6 @@ val kakaoKey = dotenv.getProperty("KAKAO_NATIVE_APP_KEY") ?: ""
 val defaultWebClientId = dotenv.getProperty("DEFAULT_WEB_CLIENT_ID") ?: ""
 val appName = dotenv.getProperty("APP_NAME") ?: ""
 
-
 //val keystoreProperties = Properties().apply {
 //    val keystoreFile = rootProject.file("app/key.properties")
 //    if (keystoreFile.exists()) {
