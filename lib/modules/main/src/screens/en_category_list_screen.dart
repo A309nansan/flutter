@@ -25,7 +25,7 @@ class _EnCategoryListScreenState extends State<EnCategoryListScreen> with Ticker
     EnCategoryModel(
       id: 1000,
       name: "나만의 그림판",
-      imagePath: "assets/images/freelayout_background/farm.png",
+      imagePath: "assets/images/freelayout_background/playground_thumbnail.png",
       description: "원하는 배경 위에 내가 그린 그림, 귀여운 스티커를 \n자유롭게 배치해 보세요!",
     ),
   ];
