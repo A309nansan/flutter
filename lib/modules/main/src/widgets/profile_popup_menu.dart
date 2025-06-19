@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:nansan_flutter/shared/digit_recognition/screen/digittestpage.dart';
+import 'package:nansan_flutter/modules/main/src/screens/pfp_screen.dart';
 import '../../../../shared/services/secure_storage_service.dart';
 import '../../../../shared/widgets/toase_message.dart';
 import '../../../auth/src/services/auth_service.dart';
@@ -75,7 +75,7 @@ class ProfilePopupMenu extends StatelessWidget {
             onSelected: (value) {
               if (value == 'profile') {
                 ToastMessage.show("내 정보 클릭!");
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => DigitTestPage()));
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProfilePicPage()));
               } else if (value == 'logout') {
                 authService.logout();
                 ToastMessage.show("로그아웃되었습니다.");
