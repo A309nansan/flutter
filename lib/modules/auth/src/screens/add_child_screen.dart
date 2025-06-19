@@ -366,72 +366,72 @@ class AddChildScreenState extends State<AddChildScreen> {
                       ],
                     ),
                     const SizedBox(height: 30),
-                    Container(
-                      height: 80,
-                      width: screenWidth * 0.75,
-                      padding: EdgeInsets.only(right: 17),
-                      child: CustomTextFormField(
-                        controller: _teacherCodeController,
-                        focusNode: _teacherFocusNode,
-                        labelText: "선생님 코드",
-                        icon: IconButton(
-                          onPressed: () {
-                            String teacherCode =
-                                _teacherCodeController.text.trim();
-                            if (teacherCode.isEmpty) {
-                              ToastMessage.show("선생님 코드를 입력해주세요.");
-                              return;
-                            }
-                            if (additionalTeachers.length >= 4) {
-                              ToastMessage.show("선생님은 최대 4명까지 추가 가능합니다.");
-                              return;
-                            }
-                            setState(() {
-                              additionalTeachers.add(teacherCode);
-                              _teacherCodeController.clear();
-                            });
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (_teacherListScrollController.hasClients) {
-                                _teacherListScrollController.animateTo(
-                                  _teacherListScrollController
-                                      .position
-                                      .maxScrollExtent,
-                                  duration: const Duration(milliseconds: 300),
-                                  curve: Curves.easeOut,
-                                );
-                              }
-                            });
-                          },
-                          icon: const Icon(Icons.add),
-                        ),
-                        validator: null,
-                      ),
-                    ),
-                    Container(
-                      height: 200, // 고정 높이 (필요에 따라 조정 가능)
-                      padding: EdgeInsets.symmetric(
-                        horizontal: screenWidth * 0.04,
-                      ),
-                      child: ListView.builder(
-                        controller: _teacherListScrollController,
-                        itemCount: additionalTeachers.length,
-                        itemBuilder: (context, index) {
-                          final teacher = additionalTeachers[index];
-                          return Teacher(
-                            teacherCode: teacher,
-                            onRemove: () {
-                              setState(() {
-                                additionalTeachers.removeAt(index);
-                              });
-                            },
-                          );
-                        },
-                      ),
-                    ),
+                    // Container(
+                    //   height: 80,
+                    //   width: screenWidth * 0.75,
+                    //   padding: EdgeInsets.only(right: 17),
+                    //   child: CustomTextFormField(
+                    //     controller: _teacherCodeController,
+                    //     focusNode: _teacherFocusNode,
+                    //     labelText: "선생님 코드",
+                    //     icon: IconButton(
+                    //       onPressed: () {
+                    //         String teacherCode =
+                    //             _teacherCodeController.text.trim();
+                    //         if (teacherCode.isEmpty) {
+                    //           ToastMessage.show("선생님 코드를 입력해주세요.");
+                    //           return;
+                    //         }
+                    //         if (additionalTeachers.length >= 4) {
+                    //           ToastMessage.show("선생님은 최대 4명까지 추가 가능합니다.");
+                    //           return;
+                    //         }
+                    //         setState(() {
+                    //           additionalTeachers.add(teacherCode);
+                    //           _teacherCodeController.clear();
+                    //         });
+                    //         WidgetsBinding.instance.addPostFrameCallback((_) {
+                    //           if (_teacherListScrollController.hasClients) {
+                    //             _teacherListScrollController.animateTo(
+                    //               _teacherListScrollController
+                    //                   .position
+                    //                   .maxScrollExtent,
+                    //               duration: const Duration(milliseconds: 300),
+                    //               curve: Curves.easeOut,
+                    //             );
+                    //           }
+                    //         });
+                    //       },
+                    //       icon: const Icon(Icons.add),
+                    //     ),
+                    //     validator: null,
+                    //   ),
+                    // ),
+                    // Container(
+                    //   height: 200, // 고정 높이 (필요에 따라 조정 가능)
+                    //   padding: EdgeInsets.symmetric(
+                    //     horizontal: screenWidth * 0.04,
+                    //   ),
+                    //   child: ListView.builder(
+                    //     controller: _teacherListScrollController,
+                    //     itemCount: additionalTeachers.length,
+                    //     itemBuilder: (context, index) {
+                    //       final teacher = additionalTeachers[index];
+                    //       return Teacher(
+                    //         teacherCode: teacher,
+                    //         onRemove: () {
+                    //           setState(() {
+                    //             additionalTeachers.removeAt(index);
+                    //           });
+                    //         },
+                    //       );
+                    //     },
+                    //   ),
+                    // ),
                     Container(
                       alignment: Alignment.bottomRight,
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
+                        horizontal: 40,
                         vertical: 20,
                       ),
                       child: Align(
