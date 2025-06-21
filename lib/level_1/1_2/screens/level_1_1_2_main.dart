@@ -230,13 +230,14 @@ class LevelOneOneTwoMainState extends ConsumerState<LevelOneOneTwoMain>
     _submitAnswer();
   }
 
-  Widget _buildHeaderItem() => SizedBox(
-    width: 100,
-    height: 30,
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: const [Icon(Icons.arrow_left_sharp), Text('1 작은 수')],
+  Widget _buildHeaderItem(double iconSize, double fontSize) => SizedBox(
+    height: 80,
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text('1 작은 수', style: TextStyle(fontSize: fontSize)),
+        Icon(Icons.arrow_back_rounded, size: iconSize),
+      ],
     ),
   );
 
@@ -262,37 +263,59 @@ class LevelOneOneTwoMainState extends ConsumerState<LevelOneOneTwoMain>
   Widget _buildRow(List<Widget> children) =>
       Row(mainAxisAlignment: MainAxisAlignment.center, children: children);
 
-  Widget _buildHeaderRow() => _buildRow(
-    List.generate(
-        5,
-        (i) => _buildHeaderItem(),
-      ).expand((w) => [w, const SizedBox(width: 15)]).toList()
-      ..removeLast(),
-  );
+  Widget _buildHeaderRow() {
+    final headers = List.generate(5, (i) => _buildHeaderItem(MediaQuery.of(context).size.width * 0.03, MediaQuery.of(context).size.width * 0.03));
 
-  Widget _buildContentRow(int startZoneKey) {
-    final rowIndex = (startZoneKey - 1) ~/ 3;
-    final currentImages =
-        rowIndex < fixedImageUrls.length ? fixedImageUrls[rowIndex] : [];
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      height: MediaQuery.of(context).size.height * 0.07,
+      width: MediaQuery.of(context).size.width * 0.88,
+      child: GridView.count(
+        crossAxisCount: 5,
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        crossAxisSpacing: 12,
+        childAspectRatio: 1.5,
+        padding: EdgeInsets.zero,
+        children: headers,
+      ),
+    );
+  }
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        ...List.generate(
-          3,
-          (i) => EmptyZone(
-            zoneKey: startZoneKey + i,
-            width: 100,
-            height: 100,
-            onDrop: _processInputData,
-          ),
-        ).expand((w) => [w, const SizedBox(width: 15)]),
-        if (currentImages.isNotEmpty) ...[
-          _buildContainer(currentImages[0]),
-          const SizedBox(width: 15),
-          if (currentImages.length > 1) _buildContainer(currentImages[1]),
-        ],
-      ],
+  Widget _buildContentRow() {
+    final List<Widget> gridItems = [];
+    int zoneKey = 1;
+
+    for (int rowIndex = 0; rowIndex < 4; rowIndex++) {
+      final currentImages =
+      rowIndex < fixedImageUrls.length ? fixedImageUrls[rowIndex] : [];
+
+      for (int i = 0; i < 3; i++) {
+        gridItems.add(EmptyZone(
+          zoneKey: zoneKey++,
+          width: 95,
+          height: 95,
+          onDrop: _processInputData,
+        ));
+      }
+
+      for (final imageUrl in currentImages.take(2)) {
+        gridItems.add(_buildContainer(imageUrl));
+      }
+
+      while (gridItems.length % 5 != 0) {
+        gridItems.add(const SizedBox.shrink());
+      }
+    }
+
+    return GridView.count(
+      crossAxisCount: 5,
+      mainAxisSpacing: 20,
+      crossAxisSpacing: 20,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.symmetric(horizontal: 30),
+      children: gridItems,
     );
   }
 
@@ -420,17 +443,18 @@ class LevelOneOneTwoMainState extends ConsumerState<LevelOneOneTwoMain>
                               questionTextSize: screenWidth * 0.03,
                             ),
                             _buildHeaderRow(),
-                            SizedBox(height: screenHeight * 0.01),
-                            ...List.generate(
-                              4,
-                              (i) => Column(
-                                children: [
-                                  _buildContentRow(1 + i * 3),
-                                  if (i < 3)
-                                    SizedBox(height: screenHeight * 0.01),
-                                ],
-                              ),
-                            ),
+                            _buildContentRow(),
+                            // SizedBox(height: screenHeight * 0.01),
+                            // ...List.generate(
+                            //   4,
+                            //   (i) => Column(
+                            //     children: [
+                            //       _buildContentRow(),
+                            //       if (i < 3)
+                            //         SizedBox(height: screenHeight * 0.01),
+                            //     ],
+                            //   ),
+                            // ),
                             SizedBox(height: screenHeight * 0.02),
                             NewQuestionTextWidget(
                               questionText: '아래의 카드들을 알맞은 위치에 넣어보세요!',
@@ -438,12 +462,12 @@ class LevelOneOneTwoMainState extends ConsumerState<LevelOneOneTwoMain>
                             ),
                             SizedBox(height: screenHeight * 0.02),
                             DraggableCardList(
-                              showRemoveButton: true,
+                              showRemoveButton: false,
                               candidates: candidates,
-                              boxWidth: 600,
-                              boxHeight: 220,
-                              cardWidth: 95,
-                              cardHeight: 95,
+                              boxWidth: screenWidth * 0.9,
+                              boxHeight: screenHeight * 0.15,
+                              cardWidth: screenWidth * 0.11,
+                              cardHeight: screenWidth * 0.11,
                               controller: widget.controller,
                             ),
                             SizedBox(height: screenHeight * 0.02),

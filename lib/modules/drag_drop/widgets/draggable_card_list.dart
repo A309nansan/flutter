@@ -30,6 +30,7 @@ class DraggableCardList extends StatefulWidget {
 
 class _DraggableCardListState extends State<DraggableCardList> {
   late final DragDropController _controller;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -73,8 +74,10 @@ class _DraggableCardListState extends State<DraggableCardList> {
           width: widget.boxWidth,
           height: widget.boxHeight,
           child: Scrollbar(
+            controller: _scrollController,
             thumbVisibility: true,
             child: SingleChildScrollView(
+              controller: _scrollController,
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Wrap(

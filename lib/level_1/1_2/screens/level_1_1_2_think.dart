@@ -230,12 +230,12 @@ class LevelOneOneTwoThinkState extends ConsumerState<LevelOneOneTwoThink>
   }
 
   Widget _buildHeaderItem(double iconSize, double fontSize) => SizedBox(
-    height: 80, // 그리드 셀 하나당 예상 높이
+    height: 80,
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text('1 큰 수', style: TextStyle(fontSize: fontSize)),
-        Icon(Icons.arrow_right_alt_outlined, size: iconSize),
+        Icon(Icons.arrow_forward_rounded, size: iconSize),
       ],
     ),
   );
@@ -260,7 +260,7 @@ class LevelOneOneTwoThinkState extends ConsumerState<LevelOneOneTwoThink>
   );
 
   Widget _buildHeaderRow() {
-    final headers = List.generate(5, (i) => _buildHeaderItem(MediaQuery.of(context).size.width * 0.05, MediaQuery.of(context).size.width * 0.03));
+    final headers = List.generate(5, (i) => _buildHeaderItem(MediaQuery.of(context).size.width * 0.03, MediaQuery.of(context).size.width * 0.03));
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 5),
