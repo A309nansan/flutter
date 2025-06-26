@@ -93,6 +93,7 @@ class _LevelOneOneThreeThinkState extends ConsumerState<LevelOneOneThreeThink>
         parent: popupController,
         curve: Curves.elasticOut,
     );
+
     // 비동기 로직 실행 후 UI 업데이트
     _loadQuestionData().then((_) {
       setState(() {
@@ -109,6 +110,7 @@ class _LevelOneOneThreeThinkState extends ConsumerState<LevelOneOneThreeThink>
     _timerController.dispose();
     submitController.dispose();
     resultController.dispose();
+    popupController.dispose();
     isSubmitted = false;
   }
 
@@ -514,6 +516,7 @@ class _LevelOneOneThreeThinkState extends ConsumerState<LevelOneOneThreeThink>
               ),
             ),
           ),
+
           if(isShowSample)
             Positioned.fill(
               child: Center(

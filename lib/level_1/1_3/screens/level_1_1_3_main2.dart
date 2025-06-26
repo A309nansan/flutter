@@ -19,9 +19,9 @@ import 'package:nansan_flutter/shared/widgets/new_header_widget.dart';
 import 'package:nansan_flutter/shared/widgets/new_question_text.dart';
 import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
 import 'package:screenshot/screenshot.dart';
-
 import '../../../shared/provider/en_riverpod_provider.dart';
 import '../../../shared/widgets/en_result_popup.dart';
+import '../../../shared/widgets/sample_popup.dart';
 
 class LevelOneOneThreeMain2 extends ConsumerStatefulWidget {
   final String problemCode;
@@ -50,15 +50,17 @@ class _LevelOneOneThreeMain2State extends ConsumerState<LevelOneOneThreeMain2>
   bool isEnd = false;
   bool isLoading = true;
   bool isShowResult = false;
+  bool isShowSample = false;
   Map<String, dynamic> problemData = {};
   Map<String, dynamic> answerData = {};
   List<String> selectedAnswers = ['0','0','0','0'];
   late AnimationController submitController;
   late AnimationController resultController;
+  late AnimationController popupController;
   late Animation<double> submitAnimation;
   late Animation<double> resultAnimation;
+  late Animation<double> popupAnimation;
 
-  // 옵션
   List<String> problem1Option = ['0','0','0'];
   List<String> problem2Option = ['0','0','0'];
   List<String> problem3Option = ['0','0','0'];
@@ -75,12 +77,20 @@ class _LevelOneOneThreeMain2State extends ConsumerState<LevelOneOneThreeMain2>
       vsync: this,
       duration: const Duration(milliseconds: 400),
     );
+    popupController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
 
     submitAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: submitController, curve: Curves.elasticOut),
     );
     resultAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: resultController, curve: Curves.elasticOut),
+    );
+    popupAnimation = CurvedAnimation(
+      parent: popupController,
+      curve: Curves.elasticOut,
     );
 
     // 비동기 로직 실행 후 UI 업데이트
@@ -98,11 +108,11 @@ class _LevelOneOneThreeMain2State extends ConsumerState<LevelOneOneThreeMain2>
     _timerController.dispose();
     submitController.dispose();
     resultController.dispose();
+    popupController.dispose();
     isSubmitted = false;
     isEnd = nextProblemCode.isEmpty;
   }
 
-  // problemcode에 따라 데이터 호출하는 함수
   Future<void> _loadQuestionData() async {
     try {
       final response = await _apiService.loadProblemData(problemCode);
@@ -120,7 +130,6 @@ class _LevelOneOneThreeMain2State extends ConsumerState<LevelOneOneThreeMain2>
       EnProblemService.saveContinueProblem(problemCode, childId);
 
       setState(() {
-        // problem과 answer 데이터 저장
         problemData = response.problem;
         answerData = response.answer;
         current = response.current;
@@ -132,7 +141,6 @@ class _LevelOneOneThreeMain2State extends ConsumerState<LevelOneOneThreeMain2>
     }
   }
 
-  // 문제별 문제데이터 처리파트
   void _processProblemData(problemData) {
     List<dynamic> p1 = problemData['p1']['candidates'];
     List<dynamic> p2 = problemData['p2']['candidates'];
@@ -147,15 +155,12 @@ class _LevelOneOneThreeMain2State extends ConsumerState<LevelOneOneThreeMain2>
     debugPrint('$problem1Option');
   }
 
-  // 제출함수(제출하기 버튼 누를시 작동하도록 설정)
   Future<void> _submitAnswer() async {
-    if (isSubmitted) return; // 이미 제출된 경우 중복 제출 방지
+    if (isSubmitted) return;
 
-    // 현재 날짜와 시간 (ISO 8601 형식)
     final now = DateTime.now();
     final dateTime = now.toIso8601String();
 
-    // SubmitRequest 객체 생성
     final submitRequest = SubmitRequest(
       childId: childId,
       problemCode: problemCode,
@@ -168,7 +173,6 @@ class _LevelOneOneThreeMain2State extends ConsumerState<LevelOneOneThreeMain2>
     );
 
     try {
-      // API 서비스 호출
       await _apiService.submitAnswer(jsonEncode(submitRequest.toJson()));
 
       ref.read(problemProgressProvider.notifier).record(problemCode, isCorrect);
@@ -199,10 +203,6 @@ class _LevelOneOneThreeMain2State extends ConsumerState<LevelOneOneThreeMain2>
     try {
       final imageBytes = await screenshotController.capture() as Uint8List;
       if (!context.mounted) return;
-
-      final childProfileJson = await SecureStorageService.getChildProfile();
-      final childProfile = jsonDecode(childProfileJson!);
-      final childId = childProfile['id'];
 
       await ImageService.uploadImage(
         imageBytes: imageBytes,
@@ -267,6 +267,21 @@ class _LevelOneOneThreeMain2State extends ConsumerState<LevelOneOneThreeMain2>
     resultController.forward(from: 0);
   }
 
+  void showSample() {
+    setState(() {
+      isShowSample = true;
+    });
+    popupController.forward(from: 0.0);
+  }
+
+  void closeSample() {
+    popupController.reverse().then((_) {
+      setState(() {
+        isShowSample = false;
+      });
+    });
+  }
+
   void end() async {
     await EnProblemService.clearChapterProblem(childId, problemCode);
     Modular.to.pop();
@@ -308,80 +323,71 @@ class _LevelOneOneThreeMain2State extends ConsumerState<LevelOneOneThreeMain2>
                                     subTextSize: screenWidth * 0.018,
                                   ),
                                   SizedBox(height: screenHeight * 0.01),
-                                  NewQuestionTextWidget(
-                                    questionText:
-                                        '2. 그림의 수를 세고, 알맞은 숫자 이름을 클릭하세요.',
-                                    questionTextSize: screenWidth * 0.03,
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: NewQuestionTextWidget(
+                                          questionText: '2. 그림의 수를 세고, 알맞은 숫자 이름을 선택하세요.',
+                                          questionTextSize: screenWidth * 0.03,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        onPressed: showSample,
+                                        icon: Icon(
+                                          Icons.lightbulb,
+                                          size: 30,
+                                          color: Colors.yellow,
+                                          shadows: [
+                                            BoxShadow(
+                                              color: Colors.black.withAlpha(77),
+                                              blurRadius: 3,
+                                              offset: const Offset(1, 2),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                   SizedBox(height: screenWidth * 0.05),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      QuestionBoxString(
-                                        width: screenWidth,
-                                        height: screenHeight,
-                                        object: problemData['object'],
-                                        number: problemData['p1']['number'],
-                                        options: problem1Option,
-                                        questionId: 0,
-                                        onAnswerSelected: (questionId, selected) {
-                                          setState(() {
-                                            selectedAnswers[questionId] = selected;
-                                          });
-                                        },
-                                        selectedAnswer: selectedAnswers[0],
-                                      ),
-                                      SizedBox(width: screenHeight * 0.03),
-                                      QuestionBoxString(
-                                        width: screenWidth,
-                                        height: screenHeight,
-                                        object: problemData['object'],
-                                        number: problemData['p2']['number'],
-                                        options: problem2Option,
-                                        questionId: 1,
-                                        onAnswerSelected: (questionId, selected) {
-                                          setState(() {
-                                            selectedAnswers[questionId] = selected;
-                                          });
-                                        },
-                                        selectedAnswer: selectedAnswers[1],
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: screenHeight * 0.03),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      QuestionBoxString(
-                                        width: screenWidth,
-                                        height: screenHeight,
-                                        object: problemData['object'],
-                                        number: problemData['p3']['number'],
-                                        options: problem3Option,
-                                        questionId: 2,
-                                        onAnswerSelected: (questionId, selected) {
-                                          setState(() {
-                                            selectedAnswers[questionId] = selected;
-                                          });
-                                        },
-                                        selectedAnswer: selectedAnswers[2],
-                                      ),
-                                      SizedBox(width: screenHeight * 0.03),
-                                      QuestionBoxString(
-                                        width: screenWidth,
-                                        height: screenHeight,
-                                        object: problemData['object'],
-                                        number: problemData['p4']['number'],
-                                        options: problem4Option,
-                                        questionId: 3,
-                                        onAnswerSelected: (questionId, selected) {
-                                          setState(() {
-                                            selectedAnswers[questionId] = selected;
-                                          });
-                                        },
-                                        selectedAnswer: selectedAnswers[3],
-                                      ),
-                                    ],
+                                  Column(
+                                    children: List.generate(2, (row) {
+                                      return Padding(
+                                        padding: EdgeInsets.only(top: row == 0 ? screenHeight * 0.01 : screenHeight * 0.03),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: List.generate(2, (col) {
+                                            final index = row * 2 + col;
+                                            final itemKey = 'p${index + 1}';
+                                            final number = problemData[itemKey]['number'];
+                                            final options = index == 0
+                                                ? problem1Option
+                                                : index == 1
+                                                ? problem2Option
+                                                : index == 2
+                                                ? problem3Option
+                                                : problem4Option;
+
+                                            return Padding(
+                                              padding: EdgeInsets.only(left: col == 1 ? screenHeight * 0.03 : 0),
+                                              child: QuestionBoxString(
+                                                width: screenWidth,
+                                                height: screenHeight,
+                                                object: problemData['object'],
+                                                number: number,
+                                                options: options,
+                                                questionId: index,
+                                                selectedAnswer: selectedAnswers[index],
+                                                onAnswerSelected: (questionId, selected) {
+                                                  setState(() {
+                                                    selectedAnswers[questionId] = selected!;
+                                                  });
+                                                },
+                                              ),
+                                            );
+                                          }),
+                                        ),
+                                      );
+                                    }),
                                   ),
                                 ],
                               ),
@@ -481,6 +487,32 @@ class _LevelOneOneThreeMain2State extends ConsumerState<LevelOneOneThreeMain2>
                       ),
                     ),
                   ),
+
+                  if(isShowSample)
+                    Positioned.fill(
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: closeSample,
+                          child: FadeTransition(
+                            opacity: popupAnimation,
+                            child: Container(
+                              color: Colors.black54,
+                              child: ScaleTransition(
+                                scale: popupAnimation,
+                                child: SamplePopup(
+                                  scaleAnimation: const AlwaysStoppedAnimation(1.0),
+                                  onClose: closeSample,
+                                  desc:
+                                  "\u{1F4A1} 그림이 나타내는 수만큼 알맞은 숫자 이름을 선택해보세요.",
+                                  image: "assets/images/level1_1_3_main2_sample.png",
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
                   if (showSubmitPopup)
                     Positioned.fill(
                       child: Stack(
