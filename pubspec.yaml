@@ -89,6 +89,7 @@ dependencies:
   value_notifier_tools: ^0.1.2
   material_dialogs: ^1.1.5
   introduction_screen: ^3.1.17
+  animated_toggle_switch: ^0.8.5
 
 dev_dependencies:
   flutter_test:
