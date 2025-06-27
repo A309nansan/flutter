@@ -26,6 +26,7 @@ class Draggable2Card extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 4.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
+          color: Colors.white,
           boxShadow: [
             BoxShadow(
               color: Colors.black54,

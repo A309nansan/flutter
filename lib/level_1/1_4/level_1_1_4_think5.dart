@@ -204,6 +204,8 @@ class Level114Think5State extends ConsumerState<Level114Think5>
     inputData[3] = q4Zone.cards.length;
 
     selectedAnswers["answer"] = inputData;
+    debugPrint("✅ 선택된 답안: $selectedAnswers");
+    debugPrint("✅ 정답: $answerData");
   }
 
   // 정답 여부 체크(보통은 이거쓰면됨)
@@ -395,62 +397,88 @@ class Level114Think5State extends ConsumerState<Level114Think5>
                                         questionTextSize: screenWidth * 0.03,
                                       ),
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
                                         children: [
-                                          Text('            <보기>와 같이 알맞은 동그라미의 개수를 오른쪽의',
-                                            style: TextStyle(fontSize: screenWidth * 0.03, fontWeight: FontWeight.bold),),
+                                          SizedBox(width: screenWidth * 0.06),
+                                          Expanded(
+                                            child: Text(
+                                              '<보기>와 같이 알맞은 동그라미의 개수를 오른쪽의',
+                                              style: TextStyle(
+                                                fontSize: screenWidth * 0.03,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
                                         ],
                                       ),
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
                                         children: [
-                                          Text('            주머니를 열어 빈칸에 넣어 보세요.',
-                                            style: TextStyle(fontSize: screenWidth * 0.03, fontWeight: FontWeight.bold),),
+                                          SizedBox(width: screenWidth * 0.06),
+                                          Expanded(
+                                            child: Text(
+                                              '주머니를 열어 빈칸에 넣어 보세요.',
+                                              style: TextStyle(
+                                                fontSize: screenWidth * 0.03,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
                                         ],
                                       ),
                                       SizedBox(height: screenHeight * 0.02),
-                                      // 여기에 문제 푸는 ui 및 삽입
                                       Container(
                                         width: screenWidth * 0.9,
                                         height: screenHeight * 0.15,
                                         decoration: BoxDecoration(
                                             border : Border.all(width: 2, color: Colors.orangeAccent,),
                                             borderRadius: BorderRadius.circular(10)),
-                                        child: Column(crossAxisAlignment: CrossAxisAlignment.center,
-                                                      children: [Container(
-                                                        alignment: Alignment.center,
-                                                        width: screenWidth * 0.07,
-                                                        height: screenHeight * 0.025,
-                                                        color: Colors.orangeAccent,
-                                                        child: Text('<보기>', style: TextStyle(fontSize: screenWidth * 0.02, fontWeight: FontWeight.bold),),),
-                                                                SizedBox(height: screenHeight * 0.01,),
-                                                                Row(
-                                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                                                  children: [
-                                                                    Container(width: screenWidth * 0.25,
-                                                                      height: screenHeight *0.1,
-                                                                      decoration: BoxDecoration(
-                                                                          borderRadius: BorderRadius.circular(10),
-                                                                          border: Border.all(color: Colors.lightBlue, width: 2)),
-                                                                        child: Image.asset('assets/images/number/dot/1.png'),
-                                                                      ),
-                                                                    SizedBox(width: screenWidth * 0.05),
-                                                                    Container(width: screenWidth * 0.3,
-                                                                      height: screenHeight * 0.1,
-                                                                      decoration: BoxDecoration(border: Border.all(width: 1, color: Colors.lightBlue)),
-                                                                      child: Image.asset('assets/images/number/dot/4.png'),)
-                                                                    ,
-                                                                    Icon(Icons.arrow_right_alt_outlined, size: screenWidth * 0.07,),
-                                                                    Container(width: screenWidth * 0.13,
-                                                                              height: screenHeight * 0.1,
-                                                                              decoration: BoxDecoration(border: Border.all(width: 1, color: Colors.lightBlue)),
-                                                                    child: Image.asset('assets/images/number/numeric1/5.png'),)
-                                                                  ]
-                                                                  )
-                                                      ]
-                                          )
-                                        ),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              alignment: Alignment.center,
+                                              width: screenWidth * 0.07,
+                                              height: screenHeight * 0.025,
+                                              color: Colors.orangeAccent,
+                                              child: Text(
+                                                '<보기>',
+                                                style: TextStyle(
+                                                    fontSize: screenWidth * 0.02,
+                                                    fontWeight: FontWeight.bold),
+                                                ),
+                                            ),
+                                            SizedBox(height: screenHeight * 0.01,),
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              children: [
+                                                Container(width: screenWidth * 0.25,
+                                                  height: screenHeight *0.1,
+                                                  decoration: BoxDecoration(
+                                                      borderRadius: BorderRadius.circular(10),
+                                                      border: Border.all(color: Colors.lightBlue, width: 2)
+                                                  ),
+                                                  child: Image.asset('assets/images/number/dot/1.png'),
+                                                ),
+                                                SizedBox(width: screenWidth * 0.05),
+                                                Container(width: screenWidth * 0.3,
+                                                  height: screenHeight * 0.1,
+                                                  decoration: BoxDecoration(border: Border.all(width: 1, color: Colors.lightBlue)),
+                                                  child: Image.asset('assets/images/number/dot/4.png'),
+                                                ),
+                                                Icon(Icons.arrow_right_alt_outlined, size: screenWidth * 0.07,),
+                                                Container(
+                                                  width: screenWidth * 0.13,
+                                                  height: screenHeight * 0.1,
+                                                  decoration: BoxDecoration(
+                                                      border: Border.all(width: 1, color: Colors.lightBlue)
+                                                  ),
+                                                  child: Image.asset('assets/images/number/numeric1/5.png'),
+                                                )
+                                              ]
+                                            )
+                                          ]
+                                        )
+                                      ),
                                       SizedBox(height: screenHeight * 0.02,),
                                       Row(
                                           mainAxisAlignment: MainAxisAlignment.center,

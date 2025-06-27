@@ -61,7 +61,6 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
     'second': GlobalKey<HandwritingRecognitionZoneState>(),
   };
 
-  // 페이지 실행 시 작동하는 함수. 수정 필요 x
   @override
   void initState() {
     super.initState();
@@ -80,7 +79,7 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
     resultAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: resultController, curve: Curves.elasticOut),
     );
-    // 비동기 로직 실행 후 UI 업데이트
+
     _loadQuestionData().then((_) {
       setState(() {
         isLoading = false;
@@ -90,7 +89,6 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
     });
   }
 
-  // 페이지를 나갈 때, 실행되는 함수. 수정 필요 x
   @override
   void dispose() {
     _timerController.dispose();
@@ -100,7 +98,6 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
     super.dispose();
   }
 
-  // 페이지 실행 시, 문제 데이터를 불러오는 함수. 수정 필요 x
   Future<void> _loadQuestionData() async {
     try {
       final response = await _apiService.loadProblemData(problemCode);
@@ -125,13 +122,10 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
 
     final saved = await EnProblemService.loadProblemResults(problemCode, childId);
     ref.read(problemProgressProvider.notifier).setFromStorage(saved);
-    final progress = ref.read(problemProgressProvider);
-    debugPrint("📦 불러온 문제 기록: $progress");
 
     EnProblemService.saveContinueProblem(problemCode, childId);
   }
 
-  // 문제 제출할때 함수. 수정 필요 x
   Future<void> _submitAnswer() async {
     if (isSubmitted) return;
     final submitRequest = SubmitRequest(
@@ -165,16 +159,13 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
     }
   }
 
-  // 문제 데이터 받아온 후, 문제에 맞게 데이터 조작
   void _processProblemData(Map problemData) {}
 
-  // 문제 푸는 로직 수행할때, seletedAnswers 데이터 넣는 로직
   Future<void> _processInputData() async {
     selectedAnswers["p1"][0] = int.tryParse(await zoneKeys["first"]!.currentState!.recognize()) ?? 0;
     selectedAnswers["p1"][1] = int.tryParse(await zoneKeys["second"]!.currentState!.recognize()) ?? 0;
   }
 
-  // 정답 여부 체크(보통은 이거쓰면됨)
   Future<void> checkAnswer() async {
     await _processInputData();
     isCorrect = const DeepCollectionEquality().equals(
@@ -184,7 +175,6 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
     _submitAnswer();
   }
 
-  // 문제푸는 스크린 이미지 서버로 전송. 수정 필요 x
   Future<void> submitActivity(BuildContext context) async {
     try {
       final imageBytes = await screenshotController.capture() as Uint8List;
@@ -200,7 +190,6 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
     }
   }
 
-  // 다음페이지로 가는 함수. 수정 필요 x
   void onNextPressed() async {
     final nextCode = nextProblemCode;
     if (nextCode.isEmpty) {
@@ -264,7 +253,6 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
     Modular.to.pop();
   }
 
-  // UI 담당
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -299,19 +287,23 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
                           subTextSize: screenWidth * 0.018,
                         ),
                         SizedBox(height: screenHeight * 0.01),
-                        NewQuestionTextWidget(
-                          questionText:
-                          '1. 동그라미의 수를 세고, <보기>와 같이 알맞은 숫자를 적어 봅시다.',
-                          questionTextSize: screenWidth * 0.03,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: NewQuestionTextWidget(
+                                questionText: '1. 동그라미의 수를 세고, 네모 칸에 알맞은 숫자를 적어 봅시다.',
+                                questionTextSize: screenWidth * 0.03,
+                              ),
+                            ),
+                          ],
                         ),
                         SizedBox(height: screenHeight * 0.04),
-                        // 여기에 문제 푸는 ui 및 삽입
                         Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            DotContainer(
-                              ans: problemData["p1"][0],
-                            ),
+                            // DotContainer(
+                            //   ans: problemData["p1"][0],
+                            // ),
                             SizedBox(height: screenHeight * 0.05),
                             DotContainer(
                               ans: problemData["p1"][1],
@@ -363,10 +355,10 @@ class LevelOneOneFourThink1State extends ConsumerState<LevelOneOneFourThink1> wi
                                   borderRadius: 10,
                                   onPressed: () async {
                                     if (isSubmitted) return;
+                                    await checkAnswer();
                                     setState(() {
                                       showSubmitPopup = true;
                                     });
-                                    await checkAnswer();
                                     await submitActivity(context);
                                     submitController.forward();
                                   },
