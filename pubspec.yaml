@@ -173,6 +173,9 @@ flutter:
     - assets/lottie/
     - assets/numbers/
     - assets/tflite/
+    - assets/images/profile/characters/
+    - assets/images/profile/clothes/
+    - assets/images/profile/accessories/
     - .env
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

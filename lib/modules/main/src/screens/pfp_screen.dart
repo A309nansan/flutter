@@ -1,28 +1,94 @@
 import 'dart:convert';
+import 'dart:io';
+
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 import 'package:nansan_flutter/shared/widgets/appbar_widget.dart';
-import 'package:nansan_flutter/shared/widgets/new_header_widget.dart';
-import 'package:nansan_flutter/shared/widgets/new_question_text.dart';
+import 'package:nansan_flutter/shared/services/request_service.dart';
+import 'package:nansan_flutter/shared/services/secure_storage_service.dart';
+import 'package:collection/collection.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'dart:ui' as ui;
+import 'dart:typed_data';
 
-enum LayerType { base, layer1, layer2 }
+class Item {
+  final int? id;
+  final int itemCode;
+  bool equipped;
 
-class ProfileLayer {
-  final LayerType type;
-  final String label;
-  final String folderName;
-  List<String> assetPaths;
-  String? selectedAsset;
+  Item({this.id, required this.itemCode, this.equipped = false});
+}
 
-  ProfileLayer({
-    required this.type,
-    required this.label,
-    required this.folderName,
-    this.assetPaths = const [],
-    this.selectedAsset,
+class EquippedItems {
+  final List<Item> backgrounds;
+  final List<Item> characters;
+  final List<Item> clothes;
+  final List<Item> accessories;
+
+  EquippedItems({
+    required this.backgrounds,
+    required this.characters,
+    required this.clothes,
+    required this.accessories,
   });
+
+  factory EquippedItems.fromJson(Map<String, dynamic> json) {
+    return EquippedItems(
+      backgrounds: (json['backgrounds'] as List<dynamic>? ?? []).map((e) => Item(
+        id: e['id'],
+        itemCode: e['itemCode'],
+        equipped: e['equipped'] ?? false,
+      )).toList(),
+      characters: (json['characters'] as List<dynamic>? ?? []).map((e) => Item(
+        id: e['id'],
+        itemCode: e['itemCode'],
+        equipped: e['equipped'] ?? false,
+      )).toList(),
+      clothes: (json['clothes'] as List<dynamic>? ?? []).map((e) => Item(
+        id: e['id'],
+        itemCode: e['itemCode'],
+        equipped: e['equipped'] ?? false,
+      )).toList(),
+      accessories: (json['accessories'] as List<dynamic>? ?? []).map((e) => Item(
+        id: e['id'],
+        itemCode: e['itemCode'],
+        equipped: e['equipped'] ?? false,
+      )).toList(),
+    );
+  }
+}
+
+Gradient getGradientByCode(int itemCode) {
+  const Map<int, Color> bottomColors = {
+    101: Color(0xFFBFF0F9),
+    102: Color(0xFFD6EFBF),
+    103: Color(0xFFEFEEBF),
+    104: Color(0xFFBEF5DD),
+    105: Color(0xFFF6E1C1),
+    106: Color(0xFFFFD6CD),
+    107: Color(0xFFFFCEF3),
+    108: Color(0xFFE8D5FF),
+    109: Color(0xFFD7DDFF),
+    110: Color(0xFFD2E4FF),
+  };
+
+  final bottom = bottomColors[itemCode] ?? Colors.white;
+
+  Color lighten(Color color, double amount) {
+    return Color.lerp(color, Colors.white, amount) ?? color;
+  }
+
+  final top = lighten(bottom, 0.5);
+
+  return LinearGradient(
+    colors: [top, bottom],
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+  );
 }
 
 class ProfilePicPage extends ConsumerStatefulWidget {
@@ -33,188 +99,591 @@ class ProfilePicPage extends ConsumerStatefulWidget {
 }
 
 class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
-  List<ProfileLayer> layers = [];
-  int selectedTabIndex = 0;
+  int? _coinBalance;
+  bool _isLoadingCoins = false;
+  bool _isLoadingEquip = false;
+  EquippedItems? _equipped;
+  final GlobalKey previewKey = GlobalKey();
+
+  final ScrollController _itemScrollController = ScrollController();
+
+  String selectedCategory = 'characters';
+
+  final List<String> categoryOrder = [
+    'characters',
+    'clothes',
+    'accessories',
+    'backgrounds',
+  ];
+
+  final Map<String, List<int>> codeRanges = {
+    'backgrounds': List.generate(10, (i) => 101 + i),
+    'characters': List.generate(2, (i) => 201 + i),
+    'clothes': List.generate(5, (i) => 301 + i),
+    'accessories': List.generate(5, (i) => 401 + i),
+  };
+
+  final Map<String, Set<int>> selectedItemCodesByCategory = {
+    'backgrounds': {},
+    'characters': {},
+    'clothes': {},
+    'accessories': {},
+  };
+
+  final Map<String, List<Item>> ownedItemsByCategory = {
+    'backgrounds': [],
+    'characters': [],
+    'clothes': [],
+    'accessories': [],
+  };
+
+  final Map<String, int> categoryIdMap = {
+    'backgrounds': 100,
+    'characters': 200,
+    'clothes': 300,
+    'accessories': 400,
+  };
+
+  List<Item> _generateItems(String category) {
+    final codes = codeRanges[category] ?? [];
+    final ownedItems = ownedItemsByCategory[category] ?? [];
+
+    return codes.map((code) {
+      final ownedItem = ownedItems.firstWhere(
+            (item) => item.itemCode == code,
+        orElse: () => Item(id: null, itemCode: code, equipped: false),
+      );
+
+      return Item(
+        id: ownedItem.id,
+        itemCode: code,
+        equipped: selectedItemCodesByCategory[category]?.contains(code) ?? false,
+      );
+    }).toList();
+  }
+
+  Future<int?> getUserId() async {
+    final childProfileJson = await SecureStorageService.getChildProfile();
+    final childProfile = jsonDecode(childProfileJson!);
+    return childProfile['id'];
+  }
+
+  Future<void> _fetchCoinBalance() async {
+    final userId = await getUserId();
+    if (userId == null) return;
+    setState(() => _isLoadingCoins = true);
+    try {
+      final response = await RequestService.get('/user/$userId/avatar/coins');
+      setState(() => _coinBalance = response['coin'] ?? 0);
+    } catch (e) {
+      debugPrint('❌ Failed to fetch coins: $e');
+    } finally {
+      setState(() => _isLoadingCoins = false);
+    }
+  }
+
+  Future<void> _loadEquipped() async {
+    final userId = await getUserId();
+    if (userId == null) return;
+    setState(() => _isLoadingEquip = true);
+    try {
+      final data = await RequestService.get('/user/$userId/avatar/items');
+      _equipped = EquippedItems.fromJson(data);
+
+      setState(() {
+        ownedItemsByCategory['backgrounds'] = _equipped!.backgrounds;
+        ownedItemsByCategory['characters'] = _equipped!.characters;
+        ownedItemsByCategory['clothes'] = _equipped!.clothes;
+        ownedItemsByCategory['accessories'] = _equipped!.accessories;
+
+        selectedItemCodesByCategory['backgrounds'] =
+            _equipped!.backgrounds.where((e) => e.equipped).map((e) => e.itemCode).toSet();
+        selectedItemCodesByCategory['characters'] =
+            _equipped!.characters.where((e) => e.equipped).map((e) => e.itemCode).toSet();
+        selectedItemCodesByCategory['clothes'] =
+            _equipped!.clothes.where((e) => e.equipped).map((e) => e.itemCode).toSet();
+        selectedItemCodesByCategory['accessories'] =
+            _equipped!.accessories.where((e) => e.equipped).map((e) => e.itemCode).toSet();
+      });
+    } catch (e) {
+      debugPrint('❌ Failed to load equipped items: $e');
+    } finally {
+      setState(() => _isLoadingEquip = false);
+    }
+  }
+
+  bool _hasUnownedItems(String category) {
+    final ownedCodes = ownedItemsByCategory[category]?.map((e) => e.itemCode).toSet() ?? {};
+    final allCodes = codeRanges[category]?.toSet() ?? {};
+    return allCodes.difference(ownedCodes).isNotEmpty;
+  }
+
+  bool get _hasChanges {
+    if (_equipped == null) return false;
+    for (final category in categoryOrder) {
+      final original = {
+        for (final item in ownedItemsByCategory[category] ?? [])
+          if (item.equipped) item.itemCode,
+      };
+      final current = selectedItemCodesByCategory[category] ?? {};
+      if (!const SetEquality().equals(original, current)) return true;
+    }
+    return false;
+  }
+
+  Future<void> _saveChanges() async {
+    final userId = await getUserId();
+
+    Item? singleSelectedItem(String category) {
+      final selectedCodes = selectedItemCodesByCategory[category] ?? {};
+      final ownedItems = ownedItemsByCategory[category] ?? [];
+      if (selectedCodes.isEmpty) return null;
+      final code = selectedCodes.first;
+      return ownedItems.firstWhere(
+            (item) => item.itemCode == code,
+        orElse: () => Item(id: null, itemCode: code),
+      );
+    }
+
+    List<Item> multiSelectedItems(String category) {
+      final selectedCodes = selectedItemCodesByCategory[category] ?? {};
+      final ownedItems = ownedItemsByCategory[category] ?? [];
+      return selectedCodes.map((code) {
+        return ownedItems.firstWhere(
+              (item) => item.itemCode == code,
+          orElse: () => Item(id: null, itemCode: code),
+        );
+      }).toList();
+    }
+
+    final body = {
+      'background': (() {
+        final item = singleSelectedItem('backgrounds');
+        return item == null
+            ? null
+            : {'id': item.id, 'itemCode': item.itemCode};
+      })(),
+      'character': (() {
+        final item = singleSelectedItem('characters');
+        return item == null
+            ? null
+            : {'id': item.id, 'itemCode': item.itemCode};
+      })(),
+      'clothes': multiSelectedItems('clothes')
+          .map((item) => {'id': item.id, 'itemCode': item.itemCode})
+          .toList(),
+      'accessories': multiSelectedItems('accessories')
+          .map((item) => {'id': item.id, 'itemCode': item.itemCode})
+          .toList(),
+    };
+
+    try {
+      final response = await RequestService.put(
+        '/user/$userId/avatar/items/equip',
+        data: body,
+      );
+      await _loadEquipped();
+
+      await SecureStorageService.saveChildAvatar(body);
+      final childProfileJson = await SecureStorageService.getChildProfile();
+      final childProfile = jsonDecode(childProfileJson!);
+      print(childProfile);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('저장되었습니다.')),
+      );
+    } catch (e, stacktrace) {
+      debugPrint('❌ Save failed: $e');
+      debugPrint('Stacktrace: $stacktrace');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('저장에 실패했습니다.')),
+      );
+    }
+  }
+
+  Future<void> _openBox() async {
+    final userId = await getUserId();
+    if (userId == null) return;
+
+    final categoryId = categoryIdMap[selectedCategory];
+    if (categoryId == null) return;
+
+    try {
+      final response = await RequestService.post(
+        '/user/$userId/avatar/items/draw/$categoryId',
+      );
+
+      final newItem = Item(
+        id: response['id'],
+        itemCode: response['itemCode'],
+        equipped: false,
+      );
+
+      setState(() {
+        ownedItemsByCategory[selectedCategory]!.add(newItem);
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('아이템을 획득했습니다!')),
+      );
+    } catch (e, stack) {
+      debugPrint('❌ Box open failed: $e');
+      debugPrint('Stacktrace: $stack');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('상자 열기에 실패했습니다.')),
+      );
+    }
+  }
+
+  Future<bool> requestStoragePermission() async {
+    if (Platform.isAndroid) {
+      final androidInfo = await DeviceInfoPlugin().androidInfo;
+      final sdk = androidInfo.version.sdkInt;
+
+      if (sdk >= 33) {
+        final status = await Permission.photos.request();
+        return status.isGranted;
+      } else {
+        final status = await Permission.storage.request();
+        return status.isGranted;
+      }
+    } else if (Platform.isIOS) {
+      final status = await Permission.photos.request();
+      return status.isGranted;
+    }
+    // Fallback for other platforms
+    return true;
+  }
+
+  Future<void> _downloadAvatarPreview(GlobalKey previewKey, BuildContext context) async {
+    final hasPermission = await requestStoragePermission();
+    if (!hasPermission) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('저장 권한이 필요합니다.')),
+      );
+      return;
+    }
+
+    try {
+      final boundary = previewKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+
+      final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+      final ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      final Uint8List pngBytes = byteData!.buffer.asUint8List();
+
+      final result = await ImageGallerySaverPlus.saveImage(
+        pngBytes,
+        quality: 100,
+        name: 'nansan_avatar_${DateTime.now().millisecondsSinceEpoch}',
+      );
+
+      debugPrint('🖼️ Save result: $result');
+
+      if (result['isSuccess'] == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('이미지가 갤러리에 저장되었습니다.')),
+        );
+      } else {
+        throw Exception("Gallery save failed");
+      }
+    } catch (e, stacktrace) {
+      debugPrint('❌ Download failed: $e');
+      debugPrint('🧱 Stacktrace:\n$stacktrace');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('다운로드에 실패했습니다.')),
+      );
+    }
+  }
+
+  Widget _buildBoxButtonTile() {
+    final sreenHeight = MediaQuery.of(context).size.height;
+    final hasUnowned = _hasUnownedItems(selectedCategory);
+    return GestureDetector(
+      onTap: hasUnowned ? _openBox : null,
+      child: Container(
+        margin: const EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: hasUnowned ? const Color(0xFFA26A13) : const Color(0xFFF9DBAA),
+          ),
+          borderRadius: BorderRadius.circular(12),
+          color: const Color(0xFFFFF9EF),
+        ),
+        child: Center(
+          child: Text(
+            hasUnowned ? '상자 열기' : '모두 보유',
+            style: TextStyle(
+              fontSize: sreenHeight * 0.03,
+              fontWeight: FontWeight.bold,
+              color: hasUnowned ? const Color(0xFFA26A13) : Colors.grey,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   void initState() {
     super.initState();
-    _loadAssets();
-  }
-
-  Future<void> _loadAssets() async {
-    final manifestContent = await rootBundle.loadString('AssetManifest.json');
-    final Map<String, dynamic> manifestMap = json.decode(manifestContent);
-
-    List<ProfileLayer> loadedLayers = [
-      ProfileLayer(
-        type: LayerType.base,
-        label: 'Base',
-        folderName: 'base',
-      ),
-      ProfileLayer(
-        type: LayerType.layer1,
-        label: 'Layer 1',
-        folderName: 'layer1',
-      ),
-      ProfileLayer(
-        type: LayerType.layer2,
-        label: 'Layer 2',
-        folderName: 'layer2',
-      ),
-    ];
-
-    for (var layer in loadedLayers) {
-      final pathPrefix = 'assets/images/profile/${layer.folderName}/';
-      final layerAssets = manifestMap.keys
-          .where((key) => key.startsWith(pathPrefix))
-          .toList();
-
-      layer.assetPaths = layerAssets;
-      if (layer.assetPaths.isNotEmpty) {
-        layer.selectedAsset = layer.assetPaths.first;
-      }
-    }
-
-    setState(() {
-      layers = loadedLayers;
-    });
+    _fetchCoinBalance();
+    _loadEquipped();
   }
 
   @override
   Widget build(BuildContext context) {
+    final sreenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+    final currentItems = _generateItems(selectedCategory);
 
     return Scaffold(
       appBar: AppbarWidget(
-        title: null,
         leading: IconButton(
-          icon: const Icon(Icons.chevron_left, size: 40.0),
+          icon: const Icon(Icons.chevron_left, size: 40),
           onPressed: () => Modular.to.pop(),
         ),
+        title: null,
       ),
-      body: layers.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            NewQuestionTextWidget(
-              questionText: '프로필 사진 변경',
-              questionTextSize: screenWidth * 0.03,
-            ),
-            SizedBox(height: screenHeight * 0.02),
-
-            // === PREVIEW BOX ===
-            Container(
-              width: 200,
-              height: 200,
-              color: Colors.grey[300],
-              child: Stack(
-                alignment: Alignment.center,
-                children: layers
-                    .where((layer) => layer.selectedAsset != null)
-                    .map((layer) => Image.asset(layer.selectedAsset!))
-                    .toList(),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // === TABS ===
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(layers.length, (index) {
-                final isSelected = selectedTabIndex == index;
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        selectedTabIndex = index;
-                      });
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                      isSelected ? Colors.blue : Colors.grey,
-                    ),
-                    child: Text(layers[index].label),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    await _downloadAvatarPreview(previewKey, context);
+                  },
+                  icon: const Icon(Icons.download, size: 28),
+                  label: const Text('다운로드', style: TextStyle(fontSize: 20)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFFF9EF),
+                    foregroundColor: const Color(0xFFA26A13),
+                    minimumSize: const Size(150, 60),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   ),
-                );
-              }),
+                ),
+                _isLoadingCoins
+                    ? const CircularProgressIndicator(strokeWidth: 2)
+                    : Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFF9EF),
+                    border: Border.all(color: const Color(0xFFF9DBAA)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text.rich(
+                    TextSpan(children: [
+                      const TextSpan(text: '🥕 ', style: TextStyle(fontSize: 28)),
+                      TextSpan(
+                        text: 'x $_coinBalance',
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFA26A13),
+                        ),
+                      ),
+                    ]),
+                  ),
+                ),
+              ],
             ),
-
-            const SizedBox(height: 8),
-
-            // === IMAGE GRID ===
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 3,
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 8,
-                children: [
-                  // NONE option
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        layers[selectedTabIndex].selectedAsset = null;
-                      });
-                    },
+          ),
+          Container(
+            width: screenWidth * 0.75,
+            height: screenWidth * 0.75,
+            decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
+            child: Stack(
+              children: [
+                RepaintBoundary(
+                  key: previewKey,
+                  child: Stack(
+                    children: [
+                      // background, character, clothes, accessories only
+                      if (selectedItemCodesByCategory['backgrounds']!.isNotEmpty)
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: getGradientByCode(
+                              selectedItemCodesByCategory['backgrounds']!.first,
+                            ),
+                          ),
+                        ),
+                      ...['characters', 'clothes', 'accessories'].expand((category) {
+                        final codes = selectedItemCodesByCategory[category]!;
+                        return codes.map((code) => Image.asset(
+                          'assets/images/profile/$category/$code.png',
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => const SizedBox(),
+                        ));
+                      }),
+                    ],
+                  ),
+                ),
+                // Save button is outside the captured area
+                if (_hasChanges)
+                  Positioned(
+                    bottom: 24,
+                    right: 0,
+                    child: ElevatedButton(
+                      onPressed: _saveChanges,
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: const Color(0xFFA26A13),
+                        backgroundColor: Colors.white,
+                        shape: const CircleBorder(),
+                        elevation: 0,
+                        padding: EdgeInsets.all(screenWidth * 0.05),
+                      ),
+                      child: const Text(
+                        '저장하기',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          SizedBox(height: sreenHeight * 0.01),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: categoryOrder.map((category) {
+              final label = {
+                'backgrounds': '배경',
+                'characters': '캐릭터',
+                'clothes': '의상',
+                'accessories': '악세사리',
+              }[category]!;
+              final isSelected = selectedCategory == category;
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6),
+                child: GestureDetector(
+                  onTap: () => setState(() => selectedCategory = category),
+                  child: Container(
+                    width: screenWidth * 0.18,
+                    height: screenWidth * 0.1,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: isSelected ? Colors.white : const Color(0xFFFFF9EF),
+                      border: Border.all(color: const Color(0xFFF9DBAA)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        label,
+                        style: TextStyle(
+                          fontSize: sreenHeight * 0.025, // 기준 크기. 자동 축소
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFA26A13),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+          SizedBox(height: sreenHeight * 0.01),
+          Expanded(
+            child: GridView.count(
+              controller: _itemScrollController,
+              crossAxisCount: 4,
+              padding: const EdgeInsets.all(16),
+              childAspectRatio: 1,
+              children: [
+                _buildBoxButtonTile(),
+                ...currentItems.map((item) {
+                  final isSelected =
+                  selectedItemCodesByCategory[selectedCategory]!.contains(item.itemCode);
+                  return GestureDetector(
+                    onTap: item.id == null
+                        ? null
+                        : () => setState(() {
+                      final set = selectedItemCodesByCategory[selectedCategory]!;
+                      if (selectedCategory == 'clothes' ||
+                          selectedCategory == 'accessories') {
+                        isSelected ? set.remove(item.itemCode) : set.add(item.itemCode);
+                      } else {
+                        set.clear();
+                        set.add(item.itemCode);
+                      }
+                    }),
                     child: Container(
+                      margin: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
                         border: Border.all(
-                          color: layers[selectedTabIndex].selectedAsset == null
-                              ? Colors.blue
-                              : Colors.transparent,
-                          width: 3,
+                          color:
+                          isSelected ? const Color(0xFFA26A13) : const Color(0xFFF9DBAA),
+                          width: 4,
                         ),
-                        borderRadius: BorderRadius.circular(8),
-                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(12),
+                        color: const Color(0xFFFFF9EF),
                       ),
-                      child: const Center(
-                        child: Text(
-                          '없음',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                      child: Stack(
+                        children: [
+                          Positioned.fill(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Stack(
+                                fit: StackFit.expand,
+                                children: [
+                                  if (selectedCategory == 'backgrounds')
+                                    Stack(
+                                      fit: StackFit.expand,
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            // item.id가 null이면 회색 배경, 아니면 gradient
+                                            color: item.id == null
+                                                ? Colors.grey.withOpacity(0.6)
+                                                : null,
+                                            gradient: item.id == null
+                                                ? null
+                                                : getGradientByCode(item.itemCode),
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  else
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.asset(
+                                        'assets/images/profile/$selectedCategory/${item.itemCode}.png',
+                                        fit: BoxFit.cover,
+                                        color: item.id == null
+                                            ? Colors.grey.withOpacity(0.6)
+                                            : null,
+                                        colorBlendMode: item.id == null
+                                            ? BlendMode.saturation
+                                            : null,
+                                        errorBuilder: (_, __, ___) =>
+                                        const Center(child: Text("No image")),
+                                      ),
+                                    ),
+                                  if (item.id == null)
+                                    Container(color: Colors.white.withOpacity(0.5)),
+                                ],
+                              ),
+                            ),
                           ),
-                        ),
+                          if (isSelected)
+                            const Positioned(
+                              top: 8,
+                              right: 8,
+                              child: Icon(Icons.check_circle, color: Color(0xFFA26A13), size: 36,),
+                            ),
+                        ],
                       ),
                     ),
-                  ),
-
-                  // Image options
-                  ...layers[selectedTabIndex].assetPaths.map((path) {
-                    final isSelected = layers[selectedTabIndex].selectedAsset == path;
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          layers[selectedTabIndex].selectedAsset = path;
-                        });
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: isSelected ? Colors.blue : Colors.transparent,
-                            width: 3,
-                          ),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(5),
-                          child: Image.asset(
-                            path,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
-                ],
-              ),
+                  );
+                }).toList(),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
