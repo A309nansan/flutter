@@ -9,15 +9,19 @@ import '../../../auth/src/services/auth_service.dart';
 class ProfilePopupMenu extends StatelessWidget {
   const ProfilePopupMenu({super.key});
 
-  Future<String?> _getProfileImg() async {
+  Future<Map<String, dynamic>?> _getEquipItems() async {
     try {
       final jsonStr = await SecureStorageService.getChildProfile();
       if (jsonStr == null) return null;
 
       final profile = jsonDecode(jsonStr);
-      return profile['profileImageUrl'] ?? '';
+      final equipItem = profile['equippedItemsResponse'];
+
+      if (equipItem == null) return null;
+
+      return equipItem as Map<String, dynamic>;
     } catch (e) {
-      print('프로필 이미지 로딩 오류: $e');
+      print('Error loading equipped items: $e');
       return null;
     }
   }
@@ -26,43 +30,59 @@ class ProfilePopupMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     final authService = Modular.get<AuthService>();
 
-    return FutureBuilder<String?>(
-      future: _getProfileImg(),
+    return FutureBuilder<Map<String, dynamic>?>(
+      future: _getEquipItems(),
       builder: (context, snapshot) {
         Widget avatarChild;
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          // 로딩 중: 인디케이터 보여줌
           avatarChild = const Center(
             child: CircularProgressIndicator(strokeWidth: 2),
           );
-        } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-          // 데이터 있음: 프로필 이미지
-          avatarChild = CircleAvatar(
-            backgroundColor: Colors.transparent,
+        } else if (snapshot.hasData && snapshot.data != null) {
+          final equipItem = snapshot.data!;
+          final background = equipItem['background']?['itemCode'] as int?;
+          final character = equipItem['character']?['itemCode'] as int?;
+          final clothes = (equipItem['clothes'] as List<dynamic>?)
+              ?.map((e) => e['itemCode'] as int)
+              .toList() ?? [];
+          final accessories = (equipItem['accessories'] as List<dynamic>?)
+              ?.map((e) => e['itemCode'] as int)
+              .toList() ?? [];
+
+          // Prepare map for rendering images by category
+          final selectedItemCodesByCategory = {
+            'backgrounds': background != null ? [background] : <int>[],
+            'characters': character != null ? [character] : <int>[],
+            'clothes': clothes,
+            'accessories': accessories,
+          };
+
+          avatarChild = Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              gradient: background != null ? getGradientByCode(background) : null,
+            ),
             child: ClipOval(
-              child: Image.network(
-                snapshot.data!,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: double.infinity,
-                errorBuilder: (context, error, stackTrace) {
-                  // 실패 시 기본 아이콘으로 대체
-                  return const Center(
-                    child: Icon(Icons.person, color: Colors.white),
-                  );
-                },
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return const Center(
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  );
-                },
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  // Background gradient is already set on Container's decoration
+
+                  // Render character, clothes, accessories images stacked
+                  ...['characters', 'clothes', 'accessories'].expand((category) {
+                    final codes = selectedItemCodesByCategory[category]!;
+                    return codes.map((code) => Image.asset(
+                      'assets/images/profile/$category/$code.png',
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => const SizedBox(),
+                    ));
+                  }),
+                ],
               ),
             ),
           );
         } else {
-          // 데이터 없음: 기본 아이콘이나 빈 원
           avatarChild = const CircleAvatar(
             backgroundColor: Colors.grey,
             child: Icon(Icons.person, color: Colors.white),
@@ -74,7 +94,9 @@ class ProfilePopupMenu extends StatelessWidget {
           child: PopupMenuButton<String>(
             onSelected: (value) {
               if (value == 'profile') {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProfilePicPage()));
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => ProfilePicPage()),
+                );
               } else if (value == 'logout') {
                 authService.logout();
                 ToastMessage.show("로그아웃되었습니다.");
@@ -111,7 +133,7 @@ class ProfilePopupMenu extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: ClipOval(child: avatarChild), // 원형 클리핑
+                child: ClipOval(child: avatarChild),
               ),
             ),
           ),

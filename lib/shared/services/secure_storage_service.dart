@@ -84,6 +84,25 @@ class SecureStorageService {
     return await _storage.read(key: 'child_profile');
   }
 
+  static Future<void> saveChildAvatar(Map<String, dynamic> equippedItemsResponse) async {
+    final jsonStr = await _storage.read(key: 'child_profile');
+    if (jsonStr == null) {
+      final newProfile = {
+        'equippedItemsResponse': equippedItemsResponse,
+      };
+      await _storage.write(key: 'child_profile', value: jsonEncode(newProfile));
+      return;
+    }
+
+    try {
+      final Map<String, dynamic> profile = jsonDecode(jsonStr);
+      profile['equippedItemsResponse'] = equippedItemsResponse;
+      await _storage.write(key: 'child_profile', value: jsonEncode(profile));
+    } catch (e) {
+      print('Error updating equippedItemsResponse in child_profile: $e');
+    }
+  }
+
   static Future<void> deleteChildProfile() async {
     await _storage.delete(key: 'child_profile');
   }

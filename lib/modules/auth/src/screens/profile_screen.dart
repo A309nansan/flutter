@@ -27,6 +27,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     try {
       final response = await RequestService.get("/user/parent/childList");
       final List<dynamic> profiles = response;
+      print(profiles.toString());
 
       return profiles.map((json) => ChildProfileModel.fromJson(json)).toList();
     } catch (e) {
