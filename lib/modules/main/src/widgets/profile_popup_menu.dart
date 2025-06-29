@@ -74,7 +74,6 @@ class ProfilePopupMenu extends StatelessWidget {
           child: PopupMenuButton<String>(
             onSelected: (value) {
               if (value == 'profile') {
-                ToastMessage.show("내 정보 클릭!");
                 Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProfilePicPage()));
               } else if (value == 'logout') {
                 authService.logout();
