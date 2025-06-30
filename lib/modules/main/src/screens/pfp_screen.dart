@@ -290,15 +290,35 @@ class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
       final childProfile = jsonDecode(childProfileJson!);
       print(childProfile);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('저장되었습니다.')),
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('알림'),
+          content: const Text('저장되었습니다.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('확인'),
+            )
+          ],
+        ),
       );
     } catch (e, stacktrace) {
       debugPrint('❌ Save failed: $e');
       debugPrint('Stacktrace: $stacktrace');
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('저장에 실패했습니다.')),
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('알림'),
+          content: const Text('저장에 실패 했습니다.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('확인'),
+            )
+          ],
+        ),
       );
     }
   }
