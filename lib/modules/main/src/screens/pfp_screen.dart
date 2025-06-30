@@ -583,7 +583,7 @@ class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
               }[category]!;
               final isSelected = selectedCategory == category;
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: GestureDetector(
                   onTap: () => setState(() => selectedCategory = category),
                   child: Container(
@@ -611,102 +611,113 @@ class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
               );
             }).toList(),
           ),
-          SizedBox(height: sreenHeight * 0.01),
+          //SizedBox(height: sreenHeight * 0.01),
           Expanded(
-            child: GridView.count(
-              controller: _itemScrollController,
-              crossAxisCount: 4,
-              padding: const EdgeInsets.all(16),
-              childAspectRatio: 1,
-              children: [
-                _buildBoxButtonTile(),
-                ...currentItems.map((item) {
-                  final isSelected =
-                  selectedItemCodesByCategory[selectedCategory]!.contains(item.itemCode);
-                  return GestureDetector(
-                    onTap: item.id == null
-                        ? null
-                        : () => setState(() {
-                      final set = selectedItemCodesByCategory[selectedCategory]!;
-                      if (selectedCategory == 'clothes' ||
-                          selectedCategory == 'accessories') {
-                        isSelected ? set.remove(item.itemCode) : set.add(item.itemCode);
-                      } else {
-                        set.clear();
-                        set.add(item.itemCode);
-                      }
-                    }),
-                    child: Container(
-                      margin: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color:
-                          isSelected ? const Color(0xFFA26A13) : const Color(0xFFF9DBAA),
-                          width: 4,
+            child: Container(
+              margin:  const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: Color(0xFFF9DBAA),
+                  width: 1,
+                ),
+              ),
+              child: GridView.count(
+                controller: _itemScrollController,
+                crossAxisCount: 4,
+                padding: const EdgeInsets.all(16),
+                childAspectRatio: 1,
+                children: [
+                  _buildBoxButtonTile(),
+                  ...currentItems.map((item) {
+                    final isSelected =
+                    selectedItemCodesByCategory[selectedCategory]!.contains(item.itemCode);
+                    return GestureDetector(
+                      onTap: item.id == null
+                          ? null
+                          : () => setState(() {
+                        final set = selectedItemCodesByCategory[selectedCategory]!;
+                        if (selectedCategory == 'clothes' ||
+                            selectedCategory == 'accessories') {
+                          isSelected ? set.remove(item.itemCode) : set.add(item.itemCode);
+                        } else {
+                          set.clear();
+                          set.add(item.itemCode);
+                        }
+                      }),
+                      child: Container(
+                        margin: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color:
+                            isSelected ? const Color(0xFFA26A13) : const Color(0xFFF9DBAA),
+                            width: 4,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          color: const Color(0xFFFFF9EF),
                         ),
-                        borderRadius: BorderRadius.circular(12),
-                        color: const Color(0xFFFFF9EF),
-                      ),
-                      child: Stack(
-                        children: [
-                          Positioned.fill(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Stack(
-                                fit: StackFit.expand,
-                                children: [
-                                  if (selectedCategory == 'backgrounds')
-                                    Stack(
-                                      fit: StackFit.expand,
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            // item.id가 null이면 회색 배경, 아니면 gradient
-                                            color: item.id == null
-                                                ? Colors.grey.withOpacity(0.6)
-                                                : null,
-                                            gradient: item.id == null
-                                                ? null
-                                                : getGradientByCode(item.itemCode),
-                                            borderRadius: BorderRadius.circular(8),
+                        child: Stack(
+                          children: [
+                            Positioned.fill(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Stack(
+                                  fit: StackFit.expand,
+                                  children: [
+                                    if (selectedCategory == 'backgrounds')
+                                      Stack(
+                                        fit: StackFit.expand,
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              // item.id가 null이면 회색 배경, 아니면 gradient
+                                              color: item.id == null
+                                                  ? Colors.grey.withOpacity(0.6)
+                                                  : null,
+                                              gradient: item.id == null
+                                                  ? null
+                                                  : getGradientByCode(item.itemCode),
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
                                           ),
+                                        ],
+                                      )
+                                    else
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: Image.asset(
+                                          'assets/images/profile/$selectedCategory/${item.itemCode}.png',
+                                          fit: BoxFit.cover,
+                                          color: item.id == null
+                                              ? Colors.grey.withOpacity(0.6)
+                                              : null,
+                                          colorBlendMode: item.id == null
+                                              ? BlendMode.saturation
+                                              : null,
+                                          errorBuilder: (_, __, ___) =>
+                                          const Center(child: Text("No image")),
                                         ),
-                                      ],
-                                    )
-                                  else
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(8),
-                                      child: Image.asset(
-                                        'assets/images/profile/$selectedCategory/${item.itemCode}.png',
-                                        fit: BoxFit.cover,
-                                        color: item.id == null
-                                            ? Colors.grey.withOpacity(0.6)
-                                            : null,
-                                        colorBlendMode: item.id == null
-                                            ? BlendMode.saturation
-                                            : null,
-                                        errorBuilder: (_, __, ___) =>
-                                        const Center(child: Text("No image")),
                                       ),
-                                    ),
-                                  if (item.id == null)
-                                    Container(color: Colors.white.withOpacity(0.5)),
-                                ],
+                                    if (item.id == null)
+                                      Container(color: Colors.white.withOpacity(0.5)),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                          if (isSelected)
-                            const Positioned(
-                              top: 8,
-                              right: 8,
-                              child: Icon(Icons.check_circle, color: Color(0xFFA26A13), size: 36,),
-                            ),
-                        ],
+                            if (isSelected)
+                              const Positioned(
+                                top: 8,
+                                right: 8,
+                                child: Icon(Icons.check_circle, color: Color(0xFFA26A13), size: 36,),
+                              ),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                }).toList(),
-              ],
+                    );
+                  }).toList(),
+                ],
+              ),
             ),
           ),
         ],
