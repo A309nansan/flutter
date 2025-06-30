@@ -1,10 +1,8 @@
-// gacha_box.dart — 코인 차감 로직 추가 (2025‑06)
-//  • _coins: 뽑을 때마다 1씩 차감, 0이면 버튼 비활성
-//  • 헤더에 "코인: n / 남은 아이템: m" 표시
-
+// gacha_box.dart
 import 'package:flutter/material.dart';
 import 'package:nansan_flutter/shared/services/request_service.dart';
-import 'pfp_screen.dart';
+import 'gacha_popup_fail.dart'; // GachaBoxFailPopup import
+import 'pfp_screen.dart'; // Item 클래스 등 필요 시
 
 
 class GachaBox {
@@ -89,7 +87,10 @@ class _GachaDialogState extends State<_GachaDialog>
   }
 
   Future<void> _startGacha() async {
-    if (_loading || _coins <= LEASTCOINS) return;
+    // 버튼 `onPressed`에서 이미 조건을 체크하므로, 여기서 바로 로딩 상태로 진입합니다.
+    // if (_loading || _coins <= LEASTCOINS || _leftCodes.isEmpty) return; // 이 부분 제거
+    if (_loading) return; // 로딩 중일 때만 리턴
+
     setState(() => _loading = true);
 
     try {
@@ -98,7 +99,8 @@ class _GachaDialogState extends State<_GachaDialog>
       );
       final item = Item(id: res['id'], itemCode: res['itemCode'], equipped: false);
       widget.onItemDrawn(item);
-      _coins--; _leftCodes.remove(item.itemCode);
+      _coins--;
+      _leftCodes.remove(item.itemCode);
 
       setState(() => _phase = Phase.animating);
       _fadeCtrl.forward(from: 0); // dim in
@@ -109,6 +111,41 @@ class _GachaDialogState extends State<_GachaDialog>
         _item = item;
         _phase = Phase.result;
       });
+
+      // --- 뽑기 후 자동 종료 로직 ---
+      if (_leftCodes.isEmpty || _coins <= LEASTCOINS) {
+        await Future.delayed(const Duration(seconds: 1)); // 사용자 결과 확인 시간
+
+        if (mounted) {
+          String mainMessage;
+          String subMessage;
+          String imageUrl;
+
+          if (_leftCodes.isEmpty) {
+            mainMessage = '모든 아이템을 획득했습니다!';
+            subMessage = '축하합니다! 이 카테고리의 모든 아이템을 모았습니다.';
+            imageUrl = 'assets/images/profile/no_items_left.png'; // 적절한 이미지 경로
+          } else { // _coins <= LEASTCOINS
+            mainMessage = '코인이 부족하여 더 이상 뽑을 수 없습니다.';
+            subMessage = '아쉽지만, 다음 기회를 노려보세요.';
+            imageUrl = 'assets/images/profile/no_coin.png'; // 적절한 이미지 경로
+          }
+
+          // GachaBoxFailPopup을 호출하여 종료 메시지 다이얼로그 표시
+          await GachaBoxFailPopup.show(
+            context: context,
+            message: mainMessage,
+            subMessage: subMessage,
+            imageUrl: imageUrl,
+          );
+          // 팝업이 닫힌 후 다이얼로그 자체를 닫습니다.
+          if (mounted) { // 팝업 후에도 mounted 체크
+            Navigator.of(context).pop();
+          }
+        }
+      }
+      // --- 자동 종료 로직 끝 ---
+
     } catch (e) {
       debugPrint('❌ Gacha failed: $e');
       if (mounted) {
@@ -118,58 +155,42 @@ class _GachaDialogState extends State<_GachaDialog>
         Navigator.of(context).pop();
       }
     } finally {
-      _loading = false;
+      if (mounted) { // finally 블록에서도 mounted 체크
+        setState(() => _loading = false);
+      }
     }
   }
+
+  // --- 기존 _alert 함수를 GachaBoxFailPopup으로 대체 ---
   void _alert() async {
-    showDialog(
-      context: context, // 'context'는 위젯 트리의 BuildContext를 의미합니다.
-      // 이 함수가 StatefulWidget 내부에 있다면 바로 사용 가능하며,
-      // StatelessWidget에서 사용 시 BuildContext를 파라미터로 받아야 합니다.
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.0), // 모서리 둥글게
-          ),
-          title: Column(
-            children: [
-              Image.asset(
-                'assets/images/profile/question.png', // 사용할 이미지 경로
-                width: 100, // 이미지 너비
-                height: 100, // 이미지 높이
-                fit: BoxFit.contain, // 이미지 비율 유지
-              ),
-              SizedBox(height: 16), // 이미지와 텍스트 사이 간격
-              Text(
-                '작업을 수행할 수 없습니다.', // 다이얼로그 제목 또는 주 메시지
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          content: Text(
-            '보유중인 코인이 없거나 모든 아이템을 뽑았습니다.', // 상세 메시지
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[700],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('확인', style: TextStyle(color: Theme.of(context).primaryColor)),
-              onPressed: () {
-                Navigator.of(context).pop(); // 다이얼로그 닫기
-              },
-            ),
-          ],
-        );
-      },
+    String mainMessage;
+    String subMessage;
+    String imageUrl;
+
+    if (_coins <= LEASTCOINS) {
+      mainMessage = '당근이 부족합니다!';
+      subMessage = '아이템을 뽑기 위한 당근이 충분하지 않습니다. 당근을 모아주세요.';
+      imageUrl = 'assets/images/profile/no_coin.png'; // 적절한 이미지 경로
+    } else { // _leftCodes.isEmpty
+      mainMessage = '남은 아이템이 없습니다!';
+      subMessage = '이 카테고리의 모든 아이템을 이미 획득했습니다.';
+      imageUrl = 'assets/images/profile/no_items_left.png'; // 적절한 이미지 경로
+    }
+
+    // GachaBoxFailPopup을 호출하여 경고 다이얼로그 표시
+    await GachaBoxFailPopup.show(
+      context: context,
+      message: mainMessage,
+      subMessage: subMessage,
+      imageUrl: imageUrl,
     );
+    // ✨ 추가: GachaBoxFailPopup이 닫힌 후, 현재 _GachaDialog를 닫습니다. ✨
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
   }
+  // --- _alert 함수 대체 끝 ---
+
   @override
   Widget build(BuildContext context) {
     final titleKo = {
@@ -216,7 +237,8 @@ class _GachaDialogState extends State<_GachaDialog>
                           ]),
                           style: const TextStyle(color: Color(0xFFA26A13), fontSize: 16),
                         ),
-                        Text('🪙 x $_coins / 남은 아이템: ${_leftCodes.length}',
+                        // ✨ 헤더에 코인과 남은 아이템 개수 표시 ✨
+                        Text('🥕 x $_coins',
                             style: const TextStyle(color: Color(0xFFA26A13), fontSize: 16, fontWeight: FontWeight.bold)),
                       ],
                     ),
@@ -227,28 +249,29 @@ class _GachaDialogState extends State<_GachaDialog>
                     alignment: Alignment.center,
                     children: [
                       GestureDetector(
+                        // 버튼 활성화/비활성화 및 _startGacha 또는 _alert 호출
                         onTap: (_leftCodes.isNotEmpty && _coins > LEASTCOINS) ? _startGacha : _alert,
-                          child:                      Container(
-                            width: 500,
-                            height: 500,
-                            decoration: BoxDecoration(
-                              border: Border.all(color: const Color(0xFFA26A13), width: 1.5),
-                              borderRadius: BorderRadius.circular(16),
-                              color: Colors.white,
-                            ),
-                            child: Center(
-                              child: _phase == Phase.result && _item != null
-                                  ? (widget.category == 'backgrounds'
-                                  ? _BackgroundPreview(code: _item!.itemCode)
-                                  : Image.asset(
-                                'assets/images/profile/${widget.category}/${_item!.itemCode}.png',
-                                fit: BoxFit.cover,
-                                color: _item!.id == null ? Colors.grey.withOpacity(0.6) : null,
-                                colorBlendMode: _item!.id == null ? BlendMode.saturation : null,
-                              ))
-                                  : Image.asset('assets/images/profile/question.png', width: 400, color: Colors.grey.withOpacity(0.6), colorBlendMode: BlendMode.saturation),
-                            ),
+                        child: Container(
+                          width: 500,
+                          height: 500,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: const Color(0xFFA26A13), width: 1.5),
+                            borderRadius: BorderRadius.circular(16),
+                            color: Colors.white,
                           ),
+                          child: Center(
+                            child: _phase == Phase.result && _item != null
+                                ? (widget.category == 'backgrounds'
+                                ? _BackgroundPreview(code: _item!.itemCode)
+                                : Image.asset(
+                              'assets/images/profile/${widget.category}/${_item!.itemCode}.png',
+                              fit: BoxFit.cover,
+                              color: _item!.id == null ? Colors.grey.withOpacity(0.6) : null,
+                              colorBlendMode: _item!.id == null ? BlendMode.saturation : null,
+                            ))
+                                : Image.asset('assets/images/profile/question.png', width: 400, color: Colors.grey.withOpacity(0.6), colorBlendMode: BlendMode.saturation),
+                          ),
+                        ),
                       ),
 
                       if (_phase == Phase.animating)
@@ -261,7 +284,6 @@ class _GachaDialogState extends State<_GachaDialog>
                     ],
                   ),
                   const SizedBox(height: 30),
-                  // (나머지 리스트·버튼 섹션은 그대로)
                   _buildItemStrip(),
                   const SizedBox(height: 36),
                   _buildButtons(),
@@ -290,11 +312,12 @@ class _GachaDialogState extends State<_GachaDialog>
       height: 100,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: widget.remainingItems.length,
+        itemCount: _leftCodes.length, // 남은 아이템만 표시
         separatorBuilder: (_, __) => const SizedBox(width: 8),
         itemBuilder: (_, idx) {
-          final code = widget.remainingItems[idx];
-          final notObtained = _leftCodes.contains(code);
+          final code = _leftCodes[idx];
+          // 이 리스트는 항상 남은 아이템을 보여주므로 notObtained는 항상 true
+          final notObtained = true;
           return Container(
             width: 100,
             height: 100,
@@ -335,10 +358,9 @@ class _GachaDialogState extends State<_GachaDialog>
           style: FilledButton.styleFrom(
             backgroundColor: (_leftCodes.isNotEmpty && _coins > LEASTCOINS) ? Colors.brown : Colors.grey,
             foregroundColor: (_leftCodes.isNotEmpty && _coins > LEASTCOINS) ? Colors.white : Colors.white70,
-            //disabledBackgroundColor: Colors.grey,
-            //disabledForegroundColor: Colors.white70,
             padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
           ),
+          // 조건이 맞지 않으면 _alert() 호출
           onPressed: (_leftCodes.isNotEmpty && _coins > LEASTCOINS) ? _startGacha : _alert,
           child: Text(_phase == Phase.ready ? '뽑기' : '한 번 더!'),
         ),

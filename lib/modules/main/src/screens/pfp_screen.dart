@@ -11,6 +11,7 @@ import 'package:nansan_flutter/shared/widgets/appbar_widget.dart';
 import 'package:nansan_flutter/shared/services/request_service.dart';
 import 'package:nansan_flutter/shared/services/secure_storage_service.dart';
 import 'gacha_box.dart';
+import 'gacha_popup_fail.dart';
 import 'package:collection/collection.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:ui' as ui;
@@ -338,6 +339,35 @@ class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
     final currentCoinBalance = _coinBalance; // PfpScreenState의 _coins 변수 사용
     final currentRemainingItems = _getRemainingItemCodes(selectedCategory);
 
+
+    if (currentCoinBalance == null || currentCoinBalance <= 0) {
+      await GachaBoxFailPopup.show(
+        context: context,
+        message: '당근이 부족합니다!',
+        subMessage: '아이템을 뽑기 위한 당근이 충분하지 않습니다. 당근을 모아주세요.', // ✨ 서브 메시지 추가
+        imageUrl: 'assets/images/profile/no_coin.png', // ✨ 코인 부족 전용 이미지 (예시)
+      );
+      return;
+    }
+
+    if (currentRemainingItems.isEmpty) {
+      await GachaBoxFailPopup.show(
+        context: context,
+        message: '남은 아이템이 없습니다!',
+        subMessage: '이 카테고리의 모든 아이템을 이미 획득했습니다.', // ✨ 서브 메시지 추가
+        imageUrl: 'assets/images/profile/no_items_left.png', // ✨ 남은 아이템 없음 전용 이미지 (예시)
+      );
+      return;
+    }
+    if (currentRemainingItems.isEmpty) {
+      // ✨ GachaBoxFailPopup 사용 ✨
+      await GachaBoxFailPopup.show(
+        context: context,
+        message: '남은 아이템이 없습니다!',
+      );
+      return;
+    }
+
     try {
       // GachaBox.open을 호출하여 다이얼로그를 띄우고 아이템을 뽑습니다.
       final newItem = await GachaBox.open(
@@ -374,6 +404,7 @@ class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
       );
     }
   }
+
   Future<bool> requestStoragePermission() async {
     if (Platform.isAndroid) {
       final androidInfo = await DeviceInfoPlugin().androidInfo;
