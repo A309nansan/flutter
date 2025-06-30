@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:nansan_flutter/modules/auth/src/models/user_model.dart';
 
@@ -84,23 +85,27 @@ class SecureStorageService {
     return await _storage.read(key: 'child_profile');
   }
 
+  static final ValueNotifier<int> profileVersion = ValueNotifier(0);
+
   static Future<void> saveChildAvatar(Map<String, dynamic> equippedItemsResponse) async {
     final jsonStr = await _storage.read(key: 'child_profile');
+
     if (jsonStr == null) {
       final newProfile = {
         'equippedItemsResponse': equippedItemsResponse,
       };
       await _storage.write(key: 'child_profile', value: jsonEncode(newProfile));
-      return;
+    } else {
+      try {
+        final Map<String, dynamic> profile = jsonDecode(jsonStr);
+        profile['equippedItemsResponse'] = equippedItemsResponse;
+        await _storage.write(key: 'child_profile', value: jsonEncode(profile));
+      } catch (e) {
+        print('Error updating equippedItemsResponse in child_profile: $e');
+      }
     }
 
-    try {
-      final Map<String, dynamic> profile = jsonDecode(jsonStr);
-      profile['equippedItemsResponse'] = equippedItemsResponse;
-      await _storage.write(key: 'child_profile', value: jsonEncode(profile));
-    } catch (e) {
-      print('Error updating equippedItemsResponse in child_profile: $e');
-    }
+    profileVersion.value++;
   }
 
   static Future<void> deleteChildProfile() async {
