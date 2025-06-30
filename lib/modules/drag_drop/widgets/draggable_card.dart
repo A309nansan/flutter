@@ -42,18 +42,9 @@ class DraggableCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.black),
               ),
-              child: cardData.imageUrl.isNotEmpty
-                  ? FractionallySizedBox(
-                widthFactor: 0.85,
-                heightFactor: 0.85,
-                child: Image.network(
-                  cardData.imageUrl,
-                  fit: BoxFit.contain,
-                ),
-              )
-                  : const Center(
+              child:  Center(
                 child: Text(
-                  '숫자카드',
+                  cardData.imageName,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
