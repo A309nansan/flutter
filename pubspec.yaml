@@ -172,6 +172,7 @@ flutter:
     - assets/lottie/
     - assets/numbers/
     - assets/tflite/
+    - assets/images/profile/
     - assets/images/profile/characters/
     - assets/images/profile/clothes/
     - assets/images/profile/accessories/
