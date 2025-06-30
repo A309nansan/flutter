@@ -10,6 +10,7 @@ import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 import 'package:nansan_flutter/shared/widgets/appbar_widget.dart';
 import 'package:nansan_flutter/shared/services/request_service.dart';
 import 'package:nansan_flutter/shared/services/secure_storage_service.dart';
+import 'gacha_box.dart';
 import 'package:collection/collection.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:ui' as ui;
@@ -301,7 +302,29 @@ class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
       );
     }
   }
+  final Map<String, List<int>> _allItemsByCategory = {
+    'backgrounds': List.generate(10, (index) => 101 + index), // 101부터 110까지
+    'characters': List.generate(5, (index) => 201 + index),   // 201부터 205까지
+    'clothes': List.generate(5, (i) => 301 + i),
+    'accessories': List.generate(5, (i) => 401 + i),
+    // ... 다른 카테고리들 추가
+  };
 
+// 사용자가 현재 소유하고 있는 아이템들을 담고 있는 Map
+// 이 변수는 PfpScreenState의 상태로 관리되어야 합니다.
+
+  List<int> _getRemainingItemCodes(String category) {
+    // 1. 해당 카테고리의 모든 가능한 아이템 코드 목록을 가져옵니다.
+    final allPossibleCodes = _allItemsByCategory[category] ?? [];
+
+    // 2. 사용자가 이미 소유하고 있는 해당 카테고리의 아이템 코드 목록을 추출합니다.
+    final ownedCodes = ownedItemsByCategory[category]?.map((item) => item.itemCode).toSet() ?? {};
+
+    // 3. 전체 코드 목록에서 소유하고 있는 코드를 제외한 나머지 코드를 필터링합니다.
+    return allPossibleCodes.where((code) => !ownedCodes.contains(code)).toList();
+  }
+
+// gacha_box.dart - PFP Screen에 위치한다고 가정 (아마도 PfpScreenState 클래스 내부에 있을 것입니다)
   Future<void> _openBox() async {
     final userId = await getUserId();
     if (userId == null) return;
@@ -309,24 +332,28 @@ class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
     final categoryId = categoryIdMap[selectedCategory];
     if (categoryId == null) return;
 
+    // 코인 잔액과 남은 아이템 코드를 PfpScreenState에서 가져와야 합니다.
+    // 이 예시에서는 _coins와 _leftCodes가 PfpScreenState에 있다고 가정합니다.
+    // 실제 구현에서는 해당 상태를 관리하는 곳에서 가져와야 합니다.
+    final currentCoinBalance = _coinBalance; // PfpScreenState의 _coins 변수 사용
+    final currentRemainingItems = _getRemainingItemCodes(selectedCategory);
+
     try {
-      final response = await RequestService.post(
-        '/user/$userId/avatar/items/draw/$categoryId',
+      // GachaBox.open을 호출하여 다이얼로그를 띄우고 아이템을 뽑습니다.
+      final newItem = await GachaBox.open(
+        context: context,
+        userId: userId,
+        category: selectedCategory,
+        categoryId: categoryId,
+        coinBalance: currentCoinBalance ?? 0, // 현재 코인 잔액 전달
+        remainingItems: currentRemainingItems, // 남은 아이템 코드 전달
       );
 
-      final newItem = Item(
-        id: response['id'],
-        itemCode: response['itemCode'],
-        equipped: false,
-      );
+      // GachaBox.open이 닫힌 후 추가적인 로직이 필요하다면 여기에 작성
+      if (newItem != null) {
+        // 예를 들어, 뽑은 아이템이 있을 때 추가 작업
+      }
 
-      setState(() {
-        ownedItemsByCategory[selectedCategory]!.add(newItem);
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('아이템을 획득했습니다!')),
-      );
     } catch (e, stack) {
       debugPrint('❌ Box open failed: $e');
       debugPrint('Stacktrace: $stack');
@@ -335,7 +362,6 @@ class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
       );
     }
   }
-
   Future<bool> requestStoragePermission() async {
     if (Platform.isAndroid) {
       final androidInfo = await DeviceInfoPlugin().androidInfo;

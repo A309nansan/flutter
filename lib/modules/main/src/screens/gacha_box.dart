@@ -68,7 +68,7 @@ class _GachaDialogState extends State<_GachaDialog>
   late List<int> _leftCodes;
   late int _coins;
   int? _focusedCode;
-  final int LEASTCOINS = 45;
+  final int LEASTCOINS = 0;
   late final AnimationController _fadeCtrl;
 
   @override
