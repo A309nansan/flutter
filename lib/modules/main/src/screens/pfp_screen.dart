@@ -100,7 +100,7 @@ class ProfilePicPage extends ConsumerStatefulWidget {
 }
 
 class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
-  int? _coinBalance;
+  int? _coinBalance = 0;
   bool _isLoadingCoins = false;
   bool _isLoadingEquip = false;
   EquippedItems? _equipped;
@@ -347,6 +347,18 @@ class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
         categoryId: categoryId,
         coinBalance: currentCoinBalance ?? 0, // 현재 코인 잔액 전달
         remainingItems: currentRemainingItems, // 남은 아이템 코드 전달
+        onNewItem: (item) {
+          // 아이템이 뽑혔을 때 이 콜백이 호출됩니다.
+          // PfpScreenState의 ownedItemsByCategory를 업데이트하고 스낵바를 표시합니다.
+          setState(() {
+            ownedItemsByCategory[selectedCategory]!.add(item);
+            _coinBalance = (_coinBalance ?? 0) - 1; // 코인 차감 (GachaBox 내부에서도 차감되지만, PfpScreenState의 상태도 업데이트해야 함)
+            currentRemainingItems.remove(item.itemCode); // 남은 아이템 목록 업데이트
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('아이템을 획득했습니다!')),
+          );
+        },
       );
 
       // GachaBox.open이 닫힌 후 추가적인 로직이 필요하다면 여기에 작성
@@ -521,54 +533,54 @@ class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
           Container(
             width: screenWidth * 0.75,
             height: screenWidth * 0.75,
-            decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
-            child: Stack(
-              children: [
-                RepaintBoundary(
-                  key: previewKey,
-                  child: Stack(
-                    children: [
-                      // background, character, clothes, accessories only
-                      if (selectedItemCodesByCategory['backgrounds']!.isNotEmpty)
-                        Container(
-                          decoration: BoxDecoration(
-                            gradient: getGradientByCode(
-                              selectedItemCodesByCategory['backgrounds']!.first,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Stack(
+                children: [
+                  RepaintBoundary(
+                    key: previewKey,
+                    child: Stack(
+                      children: [
+                        if (selectedItemCodesByCategory['backgrounds']!.isNotEmpty)
+                          Container(
+                            decoration: BoxDecoration(
+                              gradient: getGradientByCode(
+                                selectedItemCodesByCategory['backgrounds']!.first,
+                              ),
                             ),
                           ),
-                        ),
-                      ...['characters', 'clothes', 'accessories'].expand((category) {
-                        final codes = selectedItemCodesByCategory[category]!;
-                        return codes.map((code) => Image.asset(
-                          'assets/images/profile/$category/$code.png',
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => const SizedBox(),
-                        ));
-                      }),
-                    ],
-                  ),
-                ),
-                // Save button is outside the captured area
-                if (_hasChanges)
-                  Positioned(
-                    bottom: 24,
-                    right: 0,
-                    child: ElevatedButton(
-                      onPressed: _saveChanges,
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: const Color(0xFFA26A13),
-                        backgroundColor: Colors.white,
-                        shape: const CircleBorder(),
-                        elevation: 0,
-                        padding: EdgeInsets.all(screenWidth * 0.05),
-                      ),
-                      child: const Text(
-                        '저장하기',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-                      ),
+                        ...['characters', 'clothes', 'accessories'].expand((category) {
+                          final codes = selectedItemCodesByCategory[category]!;
+                          return codes.map((code) => Image.asset(
+                            'assets/images/profile/$category/$code.png',
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => const SizedBox(),
+                          ));
+                        }),
+                      ],
                     ),
                   ),
-              ],
+                  if (_hasChanges)
+                    Positioned(
+                      bottom: 24,
+                      right: 0,
+                      child: ElevatedButton(
+                        onPressed: _saveChanges,
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: const Color(0xFFA26A13),
+                          backgroundColor: Colors.white,
+                          shape: const CircleBorder(),
+                          elevation: 0,
+                          padding: EdgeInsets.all(screenWidth * 0.05),
+                        ),
+                        child: const Text(
+                          '저장하기',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
           SizedBox(height: sreenHeight * 0.01),
