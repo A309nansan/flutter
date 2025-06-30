@@ -397,15 +397,18 @@ class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
   Future<void> _downloadAvatarPreview(GlobalKey previewKey, BuildContext context) async {
     final hasPermission = await requestStoragePermission();
     if (!hasPermission) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('저장 권한이 필요합니다.')),
+      _showResultDialog(
+        context,
+        title: "저장 권한 필요",
+        message: "이미지를 저장하려면 권한이 필요합니다.",
+        icon: Icons.lock_outline,
+        color: Colors.orange,
       );
       return;
     }
 
     try {
       final boundary = previewKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
-
       final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
       final ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       final Uint8List pngBytes = byteData!.buffer.asUint8List();
@@ -419,8 +422,12 @@ class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
       debugPrint('🖼️ Save result: $result');
 
       if (result['isSuccess'] == true) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('이미지가 갤러리에 저장되었습니다.')),
+        _showResultDialog(
+          context,
+          title: "저장 완료",
+          message: "이미지가 갤러리에 저장되었습니다!",
+          icon: Icons.check_circle_outline,
+          color: Colors.green,
         );
       } else {
         throw Exception("Gallery save failed");
@@ -429,11 +436,64 @@ class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
       debugPrint('❌ Download failed: $e');
       debugPrint('🧱 Stacktrace:\n$stacktrace');
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('다운로드에 실패했습니다.')),
+      _showResultDialog(
+        context,
+        title: "저장 실패",
+        message: "이미지를 저장하지 못했습니다.",
+        icon: Icons.error_outline,
+        color: Colors.red,
       );
     }
   }
+
+  void _showResultDialog(
+      BuildContext context, {
+        required String title,
+        required String message,
+        required IconData icon,
+        required Color color,
+      }) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          backgroundColor: Colors.white,
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, size: 48, color: color),
+                const SizedBox(height: 16),
+                Text(
+                  title,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: color),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 16, color: Colors.black87),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: color,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  child: const Text("확인"),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
 
   Widget _buildBoxButtonTile() {
     final sreenHeight = MediaQuery.of(context).size.height;
