@@ -347,6 +347,18 @@ class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
         categoryId: categoryId,
         coinBalance: currentCoinBalance ?? 0, // 현재 코인 잔액 전달
         remainingItems: currentRemainingItems, // 남은 아이템 코드 전달
+        onNewItem: (item) {
+          // 아이템이 뽑혔을 때 이 콜백이 호출됩니다.
+          // PfpScreenState의 ownedItemsByCategory를 업데이트하고 스낵바를 표시합니다.
+          setState(() {
+            ownedItemsByCategory[selectedCategory]!.add(item);
+            _coinBalance = (_coinBalance ?? 0) - 1; // 코인 차감 (GachaBox 내부에서도 차감되지만, PfpScreenState의 상태도 업데이트해야 함)
+            currentRemainingItems.remove(item.itemCode); // 남은 아이템 목록 업데이트
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('아이템을 획득했습니다!')),
+          );
+        },
       );
 
       // GachaBox.open이 닫힌 후 추가적인 로직이 필요하다면 여기에 작성
