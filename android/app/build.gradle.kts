@@ -26,12 +26,12 @@ val kakaoKey = dotenv.getProperty("KAKAO_NATIVE_APP_KEY") ?: ""
 val defaultWebClientId = dotenv.getProperty("DEFAULT_WEB_CLIENT_ID") ?: ""
 val appName = dotenv.getProperty("APP_NAME") ?: ""
 
-val keystoreProperties = Properties().apply {
-    val keystoreFile = rootProject.file("app/key.properties")
-    if (keystoreFile.exists()) {
-        load(FileInputStream(keystoreFile))
-    }
-}
+//val keystoreProperties = Properties().apply {
+//    val keystoreFile = rootProject.file("app/key.properties")
+//    if (keystoreFile.exists()) {
+//        load(FileInputStream(keystoreFile))
+//    }
+//}
 
 android {
     namespace = "com.ssafy.soonamu"
@@ -72,10 +72,10 @@ android {
 
     signingConfigs {
         create("release") {
-            keyAlias = keystoreProperties["keyAlias"] as String?
-            keyPassword = keystoreProperties["keyPassword"] as String?
-            storeFile = file(keystoreProperties["storeFile"] as String?)
-            storePassword = keystoreProperties["storePassword"] as String?
+//            keyAlias = keystoreProperties["keyAlias"] as String?
+//            keyPassword = keystoreProperties["keyPassword"] as String?
+//            storeFile = file(keystoreProperties["storeFile"] as String?)
+//            storePassword = keystoreProperties["storePassword"] as String?
         }
     }
 

@@ -100,7 +100,7 @@ class ProfilePicPage extends ConsumerStatefulWidget {
 }
 
 class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
-  int? _coinBalance;
+  int? _coinBalance = 0;
   bool _isLoadingCoins = false;
   bool _isLoadingEquip = false;
   EquippedItems? _equipped;
@@ -521,54 +521,54 @@ class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
           Container(
             width: screenWidth * 0.75,
             height: screenWidth * 0.75,
-            decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
-            child: Stack(
-              children: [
-                RepaintBoundary(
-                  key: previewKey,
-                  child: Stack(
-                    children: [
-                      // background, character, clothes, accessories only
-                      if (selectedItemCodesByCategory['backgrounds']!.isNotEmpty)
-                        Container(
-                          decoration: BoxDecoration(
-                            gradient: getGradientByCode(
-                              selectedItemCodesByCategory['backgrounds']!.first,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Stack(
+                children: [
+                  RepaintBoundary(
+                    key: previewKey,
+                    child: Stack(
+                      children: [
+                        if (selectedItemCodesByCategory['backgrounds']!.isNotEmpty)
+                          Container(
+                            decoration: BoxDecoration(
+                              gradient: getGradientByCode(
+                                selectedItemCodesByCategory['backgrounds']!.first,
+                              ),
                             ),
                           ),
-                        ),
-                      ...['characters', 'clothes', 'accessories'].expand((category) {
-                        final codes = selectedItemCodesByCategory[category]!;
-                        return codes.map((code) => Image.asset(
-                          'assets/images/profile/$category/$code.png',
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => const SizedBox(),
-                        ));
-                      }),
-                    ],
-                  ),
-                ),
-                // Save button is outside the captured area
-                if (_hasChanges)
-                  Positioned(
-                    bottom: 24,
-                    right: 0,
-                    child: ElevatedButton(
-                      onPressed: _saveChanges,
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: const Color(0xFFA26A13),
-                        backgroundColor: Colors.white,
-                        shape: const CircleBorder(),
-                        elevation: 0,
-                        padding: EdgeInsets.all(screenWidth * 0.05),
-                      ),
-                      child: const Text(
-                        '저장하기',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-                      ),
+                        ...['characters', 'clothes', 'accessories'].expand((category) {
+                          final codes = selectedItemCodesByCategory[category]!;
+                          return codes.map((code) => Image.asset(
+                            'assets/images/profile/$category/$code.png',
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => const SizedBox(),
+                          ));
+                        }),
+                      ],
                     ),
                   ),
-              ],
+                  if (_hasChanges)
+                    Positioned(
+                      bottom: 24,
+                      right: 0,
+                      child: ElevatedButton(
+                        onPressed: _saveChanges,
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: const Color(0xFFA26A13),
+                          backgroundColor: Colors.white,
+                          shape: const CircleBorder(),
+                          elevation: 0,
+                          padding: EdgeInsets.all(screenWidth * 0.05),
+                        ),
+                        child: const Text(
+                          '저장하기',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
           SizedBox(height: sreenHeight * 0.01),
