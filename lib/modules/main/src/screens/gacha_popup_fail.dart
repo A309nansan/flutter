@@ -32,7 +32,7 @@ class GachaBoxFailPopup {
                 ),
                 clipBehavior: Clip.hardEdge, // ✨ 이 속성이 이미지를 컨테이너 밖으로 나가지 않도록 잘라줍니다.
                 child: Image.asset(
-                  imageUrl ?? 'assets/images/profile/question.png',
+                  imageUrl ?? 'assets/images/profile/question.webp',
                   fit: BoxFit.cover, // 이미지가 컨테이너를 가득 채우면서 짤리도록
                 ),
               ),

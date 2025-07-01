@@ -353,7 +353,7 @@ class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
         context: context,
         message: '당근이 부족합니다!',
         subMessage: '아이템을 뽑기 위한 당근이 충분하지 않습니다. 당근을 모아주세요.', // ✨ 서브 메시지 추가
-        imageUrl: 'assets/images/profile/no_coin.png', // ✨ 코인 부족 전용 이미지 (예시)
+        imageUrl: 'assets/images/profile/no_coin.webp', // ✨ 코인 부족 전용 이미지 (예시)
       );
       return;
     }
@@ -363,7 +363,7 @@ class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
         context: context,
         message: '남은 아이템이 없습니다!',
         subMessage: '이 카테고리의 모든 아이템을 이미 획득했습니다.', // ✨ 서브 메시지 추가
-        imageUrl: 'assets/images/profile/no_items_left.png', // ✨ 남은 아이템 없음 전용 이미지 (예시)
+        imageUrl: 'assets/images/profile/no_items_left.webp', // ✨ 남은 아이템 없음 전용 이미지 (예시)
       );
       return;
     }
@@ -651,7 +651,7 @@ class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
                         ...['characters', 'clothes', 'accessories'].expand((category) {
                           final codes = selectedItemCodesByCategory[category]!;
                           return codes.map((code) => Image.asset(
-                            'assets/images/profile/$category/$code.png',
+                            'assets/images/profile/$category/$code.webp',
                             fit: BoxFit.cover,
                             errorBuilder: (_, __, ___) => const SizedBox(),
                           ));
@@ -770,7 +770,7 @@ class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
                           ),
                           borderRadius: BorderRadius.circular(12),
                           color: item.itemCode == 201               //흰색 토끼에만 배경색 추가
-                              ? const Color(0xFFFFF9EF)
+                              ? Color(0xFFFFF9EF)
                               : Colors.white,
                         ),
                         child: Stack(
@@ -803,7 +803,7 @@ class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
                                       ClipRRect(
                                         borderRadius: BorderRadius.circular(8),
                                         child: Image.asset(
-                                          'assets/images/profile/$selectedCategory/${item.itemCode}.png',
+                                          'assets/images/profile/$selectedCategory/${item.itemCode}.webp',
                                           fit: BoxFit.cover,
                                           color: item.id == null
                                               ? Colors.grey.withOpacity(0.6)

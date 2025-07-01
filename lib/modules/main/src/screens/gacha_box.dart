@@ -124,11 +124,11 @@ class _GachaDialogState extends State<_GachaDialog>
           if (_leftCodes.isEmpty) {
             mainMessage = '모든 아이템을 획득했습니다!';
             subMessage = '축하합니다! 이 카테고리의 모든 아이템을 모았습니다.';
-            imageUrl = 'assets/images/profile/no_items_left.png'; // 적절한 이미지 경로
+            imageUrl = 'assets/images/profile/no_items_left.webp'; // 적절한 이미지 경로
           } else { // _coins <= LEASTCOINS
             mainMessage = '코인이 부족하여 더 이상 뽑을 수 없습니다.';
             subMessage = '아쉽지만, 다음 기회를 노려보세요.';
-            imageUrl = 'assets/images/profile/no_coin.png'; // 적절한 이미지 경로
+            imageUrl = 'assets/images/profile/no_coin.webp'; // 적절한 이미지 경로
           }
 
           // GachaBoxFailPopup을 호출하여 종료 메시지 다이얼로그 표시
@@ -170,11 +170,11 @@ class _GachaDialogState extends State<_GachaDialog>
     if (_coins <= LEASTCOINS) {
       mainMessage = '당근이 부족합니다!';
       subMessage = '아이템을 뽑기 위한 당근이 충분하지 않습니다. 당근을 모아주세요.';
-      imageUrl = 'assets/images/profile/no_coin.png'; // 적절한 이미지 경로
+      imageUrl = 'assets/images/profile/no_coin.webp'; // 적절한 이미지 경로
     } else { // _leftCodes.isEmpty
       mainMessage = '남은 아이템이 없습니다!';
       subMessage = '이 카테고리의 모든 아이템을 이미 획득했습니다.';
-      imageUrl = 'assets/images/profile/no_items_left.png'; // 적절한 이미지 경로
+      imageUrl = 'assets/images/profile/no_items_left.webp'; // 적절한 이미지 경로
     }
 
     // GachaBoxFailPopup을 호출하여 경고 다이얼로그 표시
@@ -264,12 +264,12 @@ class _GachaDialogState extends State<_GachaDialog>
                                 ? (widget.category == 'backgrounds'
                                 ? _BackgroundPreview(code: _item!.itemCode)
                                 : Image.asset(
-                              'assets/images/profile/${widget.category}/${_item!.itemCode}.png',
+                              'assets/images/profile/${widget.category}/${_item!.itemCode}.webp',
                               fit: BoxFit.cover,
                               color: _item!.id == null ? Colors.grey.withOpacity(0.6) : null,
                               colorBlendMode: _item!.id == null ? BlendMode.saturation : null,
                             ))
-                                : Image.asset('assets/images/profile/question.png', width: 400, color: Colors.grey.withOpacity(0.6), colorBlendMode: BlendMode.saturation),
+                                : Image.asset('assets/images/profile/question.webp', width: 400, color: Colors.grey.withOpacity(0.6), colorBlendMode: BlendMode.saturation),
                           ),
                         ),
                       ),
@@ -328,7 +328,7 @@ class _GachaDialogState extends State<_GachaDialog>
             child: widget.category == 'backgrounds'
                 ? _BackgroundPreview(code: code)
                 : Image.asset(
-              'assets/images/profile/${widget.category}/$code.png',
+              'assets/images/profile/${widget.category}/$code.webp',
               fit: BoxFit.cover,
               color: notObtained ? Colors.grey.withOpacity(0.6) : null,
               colorBlendMode: notObtained ? BlendMode.saturation : null,

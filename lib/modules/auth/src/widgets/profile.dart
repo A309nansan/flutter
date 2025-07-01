@@ -84,17 +84,17 @@ class _ProfileState extends State<Profile> {
                 children: [
                   if (characterCode != null)
                     Image.asset(
-                      'assets/images/profile/characters/$characterCode.png',
+                      'assets/images/profile/characters/$characterCode.webp',
                       fit: BoxFit.cover,
                       errorBuilder: (_, __, ___) => const SizedBox(),
                     ),
                   ...clothesCodes.map((code) => Image.asset(
-                    'assets/images/profile/clothes/$code.png',
+                    'assets/images/profile/clothes/$code.webp',
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => const SizedBox(),
                   )),
                   ...accessoriesCodes.map((code) => Image.asset(
-                    'assets/images/profile/accessories/$code.png',
+                    'assets/images/profile/accessories/$code.webp',
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => const SizedBox(),
                   )),

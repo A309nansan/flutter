@@ -90,7 +90,7 @@ class _ProfilePopupMenuState extends State<ProfilePopupMenu> {
                       ...['characters', 'clothes', 'accessories'].expand((category) {
                         final codes = selectedItemCodesByCategory[category]!;
                         return codes.map((code) => Image.asset(
-                          'assets/images/profile/$category/$code.png',
+                          'assets/images/profile/$category/$code.webp',
                           fit: BoxFit.cover,
                           errorBuilder: (_, __, ___) => const SizedBox(),
                         ));
