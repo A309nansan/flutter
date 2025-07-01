@@ -291,15 +291,23 @@ class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
       final childProfile = jsonDecode(childProfileJson!);
       print(childProfile);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('저장되었습니다.')),
+      _showResultDialog(
+        context,
+        title: "저장 완료",
+        message: "아이템 변경 사항이 저장되었습니다!",
+        icon: Icons.check_circle_outline,
+        color: Colors.green,
       );
     } catch (e, stacktrace) {
       debugPrint('❌ Save failed: $e');
       debugPrint('Stacktrace: $stacktrace');
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('저장에 실패했습니다.')),
+      _showResultDialog(
+        context,
+        title: "저장 실패",
+        message: "아이템 변경 사항이 저장되지 않았습니다!",
+        icon: Icons.check_circle_outline,
+        color: Colors.green,
       );
     }
   }
@@ -703,8 +711,8 @@ class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
                       child: Text(
                         label,
                         style: TextStyle(
-                          fontSize: sreenHeight * 0.025, // 기준 크기. 자동 축소
-                          fontWeight: FontWeight.bold,
+                          fontSize: sreenHeight * 0.02, // 기준 크기. 자동 축소
+                          fontWeight: FontWeight.w500,
                           color: Color(0xFFA26A13),
                         ),
                       ),
@@ -731,6 +739,8 @@ class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
                 crossAxisCount: 4,
                 padding: const EdgeInsets.all(16),
                 childAspectRatio: 1,
+                crossAxisSpacing: 15.0,
+                mainAxisSpacing: 15.0,
                 children: [
                   _buildBoxButtonTile(),
                   ...currentItems.map((item) {
@@ -755,10 +765,13 @@ class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
                           border: Border.all(
                             color:
                             isSelected ? const Color(0xFFA26A13) : const Color(0xFFF9DBAA),
-                            width: 4,
+                            width:
+                            isSelected ? 4 : 1,
                           ),
                           borderRadius: BorderRadius.circular(12),
-                          color: const Color(0xFFFFF9EF),
+                          color: item.itemCode == 201               //흰색 토끼에만 배경색 추가
+                              ? const Color(0xFFFFF9EF)
+                              : Colors.white,
                         ),
                         child: Stack(
                           children: [
