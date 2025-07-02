@@ -313,7 +313,7 @@ class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
   }
   final Map<String, List<int>> _allItemsByCategory = {
     'backgrounds': List.generate(10, (index) => 101 + index), // 101부터 110까지
-    'characters': List.generate(5, (index) => 201 + index),   // 201부터 205까지
+    'characters': List.generate(2, (index) => 201 + index),   // 201부터 202까지
     'clothes': List.generate(5, (i) => 301 + i),
     'accessories': List.generate(5, (i) => 401 + i),
     // ... 다른 카테고리들 추가
