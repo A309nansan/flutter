@@ -18,7 +18,7 @@ class GachaBox {
     Item? picked;
     await showDialog(
       context: context,
-      barrierColor: Colors.black54,
+      barrierColor: Colors.transparent,
       barrierDismissible: true,
       builder: (_) => _GachaDialog(
         userId: userId,
@@ -202,15 +202,12 @@ class _GachaDialogState extends State<_GachaDialog>
 
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
       child: Stack(
         alignment: Alignment.center,
         children: [
           // ─── Dim overlay ───
-          FadeTransition(
-            opacity: _fadeCtrl,
-            child: Container(color: Colors.black.withOpacity(0.6)),
-          ),
+
           // ─── Main card ───
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 560),
@@ -245,44 +242,32 @@ class _GachaDialogState extends State<_GachaDialog>
                   ),
                   const SizedBox(height: 20),
                   // ─── 중앙 영역 ───
-                  Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      GestureDetector(
-                        // 버튼 활성화/비활성화 및 _startGacha 또는 _alert 호출
-                        onTap: (_leftCodes.isNotEmpty && _coins > LEASTCOINS) ? _startGacha : _alert,
-                        child: Container(
-                          width: 500,
-                          height: 500,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: const Color(0xFFA26A13), width: 1.5),
-                            borderRadius: BorderRadius.circular(16),
-                            color: Colors.white,
-                          ),
-                          child: Center(
-                            child: _phase == Phase.result && _item != null
-                                ? (widget.category == 'backgrounds'
-                                ? _BackgroundPreview(code: _item!.itemCode)
-                                : Image.asset(
-                              'assets/images/profile/${widget.category}/${_item!.itemCode}.webp',
-                              fit: BoxFit.cover,
-                              color: _item!.id == null ? Colors.grey.withOpacity(0.6) : null,
-                              colorBlendMode: _item!.id == null ? BlendMode.saturation : null,
-                            ))
-                                : Image.asset('assets/images/profile/question.webp', width: 400, color: Colors.grey.withOpacity(0.6), colorBlendMode: BlendMode.saturation),
-                          ),
-                        ),
+                  GestureDetector(
+                    // 버튼 활성화/비활성화 및 _startGacha 또는 _alert 호출
+                    onTap: (_leftCodes.isNotEmpty && _coins > LEASTCOINS) ? _startGacha : _alert,
+                    child: Container(
+                      width: 500,
+                      height: 500,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: const Color(0xFFA26A13), width: 1.5),
+                        borderRadius: BorderRadius.circular(16),
+                        color: Colors.white,
                       ),
-
-                      if (_phase == Phase.animating)
-                        FadeTransition(
-                          opacity: _fadeCtrl,
-                          child: Container(width: 500, height: 500, decoration: BoxDecoration(color: Colors.black.withOpacity(0.45), borderRadius: BorderRadius.circular(16))),
-                        ),
-                      if (_phase == Phase.animating)
-                        Image.asset('assets/images/profile/box_full.gif', width: 280),
-                    ],
+                      child: Center(
+                        child: _phase == Phase.result && _item != null
+                            ? (widget.category == 'backgrounds'
+                            ? _BackgroundPreview(code: _item!.itemCode)
+                            : Image.asset(
+                          'assets/images/profile/${widget.category}/${_item!.itemCode}.webp',
+                          fit: BoxFit.cover,
+                          color: _item!.id == null ? Colors.grey.withOpacity(0.6) : null,
+                          colorBlendMode: _item!.id == null ? BlendMode.saturation : null,
+                        ))
+                            : Image.asset('assets/images/profile/question.webp', width: 400, color: Colors.grey.withOpacity(0.6), colorBlendMode: BlendMode.saturation),
+                      ),
+                    ),
                   ),
+
                   const SizedBox(height: 30),
                   _buildItemStrip(),
                   const SizedBox(height: 36),
@@ -292,6 +277,13 @@ class _GachaDialogState extends State<_GachaDialog>
               ),
             ),
           ),
+          if (_phase == Phase.animating)
+          FadeTransition(
+            opacity: _fadeCtrl,
+            child: Container(color: Colors.black.withOpacity(0.6)),
+          ),
+          if (_phase == Phase.animating)
+            Image.asset('assets/images/profile/box_full.webp', width: 280),
         ],
       ),
     );
