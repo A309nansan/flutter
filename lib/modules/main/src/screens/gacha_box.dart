@@ -263,7 +263,7 @@ class _GachaDialogState extends State<_GachaDialog>
                           color: _item!.id == null ? Colors.grey.withOpacity(0.6) : null,
                           colorBlendMode: _item!.id == null ? BlendMode.saturation : null,
                         ))
-                            : Image.asset('assets/images/profile/question.webp', width: 400, color: Colors.grey.withOpacity(0.6), colorBlendMode: BlendMode.saturation),
+                            : Image.asset('assets/images/profile/question.webp', width: 400, color: Colors.white, colorBlendMode: BlendMode.saturation),
                       ),
                     ),
                   ),

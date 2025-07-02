@@ -548,15 +548,34 @@ class _ProfilePicPageState extends ConsumerState<ProfilePicPage> {
           borderRadius: BorderRadius.circular(12),
           color: const Color(0xFFFFF9EF),
         ),
-        child: Center(
-          child: Text(
-            hasUnowned ? '상자 열기' : '모두 보유',
-            style: TextStyle(
-              fontSize: sreenHeight * 0.03,
-              fontWeight: FontWeight.bold,
-              color: hasUnowned ? const Color(0xFFA26A13) : Colors.grey,
+        // Column이 Container의 전체 높이를 차지하도록 합니다.
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center, // 이미지와 텍스트를 중앙 정렬
+          children: [
+            Expanded( // 이미지가 남은 공간을 모두 차지하도록 합니다.
+              child: Padding( // 이미지 주변에 약간의 패딩을 주어 시각적으로 여백을 줍니다.
+                padding: const EdgeInsets.all(8.0), // 패딩 크기는 필요에 따라 조절하세요
+                child: Image.asset(
+                  hasUnowned ? 'assets/images/profile/question.webp' : 'assets/images/profile/thumbsup.webp',
+                  fit: BoxFit.contain, // 이미지가 주어진 공간에 완전히 맞도록 비율을 유지하며 크기를 조절합니다.
+                  // BoxFit.cover는 잘려나갈 수 있으므로, 이미지를 모두 보여주려면 contain이 적합합니다.
+                  errorBuilder: (_, __, ___) => const SizedBox(),
+                ),
+              ),
             ),
-          ),
+            // 이미지와 텍스트 사이에 간격이 필요하면 SizedBox를 추가할 수 있습니다.
+            // const SizedBox(height: 4),
+            Text(
+              hasUnowned ? '상자 열기' : '모두 보유',
+              textAlign: TextAlign.center, // 텍스트가 여러 줄일 경우 중앙 정렬
+              style: TextStyle(
+                fontSize: sreenHeight * 0.02, // 가독성을 위해 글꼴 크기를 약간 키웠습니다. (예: 800px 높이에서 16px)
+                fontWeight: FontWeight.bold,
+                color: hasUnowned ? const Color(0xFFA26A13) : Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 5), // 텍스트 아래에 작은 여백 추가
+          ],
         ),
       ),
     );
