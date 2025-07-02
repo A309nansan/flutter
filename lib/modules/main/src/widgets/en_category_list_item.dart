@@ -109,7 +109,7 @@ class EnCategoryListItem extends StatelessWidget {
                   width: screenWidth * 0.2,
                   // margin: const EdgeInsets.only(right: 20),
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: onTap ?? () {
                       Modular.to.pushNamed(
                         '/main/chapter-list',
                         arguments: {
