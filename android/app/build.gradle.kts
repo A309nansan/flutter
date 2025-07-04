@@ -54,8 +54,8 @@ android {
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 29
         targetSdk = flutter.targetSdkVersion
-        versionCode = 39
-        versionName = "1.1.39"
+        versionCode = 41
+        versionName = "1.1.41"
 
         if (kakaoKey.isEmpty()) throw GradleException("KAKAO_NATIVE_APP_KEY not found in .env file")
         if (defaultWebClientId.isEmpty()) throw GradleException("DEFAULT_WEB_CLIENT_ID not found in .env file")
