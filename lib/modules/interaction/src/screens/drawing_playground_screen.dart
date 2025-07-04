@@ -131,6 +131,9 @@ class DrawingPlaygroundScreenState extends State<DrawingPlaygroundScreen> with T
                 ),
               ),
               PageViewModel(
+                decoration: PageDecoration(
+                  pageColor: Colors.white
+                ),
                 titleWidget: Column(
                   children: [
                     Container(
