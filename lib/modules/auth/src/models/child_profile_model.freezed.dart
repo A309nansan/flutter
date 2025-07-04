@@ -1,4 +1,3 @@
-// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -10,154 +9,341 @@ part of 'child_profile_model.dart';
 // FreezedGenerator
 // **************************************************************************
 
-// dart format off
 T _$identity<T>(T value) => value;
+
+final _privateConstructorUsedError = UnsupportedError(
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
+
+ChildProfileModel _$ChildProfileModelFromJson(Map<String, dynamic> json) {
+  return _ChildProfileModel.fromJson(json);
+}
 
 /// @nodoc
 mixin _$ChildProfileModel {
-
- int get id; String get name; String get profileImageUrl; String get birthDate; String get grade; String get gender;
-/// Create a copy of ChildProfileModel
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$ChildProfileModelCopyWith<ChildProfileModel> get copyWith => _$ChildProfileModelCopyWithImpl<ChildProfileModel>(this as ChildProfileModel, _$identity);
+  int get id => throw _privateConstructorUsedError;
+  String get name => throw _privateConstructorUsedError;
+  String get profileImageUrl => throw _privateConstructorUsedError;
+  String get birthDate => throw _privateConstructorUsedError;
+  String get grade => throw _privateConstructorUsedError;
+  String get gender => throw _privateConstructorUsedError;
+  equippedItemsResponse get equipItem => throw _privateConstructorUsedError;
 
   /// Serializes this ChildProfileModel to a JSON map.
-  Map<String, dynamic> toJson();
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChildProfileModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.profileImageUrl, profileImageUrl) || other.profileImageUrl == profileImageUrl)&&(identical(other.birthDate, birthDate) || other.birthDate == birthDate)&&(identical(other.grade, grade) || other.grade == grade)&&(identical(other.gender, gender) || other.gender == gender));
-}
-
-@JsonKey(includeFromJson: false, includeToJson: false)
-@override
-int get hashCode => Object.hash(runtimeType,id,name,profileImageUrl,birthDate,grade,gender);
-
-@override
-String toString() {
-  return 'ChildProfileModel(id: $id, name: $name, profileImageUrl: $profileImageUrl, birthDate: $birthDate, grade: $grade, gender: $gender)';
-}
-
-
+  /// Create a copy of ChildProfileModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $ChildProfileModelCopyWith<ChildProfileModel> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract mixin class $ChildProfileModelCopyWith<$Res>  {
-  factory $ChildProfileModelCopyWith(ChildProfileModel value, $Res Function(ChildProfileModel) _then) = _$ChildProfileModelCopyWithImpl;
-@useResult
-$Res call({
- int id, String name, String profileImageUrl, String birthDate, String grade, String gender
-});
+abstract class $ChildProfileModelCopyWith<$Res> {
+  factory $ChildProfileModelCopyWith(
+    ChildProfileModel value,
+    $Res Function(ChildProfileModel) then,
+  ) = _$ChildProfileModelCopyWithImpl<$Res, ChildProfileModel>;
+  @useResult
+  $Res call({
+    int id,
+    String name,
+    String profileImageUrl,
+    String birthDate,
+    String grade,
+    String gender,
+    equippedItemsResponse equipItem,
+  });
 
-
-
-
+  $EquipItemModelCopyWith<$Res> get equipItem;
 }
+
 /// @nodoc
-class _$ChildProfileModelCopyWithImpl<$Res>
+class _$ChildProfileModelCopyWithImpl<$Res, $Val extends ChildProfileModel>
     implements $ChildProfileModelCopyWith<$Res> {
-  _$ChildProfileModelCopyWithImpl(this._self, this._then);
+  _$ChildProfileModelCopyWithImpl(this._value, this._then);
 
-  final ChildProfileModel _self;
-  final $Res Function(ChildProfileModel) _then;
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
-/// Create a copy of ChildProfileModel
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? profileImageUrl = null,Object? birthDate = null,Object? grade = null,Object? gender = null,}) {
-  return _then(_self.copyWith(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,profileImageUrl: null == profileImageUrl ? _self.profileImageUrl : profileImageUrl // ignore: cast_nullable_to_non_nullable
-as String,birthDate: null == birthDate ? _self.birthDate : birthDate // ignore: cast_nullable_to_non_nullable
-as String,grade: null == grade ? _self.grade : grade // ignore: cast_nullable_to_non_nullable
-as String,gender: null == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
-as String,
-  ));
+  /// Create a copy of ChildProfileModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? name = null,
+    Object? profileImageUrl = null,
+    Object? birthDate = null,
+    Object? grade = null,
+    Object? gender = null,
+    Object? equipItem = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            id:
+                null == id
+                    ? _value.id
+                    : id // ignore: cast_nullable_to_non_nullable
+                        as int,
+            name:
+                null == name
+                    ? _value.name
+                    : name // ignore: cast_nullable_to_non_nullable
+                        as String,
+            profileImageUrl:
+                null == profileImageUrl
+                    ? _value.profileImageUrl
+                    : profileImageUrl // ignore: cast_nullable_to_non_nullable
+                        as String,
+            birthDate:
+                null == birthDate
+                    ? _value.birthDate
+                    : birthDate // ignore: cast_nullable_to_non_nullable
+                        as String,
+            grade:
+                null == grade
+                    ? _value.grade
+                    : grade // ignore: cast_nullable_to_non_nullable
+                        as String,
+            gender:
+                null == gender
+                    ? _value.gender
+                    : gender // ignore: cast_nullable_to_non_nullable
+                        as String,
+            equipItem:
+                null == equipItem
+                    ? _value.equipItem
+                    : equipItem // ignore: cast_nullable_to_non_nullable
+                        as equippedItemsResponse,
+          )
+          as $Val,
+    );
+  }
+
+  /// Create a copy of ChildProfileModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $EquipItemModelCopyWith<$Res> get equipItem {
+    return $EquipItemModelCopyWith<$Res>(_value.equipItem, (value) {
+      return _then(_value.copyWith(equipItem: value) as $Val);
+    });
+  }
 }
 
+/// @nodoc
+abstract class _$$ChildProfileModelImplCopyWith<$Res>
+    implements $ChildProfileModelCopyWith<$Res> {
+  factory _$$ChildProfileModelImplCopyWith(
+    _$ChildProfileModelImpl value,
+    $Res Function(_$ChildProfileModelImpl) then,
+  ) = __$$ChildProfileModelImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    int id,
+    String name,
+    String profileImageUrl,
+    String birthDate,
+    String grade,
+    String gender,
+    equippedItemsResponse equipItem,
+  });
+
+  @override
+  $EquipItemModelCopyWith<$Res> get equipItem;
 }
 
+/// @nodoc
+class __$$ChildProfileModelImplCopyWithImpl<$Res>
+    extends _$ChildProfileModelCopyWithImpl<$Res, _$ChildProfileModelImpl>
+    implements _$$ChildProfileModelImplCopyWith<$Res> {
+  __$$ChildProfileModelImplCopyWithImpl(
+    _$ChildProfileModelImpl _value,
+    $Res Function(_$ChildProfileModelImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of ChildProfileModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? name = null,
+    Object? profileImageUrl = null,
+    Object? birthDate = null,
+    Object? grade = null,
+    Object? gender = null,
+    Object? equipItem = null,
+  }) {
+    return _then(
+      _$ChildProfileModelImpl(
+        id:
+            null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                    as int,
+        name:
+            null == name
+                ? _value.name
+                : name // ignore: cast_nullable_to_non_nullable
+                    as String,
+        profileImageUrl:
+            null == profileImageUrl
+                ? _value.profileImageUrl
+                : profileImageUrl // ignore: cast_nullable_to_non_nullable
+                    as String,
+        birthDate:
+            null == birthDate
+                ? _value.birthDate
+                : birthDate // ignore: cast_nullable_to_non_nullable
+                    as String,
+        grade:
+            null == grade
+                ? _value.grade
+                : grade // ignore: cast_nullable_to_non_nullable
+                    as String,
+        gender:
+            null == gender
+                ? _value.gender
+                : gender // ignore: cast_nullable_to_non_nullable
+                    as String,
+        equipItem:
+            null == equipItem
+                ? _value.equipItem
+                : equipItem // ignore: cast_nullable_to_non_nullable
+                    as equippedItemsResponse,
+      ),
+    );
+  }
+}
 
 /// @nodoc
 @JsonSerializable()
+class _$ChildProfileModelImpl implements _ChildProfileModel {
+  const _$ChildProfileModelImpl({
+    required this.id,
+    required this.name,
+    required this.profileImageUrl,
+    required this.birthDate,
+    required this.grade,
+    required this.gender,
+    this.equipItem = const equippedItemsResponse(
+      background: {"itemCode": 101},
+      character: {"itemCode": 201},
+      clothes: [],
+      accessories: [],
+    ),
+  });
 
-class _ChildProfileModel implements ChildProfileModel {
-  const _ChildProfileModel({required this.id, required this.name, required this.profileImageUrl, required this.birthDate, required this.grade, required this.gender});
-  factory _ChildProfileModel.fromJson(Map<String, dynamic> json) => _$ChildProfileModelFromJson(json);
+  factory _$ChildProfileModelImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ChildProfileModelImplFromJson(json);
 
-@override final  int id;
-@override final  String name;
-@override final  String profileImageUrl;
-@override final  String birthDate;
-@override final  String grade;
-@override final  String gender;
+  @override
+  final int id;
+  @override
+  final String name;
+  @override
+  final String profileImageUrl;
+  @override
+  final String birthDate;
+  @override
+  final String grade;
+  @override
+  final String gender;
+  @override
+  @JsonKey()
+  final equippedItemsResponse equipItem;
 
-/// Create a copy of ChildProfileModel
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-_$ChildProfileModelCopyWith<_ChildProfileModel> get copyWith => __$ChildProfileModelCopyWithImpl<_ChildProfileModel>(this, _$identity);
+  @override
+  String toString() {
+    return 'ChildProfileModel(id: $id, name: $name, profileImageUrl: $profileImageUrl, birthDate: $birthDate, grade: $grade, gender: $gender, equipItem: $equipItem)';
+  }
 
-@override
-Map<String, dynamic> toJson() {
-  return _$ChildProfileModelToJson(this, );
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ChildProfileModelImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.profileImageUrl, profileImageUrl) ||
+                other.profileImageUrl == profileImageUrl) &&
+            (identical(other.birthDate, birthDate) ||
+                other.birthDate == birthDate) &&
+            (identical(other.grade, grade) || other.grade == grade) &&
+            (identical(other.gender, gender) || other.gender == gender) &&
+            (identical(other.equipItem, equipItem) ||
+                other.equipItem == equipItem));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    name,
+    profileImageUrl,
+    birthDate,
+    grade,
+    gender,
+    equipItem,
+  );
+
+  /// Create a copy of ChildProfileModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ChildProfileModelImplCopyWith<_$ChildProfileModelImpl> get copyWith =>
+      __$$ChildProfileModelImplCopyWithImpl<_$ChildProfileModelImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ChildProfileModelImplToJson(this);
+  }
 }
 
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChildProfileModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.profileImageUrl, profileImageUrl) || other.profileImageUrl == profileImageUrl)&&(identical(other.birthDate, birthDate) || other.birthDate == birthDate)&&(identical(other.grade, grade) || other.grade == grade)&&(identical(other.gender, gender) || other.gender == gender));
+abstract class _ChildProfileModel implements ChildProfileModel {
+  const factory _ChildProfileModel({
+    required final int id,
+    required final String name,
+    required final String profileImageUrl,
+    required final String birthDate,
+    required final String grade,
+    required final String gender,
+    final equippedItemsResponse equipItem,
+  }) = _$ChildProfileModelImpl;
+
+  factory _ChildProfileModel.fromJson(Map<String, dynamic> json) =
+      _$ChildProfileModelImpl.fromJson;
+
+  @override
+  int get id;
+  @override
+  String get name;
+  @override
+  String get profileImageUrl;
+  @override
+  String get birthDate;
+  @override
+  String get grade;
+  @override
+  String get gender;
+  @override
+  equippedItemsResponse get equipItem;
+
+  /// Create a copy of ChildProfileModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$ChildProfileModelImplCopyWith<_$ChildProfileModelImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
-
-@JsonKey(includeFromJson: false, includeToJson: false)
-@override
-int get hashCode => Object.hash(runtimeType,id,name,profileImageUrl,birthDate,grade,gender);
-
-@override
-String toString() {
-  return 'ChildProfileModel(id: $id, name: $name, profileImageUrl: $profileImageUrl, birthDate: $birthDate, grade: $grade, gender: $gender)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class _$ChildProfileModelCopyWith<$Res> implements $ChildProfileModelCopyWith<$Res> {
-  factory _$ChildProfileModelCopyWith(_ChildProfileModel value, $Res Function(_ChildProfileModel) _then) = __$ChildProfileModelCopyWithImpl;
-@override @useResult
-$Res call({
- int id, String name, String profileImageUrl, String birthDate, String grade, String gender
-});
-
-
-
-
-}
-/// @nodoc
-class __$ChildProfileModelCopyWithImpl<$Res>
-    implements _$ChildProfileModelCopyWith<$Res> {
-  __$ChildProfileModelCopyWithImpl(this._self, this._then);
-
-  final _ChildProfileModel _self;
-  final $Res Function(_ChildProfileModel) _then;
-
-/// Create a copy of ChildProfileModel
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? profileImageUrl = null,Object? birthDate = null,Object? grade = null,Object? gender = null,}) {
-  return _then(_ChildProfileModel(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,profileImageUrl: null == profileImageUrl ? _self.profileImageUrl : profileImageUrl // ignore: cast_nullable_to_non_nullable
-as String,birthDate: null == birthDate ? _self.birthDate : birthDate // ignore: cast_nullable_to_non_nullable
-as String,grade: null == grade ? _self.grade : grade // ignore: cast_nullable_to_non_nullable
-as String,gender: null == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
-as String,
-  ));
-}
-
-
-}
-
-// dart format on

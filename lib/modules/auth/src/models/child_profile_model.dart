@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'equip_item_model.dart';
+
 part 'child_profile_model.freezed.dart';
 part 'child_profile_model.g.dart';
 
@@ -12,6 +14,12 @@ abstract class ChildProfileModel with _$ChildProfileModel {
       required String birthDate,
       required String grade,
       required String gender,
+      @Default(equippedItemsResponse(
+        background: {"itemCode": 101},
+        character: {"itemCode": 201},
+        clothes: [],
+        accessories: [],
+      )) equippedItemsResponse equipItem,
   }) = _ChildProfileModel;
 
   factory ChildProfileModel.fromJson(Map<String, dynamic> json) =>

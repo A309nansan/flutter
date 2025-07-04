@@ -32,15 +32,11 @@ class AuthService {
       // 사용자 정보 저장
       await SecureStorageService.saveUserModel(userModel);
 
-      // 로그인 후 사용자 id 가져와서 저장 ("/user/me" 호출)
+      // 로그인 후 사용자 id 가져와서 저장
       await getUserId();
 
-      bool status = await getStatus();
-      if (status) {
-        Modular.to.navigate('/profile');
-      } else {
-        Modular.to.navigate('/auth/role-select', arguments: userModel);
-      }
+      Modular.to.navigate('/profile');
+
       ToastMessage.show("로그인 되었습니다.");
     } catch (e) {
       debugPrint("❌ 로그인 에러: $e");

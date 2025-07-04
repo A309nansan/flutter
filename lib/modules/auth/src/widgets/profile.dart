@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:nansan_flutter/modules/main/src/screens/pfp_screen.dart';
 import '../../../../shared/services/request_service.dart';
 import '../../../../shared/services/secure_storage_service.dart';
 import '../models/child_profile_model.dart';
@@ -15,15 +16,8 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
   Future<void> fetchChildId() async {
     try {
-
       final selectedChildId = widget.profile.id;
       final response = await RequestService.rawGet("/user/child/select/$selectedChildId");
       final headers = response.headers;
@@ -43,19 +37,25 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     var screenWidth = MediaQuery.of(context).size.width;
-    var screenHeight = MediaQuery.of(context).size.height;
+
+    final equip = widget.profile.equipItem;
+    final backgroundCode = equip.background?['itemCode'] as int?;
+    final characterCode = equip.character?['itemCode'] as int?;
+    final clothesList = equip.clothes ?? [];
+    final accessoriesList = equip.accessories ?? [];
+
+    List<int> clothesCodes = clothesList.map<int>((item) => item['itemCode'] as int).toList();
+    List<int> accessoriesCodes = accessoriesList.map<int>((item) => item['itemCode'] as int).toList();
 
     return ElevatedButton(
-      onPressed: () async  {
+      onPressed: () async {
         await fetchChildId();
         Modular.to.pushNamed('/main/main-list');
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.white,
-        foregroundColor: Color.fromARGB(255, 249, 241, 196),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20)
-        ),
+        foregroundColor: const Color.fromARGB(255, 249, 241, 196),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         padding: EdgeInsets.zero,
         minimumSize: Size.zero,
         elevation: 3,
@@ -64,40 +64,61 @@ class _ProfileState extends State<Profile> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: MediaQuery.of(context).size.width * 0.18,
+            width: screenWidth * 0.18,
+            height: screenWidth * 0.18,
             decoration: BoxDecoration(
-              color: Colors.white,
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Color(0xAAC2BCBC),
+                  color: const Color(0xAAC2BCBC),
                   blurRadius: 5.0,
                   offset: const Offset(0, 7),
                 ),
               ],
+              gradient: backgroundCode != null ? getGradientByCode(backgroundCode) : null,
+              color: backgroundCode == null ? Colors.grey.shade300 : null,
             ),
-            child: CircleAvatar(
-              radius: MediaQuery.of(context).size.width * 0.1,
-              backgroundImage: NetworkImage(widget.profile.profileImageUrl.toString()),
-              backgroundColor: Colors.white,
+            child: ClipOval(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  if (characterCode != null)
+                    Image.asset(
+                      'assets/images/profile/characters/$characterCode.webp',
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => const SizedBox(),
+                    ),
+                  ...clothesCodes.map((code) => Image.asset(
+                    'assets/images/profile/clothes/$code.webp',
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const SizedBox(),
+                  )),
+                  ...accessoriesCodes.map((code) => Image.asset(
+                    'assets/images/profile/accessories/$code.webp',
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const SizedBox(),
+                  )),
+                ],
+              ),
             ),
           ),
+          const SizedBox(height: 6),
           Text(
             widget.profile.name,
             style: TextStyle(
               fontSize: screenWidth * 0.025,
               fontWeight: FontWeight.bold,
-              color: Colors.black
+              color: Colors.black,
             ),
           ),
           Text(
             "아이",
             style: TextStyle(
-                fontSize: screenWidth * 0.016,
+              fontSize: screenWidth * 0.016,
               fontWeight: FontWeight.bold,
-              color: Colors.black54
+              color: Colors.black54,
             ),
-          )
+          ),
         ],
       ),
     );

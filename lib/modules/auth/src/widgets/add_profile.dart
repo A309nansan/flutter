@@ -17,17 +17,9 @@ class AddProfile extends StatelessWidget {
       padding: EdgeInsets.all(10),
       child: ElevatedButton(
         onPressed: () async {
-          if (userRole == "PARENT") {
-            final result = await Modular.to.pushNamed('/auth/add_child');
-            if (result == true && onProfileAdded != null) {
-              onProfileAdded!();
-            }
-          } else if (userRole == "CHILD") {
-            ToastMessage.show("권한이 없습니다.");
-          } else if (userRole == "TEACHER") {
-            Modular.to.pushNamed('/teacher/add_class');
-          } else {
-            ToastMessage.show("지원하지 않는 사용자입니다.");
+          final result = await Modular.to.pushNamed('/auth/add_child');
+          if (result == true && onProfileAdded != null) {
+            onProfileAdded!();
           }
         },
         style: ElevatedButton.styleFrom(
