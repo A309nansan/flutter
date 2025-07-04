@@ -64,12 +64,7 @@ class SplashScreenState extends State<SplashScreen> {
     UserModel? user = await SecureStorageService.getUserModel();
 
     if (accessToken != null && accessToken.isNotEmpty && user != null) {
-      bool status = await authService.getStatus();
-      if (status) {
-        Modular.to.navigate('/profile');
-      } else {
-        Modular.to.navigate('/auth/role-select', arguments: user);
-      }
+      Modular.to.navigate('/profile');
     } else {
       Modular.to.navigate('/login');
     }
