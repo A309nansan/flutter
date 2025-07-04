@@ -21,7 +21,6 @@ import 'package:nansan_flutter/shared/widgets/new_question_text.dart';
 import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:collection/collection.dart';
-
 import '../../../shared/provider/en_riverpod_provider.dart';
 import '../../../shared/widgets/en_result_popup.dart';
 
@@ -230,14 +229,13 @@ class LevelOneOneTwoThinkState extends ConsumerState<LevelOneOneTwoThink>
     _submitAnswer();
   }
 
-  Widget _buildHeaderItem() => SizedBox(
-    width: 100,
-    height: 30,
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: const [
-        Text('1 큰 수', style: TextStyle()),
-        Icon(Icons.arrow_right_alt_outlined),
+  Widget _buildHeaderItem(double iconSize, double fontSize) => SizedBox(
+    height: 80,
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text('1 큰 수', style: TextStyle(fontSize: fontSize)),
+        Icon(Icons.arrow_forward_rounded, size: iconSize),
       ],
     ),
   );
@@ -261,42 +259,60 @@ class LevelOneOneTwoThinkState extends ConsumerState<LevelOneOneTwoThink>
     ),
   );
 
-  Widget _buildRow(List<Widget> children) =>
-      Row(mainAxisAlignment: MainAxisAlignment.center, children: children);
+  Widget _buildHeaderRow() {
+    final headers = List.generate(5, (i) => _buildHeaderItem(MediaQuery.of(context).size.width * 0.03, MediaQuery.of(context).size.width * 0.03));
 
-  Widget _buildHeaderRow() => _buildRow(
-    List.generate(
-        5,
-        (i) => _buildHeaderItem(),
-      ).expand((w) => [w, const SizedBox(width: 15)]).toList()
-      ..removeLast(),
-  );
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      height: MediaQuery.of(context).size.height * 0.07,
+      width: MediaQuery.of(context).size.width * 0.88,
+      child: GridView.count(
+        crossAxisCount: 5,
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        crossAxisSpacing: 12,
+        childAspectRatio: 1.5,
+        padding: EdgeInsets.zero,
+        children: headers,
+      ),
+    );
+  }
 
-  Widget _buildContentRow(int startZoneKey) {
-    final rowIndex = (startZoneKey - 1) ~/ 3;
-    final currentImages =
-        rowIndex < fixedImageUrls.length ? fixedImageUrls[rowIndex] : [];
+  Widget _buildContentRow() {
+    final List<Widget> gridItems = [];
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        if (currentImages.isNotEmpty) ...[
-          _buildContainer(currentImages[0]),
-          const SizedBox(width: 15),
-          if (currentImages.length > 1) _buildContainer(currentImages[1]),
-          const SizedBox(width: 15),
-        ],
-        ...List.generate(
-            3,
-            (i) => EmptyZone(
-              zoneKey: startZoneKey + i,
-              width: 100,
-              height: 100,
-              onDrop: _processInputData,
-            ),
-          ).expand((w) => [w, const SizedBox(width: 15)]).toList()
-          ..removeLast(),
-      ],
+    for (int rowIndex = 0; rowIndex < 4; rowIndex++) {
+      final zoneStartKey = 1 + rowIndex * 3;
+      final currentImages = rowIndex < fixedImageUrls.length
+          ? fixedImageUrls[rowIndex]
+          : [];
+
+      for (final imageUrl in currentImages.take(2)) {
+        gridItems.add(_buildContainer(imageUrl));
+      }
+
+      for (int i = 0; i < 3; i++) {
+        gridItems.add(EmptyZone(
+          zoneKey: zoneStartKey + i,
+          width: 95,
+          height: 95,
+          onDrop: _processInputData,
+        ));
+      }
+
+      while (gridItems.length % 5 != 0) {
+        gridItems.add(const SizedBox.shrink());
+      }
+    }
+
+    return GridView.count(
+      crossAxisCount: 5,
+      mainAxisSpacing: 20,
+      crossAxisSpacing: 20,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.symmetric(horizontal: 30),
+      children: gridItems,
     );
   }
 
@@ -422,18 +438,8 @@ class LevelOneOneTwoThinkState extends ConsumerState<LevelOneOneTwoThink>
                               questionText: '회색 빈칸에 알맞은 1 큰 수를 나타내는 그림은 무엇일까요?',
                               questionTextSize: screenWidth * 0.03,
                             ),
-                            SizedBox(height: screenHeight * 0.02),
                             _buildHeaderRow(),
-                            ...List.generate(
-                              4,
-                              (i) => Column(
-                                children: [
-                                  _buildContentRow(1 + i * 3),
-                                  if (i < 3)
-                                    SizedBox(height: screenHeight * 0.01),
-                                ],
-                              ),
-                            ),
+                            _buildContentRow(),
                             SizedBox(height: screenHeight * 0.02),
                             NewQuestionTextWidget(
                               questionText: '아래의 카드들을 알맞은 위치에 넣어보세요!',
@@ -441,12 +447,12 @@ class LevelOneOneTwoThinkState extends ConsumerState<LevelOneOneTwoThink>
                             ),
                             SizedBox(height: screenHeight * 0.02),
                             DraggableCardList(
-                              showRemoveButton: true,
+                              showRemoveButton: false,
                               candidates: candidates,
-                              boxWidth: 600,
-                              boxHeight: 220,
-                              cardWidth: 95,
-                              cardHeight: 95,
+                              boxWidth: screenWidth * 0.9,
+                              boxHeight: screenHeight * 0.15,
+                              cardWidth: screenWidth * 0.11,
+                              cardHeight: screenWidth * 0.11,
                               controller: widget.controller,
                             ),
                             SizedBox(height: screenHeight * 0.02),

@@ -29,66 +29,60 @@ class DraggableCard extends StatelessWidget {
   }
 
   Widget _buildCard(Color color) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Container(
-          width: width,
-          height: height,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.black),
-          ),
-          child:
-              cardData.imageUrl.isNotEmpty
-                  ? FractionallySizedBox(
-                    widthFactor: 0.85,
-                    heightFactor: 0.85,
-                    child: Image.network(
-                      cardData.imageUrl,
-                      fit: BoxFit.contain,
-                    ),
-                  )
-                  : Center(
-                    child: Text(
-                      cardData.imageName,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-        ),
-        if (showRemoveButton)
-          Positioned(
-            right: -6,
-            top: -6,
-            width: 20,
-            height: 20,
-            child: SizedBox(
-              width: 15,
-              height: 15,
-              child: ElevatedButton(
-                onPressed: onRemove,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  shape: CircleBorder(),
-                  padding: EdgeInsets.zero,
-                ),
+    return SizedBox(
+      width: width,
+      height: height,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.black),
+              ),
+              child:  Center(
                 child: Text(
-                  'X',
+                  cardData.imageName,
                   style: TextStyle(
-                    color: Colors.white,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    fontSize: 12,
                   ),
+                  textAlign: TextAlign.center,
                 ),
               ),
             ),
           ),
-      ],
+          if (showRemoveButton)
+            Positioned(
+              right: -6,
+              top: -6,
+              width: 20,
+              height: 20,
+              child: SizedBox(
+                width: 15,
+                height: 15,
+                child: ElevatedButton(
+                  onPressed: onRemove,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    shape: const CircleBorder(),
+                    padding: EdgeInsets.zero,
+                  ),
+                  child: const Text(
+                    'X',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

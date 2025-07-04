@@ -312,74 +312,45 @@ class _LevelOneOneFourThink3State extends ConsumerState<LevelOneOneFourThink3>
                                     questionTextSize: screenWidth * 0.03,
                                   ),
                                   SizedBox(height: screenWidth * 0.05),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      QuestionBoxString(
-                                        width: screenWidth,
-                                        height: screenHeight,
-                                        object: problemData['object'],
-                                        number: problemData['p1']['number'],
-                                        options: problem1Option,
-                                        questionId: 0,
-                                        onAnswerSelected: (questionId, selected) {
-                                          setState(() {
-                                            selectedAnswers[questionId] = selected;
-                                          });
-                                        },
-                                        selectedAnswer: selectedAnswers[0],
-                                      ),
-                                      SizedBox(width: screenHeight * 0.03),
-                                      QuestionBoxString(
-                                        width: screenWidth,
-                                        height: screenHeight,
-                                        object: problemData['object'],
-                                        number: problemData['p2']['number'],
-                                        options: problem2Option,
-                                        questionId: 1,
-                                        onAnswerSelected: (questionId, selected) {
-                                          setState(() {
-                                            selectedAnswers[questionId] = selected;
-                                          });
-                                        },
-                                        selectedAnswer: selectedAnswers[1],
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: screenHeight * 0.03),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      QuestionBoxString(
-                                        width: screenWidth,
-                                        height: screenHeight,
-                                        object: problemData['object'],
-                                        number: problemData['p3']['number'],
-                                        options: problem3Option,
-                                        questionId: 2,
-                                        onAnswerSelected: (questionId, selected) {
-                                          setState(() {
-                                            selectedAnswers[questionId] = selected;
-                                          });
-                                        },
-                                        selectedAnswer: selectedAnswers[2],
-                                      ),
-                                      SizedBox(width: screenHeight * 0.03),
-                                      QuestionBoxString(
-                                        width: screenWidth,
-                                        height: screenHeight,
-                                        object: problemData['object'],
-                                        number: problemData['p4']['number'],
-                                        options: problem4Option,
-                                        questionId: 3,
-                                        onAnswerSelected: (questionId, selected) {
-                                          setState(() {
-                                            selectedAnswers[questionId] = selected;
-                                          });
-                                        },
-                                        selectedAnswer: selectedAnswers[3],
-                                      ),
-                                    ],
+                                  Column(
+                                    children: List.generate(2, (row) {
+                                      return Padding(
+                                        padding: EdgeInsets.only(top: row == 0 ? screenHeight * 0.01 : screenHeight * 0.03),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: List.generate(2, (col) {
+                                            final index = row * 2 + col;
+                                            final itemKey = 'p${index + 1}';
+                                            final number = problemData[itemKey]['number'];
+                                            final options = index == 0
+                                                ? problem1Option
+                                                : index == 1
+                                                ? problem2Option
+                                                : index == 2
+                                                ? problem3Option
+                                                : problem4Option;
+
+                                            return Padding(
+                                              padding: EdgeInsets.only(left: col == 1 ? screenHeight * 0.03 : 0),
+                                              child: QuestionBoxString(
+                                                width: screenWidth,
+                                                height: screenHeight,
+                                                object: problemData['object'],
+                                                number: number,
+                                                options: options,
+                                                questionId: index,
+                                                selectedAnswer: selectedAnswers[index],
+                                                onAnswerSelected: (questionId, selected) {
+                                                  setState(() {
+                                                    selectedAnswers[questionId] = selected!;
+                                                  });
+                                                },
+                                              ),
+                                            );
+                                          }),
+                                        ),
+                                      );
+                                    }),
                                   ),
                                 ],
                               ),

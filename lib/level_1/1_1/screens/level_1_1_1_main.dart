@@ -103,22 +103,23 @@ class _LevelOneOneOneMainState extends State<LevelOneOneOneMain>
                             SizedBox(height: screenHeight * 0.05),
                             Expanded(
                               flex: 8,
-                              child: GridView.count(
-                                crossAxisCount: 3,
+                              child: GridView.builder(
                                 padding: const EdgeInsets.all(10),
-                                children:
-                                    controller.candidates
-                                        .map(
-                                          (c) => AnswerGridItemWidget(
-                                            candidate: c,
-                                            selectedAnswers:
-                                                controller.selectedAnswers,
-                                            onSelectionChanged:
-                                                (key) => controller
-                                                    .handleSelection(key),
-                                          ),
-                                        )
-                                        .toList(),
+                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
+                                  crossAxisSpacing: 16,
+                                  mainAxisSpacing: 16,
+                                  childAspectRatio: 1,
+                                ),
+                                itemCount: controller.candidates.length,
+                                itemBuilder: (context, index) {
+                                  final c = controller.candidates[index];
+                                  return AnswerGridItemWidget(
+                                    candidate: c,
+                                    selectedAnswers: controller.selectedAnswers,
+                                    onSelectionChanged: (key) => controller.handleSelection(key),
+                                  );
+                                },
                               ),
                             ),
                             Spacer(),

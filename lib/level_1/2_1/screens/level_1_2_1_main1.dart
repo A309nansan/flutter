@@ -41,13 +41,13 @@ class _LevelOneTwoOneMain1State extends ConsumerState<LevelOneTwoOneMain1>
   int? elapsedSeconds;
   int current = 1;
   int total = 1;
-  String nextProblemCode = '';
+  String nextProblemCode = 'enlv1s2c1jy2';
   String problemCode = 'enlv1s2c1jy1';
   bool isSubmitted = false;
   bool isCorrect = false;
   bool showSubmitPopup = false;
   bool isLoading = true;
-  bool isEnd = true;
+  bool isEnd = false;
   bool isShowResult = false;
   Map<String, dynamic> problemData = {};
   Map<String, dynamic> answerData = {};
@@ -211,10 +211,6 @@ class _LevelOneTwoOneMain1State extends ConsumerState<LevelOneTwoOneMain1>
     try {
       final imageBytes = await screenshotController.capture() as Uint8List;
       if (!context.mounted) return;
-
-      final childProfileJson = await SecureStorageService.getChildProfile();
-      final childProfile = jsonDecode(childProfileJson!);
-      final childId = childProfile['id'];
 
       await ImageService.uploadImage(
         imageBytes: imageBytes,

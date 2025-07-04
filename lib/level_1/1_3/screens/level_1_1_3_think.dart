@@ -3,8 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nansan_flutter/level_1/1_3/widgets/Example_widget_113.dart';
-import 'package:nansan_flutter/level_1/1_3/widgets/clickable_widget_113.dart';
+import 'package:nansan_flutter/level_1/1_3/widgets/click_and_drag_widget.dart';
 import 'package:nansan_flutter/modules/level_api/models/submit_request.dart';
 import 'package:nansan_flutter/modules/level_api/services/problem_api_service.dart';
 import 'package:nansan_flutter/shared/controllers/timer_controller.dart';
@@ -17,11 +16,10 @@ import 'package:nansan_flutter/shared/widgets/en_problem_splash_screen.dart';
 import 'package:nansan_flutter/shared/widgets/en_progress_bar_widget.dart';
 import 'package:nansan_flutter/shared/widgets/new_header_widget.dart';
 import 'package:nansan_flutter/shared/widgets/new_question_text.dart';
+import 'package:nansan_flutter/shared/widgets/sample_popup.dart';
 import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:collection/collection.dart';
-
-
 import '../../../shared/provider/en_riverpod_provider.dart';
 import '../../../shared/widgets/en_result_popup.dart';
 
@@ -36,7 +34,7 @@ class LevelOneOneThreeThink extends ConsumerStatefulWidget {
 
 class _LevelOneOneThreeThinkState extends ConsumerState<LevelOneOneThreeThink>
     with TickerProviderStateMixin {
-  // 필수코드
+
   final ScreenshotController screenshotController = ScreenshotController();
   final TimerController _timerController = TimerController();
   final ProblemApiService _apiService = ProblemApiService();
@@ -52,15 +50,17 @@ class _LevelOneOneThreeThinkState extends ConsumerState<LevelOneOneThreeThink>
   bool isEnd = false;
   bool isLoading = true;
   bool isShowResult = false;
+  bool isShowSample = false;
   Map problemData = {};
   Map answerData = {};
   Map<String, List<int>> selectedAnswers = {"answer": <int>[]};
   late AnimationController submitController;
   late AnimationController resultController;
+  late AnimationController popupController;
   late Animation<double> submitAnimation;
   late Animation<double> resultAnimation;
+  late Animation<double> popupAnimation;
 
-  //페이지별 변수
   late String object;
   late int p1Data;
   late int p2Data;
@@ -78,6 +78,10 @@ class _LevelOneOneThreeThinkState extends ConsumerState<LevelOneOneThreeThink>
       vsync: this,
       duration: const Duration(milliseconds: 400),
     );
+    popupController = AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 400),
+    );
 
     submitAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: submitController, curve: Curves.elasticOut),
@@ -85,6 +89,11 @@ class _LevelOneOneThreeThinkState extends ConsumerState<LevelOneOneThreeThink>
     resultAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: resultController, curve: Curves.elasticOut),
     );
+    popupAnimation = CurvedAnimation(
+        parent: popupController,
+        curve: Curves.elasticOut,
+    );
+
     // 비동기 로직 실행 후 UI 업데이트
     _loadQuestionData().then((_) {
       setState(() {
@@ -101,10 +110,10 @@ class _LevelOneOneThreeThinkState extends ConsumerState<LevelOneOneThreeThink>
     _timerController.dispose();
     submitController.dispose();
     resultController.dispose();
+    popupController.dispose();
     isSubmitted = false;
   }
 
-  // problemcode에 따라 데이터 호출하는 함수
   Future _loadQuestionData() async {
     try {
       final response = await _apiService.loadProblemData(problemCode);
@@ -136,11 +145,9 @@ class _LevelOneOneThreeThinkState extends ConsumerState<LevelOneOneThreeThink>
     }
   }
 
-  // 제출함수(제출하기 버튼 누를시 작동하도록 설정)
   Future _submitAnswer() async {
-    if (isSubmitted) return; // 이미 제출된 경우 중복 제출 방지
+    if (isSubmitted) return;
 
-    // 현재 날짜와 시간 (ISO 8601 형식)
     final now = DateTime.now();
     final dateTime = now.toIso8601String();
 
@@ -157,7 +164,6 @@ class _LevelOneOneThreeThinkState extends ConsumerState<LevelOneOneThreeThink>
     );
 
     try {
-      // API 서비스 호출
       await _apiService.submitAnswer(jsonEncode(submitRequest.toJson()));
 
       ref.read(problemProgressProvider.notifier).record(problemCode, isCorrect);
@@ -183,7 +189,6 @@ class _LevelOneOneThreeThinkState extends ConsumerState<LevelOneOneThreeThink>
     p3Data = problemData['problem'][2];
   }
 
-  // 수정: 제출 시 최종 입력 데이터 처리
   void _processInputData(int identifier, int count) {
     setState(() {
       selectNumber[identifier] = count;
@@ -274,6 +279,21 @@ class _LevelOneOneThreeThinkState extends ConsumerState<LevelOneOneThreeThink>
     resultController.forward(from: 0);
   }
 
+  void showSample() {
+    setState(() {
+      isShowSample = true;
+    });
+    popupController.forward(from: 0.0);
+  }
+
+  void closeSample() {
+    popupController.reverse().then((_) {
+      setState(() {
+        isShowSample = false;
+      });
+    });
+  }
+
   void end() async {
     await EnProblemService.clearChapterProblem(childId, problemCode);
     Modular.to.pop();
@@ -283,6 +303,14 @@ class _LevelOneOneThreeThinkState extends ConsumerState<LevelOneOneThreeThink>
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    if (isLoading) {
+      return const Scaffold(
+        appBar: AppbarWidget(title: null),
+        body: Center(child: EnProblemSplashScreen()),
+      );
+    }
+
+    final problemImages = [p1Data, p2Data, p3Data];
 
     return Scaffold(
       appBar: AppbarWidget(
@@ -292,286 +320,290 @@ class _LevelOneOneThreeThinkState extends ConsumerState<LevelOneOneThreeThink>
           onPressed: () => Modular.to.pop(),
         ),
       ),
-      body:
-          isLoading
-              ? const Center(child: EnProblemSplashScreen())
-              : Stack(
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Container(
+              color: Colors.white,
+              child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
+                  Screenshot(
+                    controller: screenshotController,
                     child: Container(
                       color: Colors.white,
                       child: Column(
                         children: [
-                          Screenshot(
-                            controller: screenshotController,
-                            child: Container(
-                              color: Colors.white,
-                              child: Column(
-                                children: [
-                                  NewHeaderWidget(
-                                    headerText: '개념학습활동',
-                                    headerTextSize: screenWidth * 0.028,
-                                    subTextSize: screenWidth * 0.018,
-                                  ),
-                                  SizedBox(height: screenHeight * 0.01),
-                                  NewQuestionTextWidget(
-                                    questionText:
-                                        '<보기>와 같이 그림이 나타내는 수만큼 네모를 클릭해 보세요!',
-                                    questionTextSize: screenWidth * 0.03,
-                                  ),
-                                  SizedBox(height: screenHeight * 0.02),
-                                  ExampleWidget113(width: screenWidth, height: screenHeight, object : object),
-                                  SizedBox(height: screenHeight * 0.02),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        alignment: Alignment.center,
-                                        width: screenWidth * 0.3,
-                                        height: screenHeight * 0.15,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(10),
-                                          border: Border.all(
-                                            width: 2,
-                                            color: Colors.lightBlue,
-                                          ),
-                                        ),
-                                        child: Image.asset('assets/images/number/$object/$p1Data.png'),
-                                      ),
-                                      SizedBox(width: screenWidth * 0.05),
-                                      ClickableWidget(
-                                        width: screenWidth * 0.5,
-                                        height: screenWidth * 0.24,
-                                        bgColor: Colors.white,
-                                        liColor: Colors.black,
-                                        textColor: Colors.black,
-                                        identifier : 0,
-                                        onClickCountChanged:
-                                            _processInputData, // 콜백 함수 전달
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: screenHeight * 0.02),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        alignment: Alignment.center,
-                                        width: screenWidth * 0.3,
-                                        height: screenHeight * 0.15,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(10),
-                                          border: Border.all(
-                                            width: 2,
-                                            color: Colors.lightBlue,
-                                          ),
-                                        ),
-                                        child: Image.asset('assets/images/number/$object/$p2Data.png'),
-                                      ),
-                                      SizedBox(width: screenWidth * 0.05),
-                                      ClickableWidget(
-                                        width: screenWidth * 0.5,
-                                        height: screenWidth * 0.24,
-                                        bgColor: Colors.white,
-                                        liColor: Colors.black,
-                                        textColor: Colors.black,
-                                        identifier : 1,
-                                        onClickCountChanged:
-                                            _processInputData, // 콜백 함수 전달
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: screenHeight * 0.02),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        alignment: Alignment.center,
-                                        width: screenWidth * 0.3,
-                                        height: screenHeight * 0.15,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(10),
-                                          border: Border.all(
-                                            width: 2,
-                                            color: Colors.lightBlue,
-                                          ),
-                                        ),
-                                        child: Image.asset('assets/images/number/$object/$p3Data.png'),
-                                      ),
-                                      SizedBox(width: screenWidth * 0.05),
-                                      ClickableWidget(
-                                        width: screenWidth * 0.5,
-                                        height: screenWidth * 0.24,
-                                        bgColor: Colors.white,
-                                        liColor: Colors.black,
-                                        textColor: Colors.black,
-                                        identifier : 2,
-                                        onClickCountChanged:
-                                            _processInputData, // 콜백 함수 전달
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
+                          NewHeaderWidget(
+                            headerText: '개념학습활동',
+                            headerTextSize: screenWidth * 0.028,
+                            subTextSize: screenWidth * 0.018,
                           ),
-                          Spacer(),
+                          SizedBox(height: screenHeight * 0.01),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              EnProgressBarWidget(current: current, total: total),
-                              Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 30.0,
-                                  vertical: screenHeight * 0.02,
+                              Expanded(
+                                child: NewQuestionTextWidget(
+                                  questionText: '그림이 나타내는 수만큼 네모를 클릭하여 채워보세요!',
+                                  questionTextSize: screenWidth * 0.03,
                                 ),
-                                child: AnimatedSwitcher(
-                                  duration: const Duration(milliseconds: 300),
-                                  transitionBuilder: (child, animation) {
-                                    return FadeTransition(
-                                      opacity: animation,
-                                      child: child,
-                                    );
-                                  },
-                                  child: Row(
-                                    key: ValueKey<String>(
-                                      '${isSubmitted}_$isCorrect',
+                              ),
+                              IconButton(
+                                onPressed: showSample,
+                                icon: Icon(
+                                  Icons.lightbulb,
+                                  size: 30,
+                                  color: Colors.yellow,
+                                  shadows: [
+                                    BoxShadow(
+                                      color: Colors.black.withAlpha(77),
+                                      blurRadius: 3,
+                                      offset: const Offset(1, 2),
                                     ),
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      if (!isSubmitted)
-                                        ButtonWidget(
-                                          height: screenHeight * 0.035,
-                                          width: screenWidth * 0.18,
-                                          buttonText: "제출하기",
-                                          fontSize: screenWidth * 0.02,
-                                          borderRadius: 10,
-                                          onPressed:
-                                              (isSubmitted)
-                                                  ? null
-                                                  : () => {
-                                                    submitController.forward(),
-                                                    showSubmitPopup = true,
-                                                    submitActivity(context),
-                                                    checkAnswer(),
-                                                  },
-                                        ),
-
-                                      if (isSubmitted && isCorrect == false) ...[
-                                        ButtonWidget(
-                                          height: screenHeight * 0.035,
-                                          width: screenWidth * 0.18,
-                                          buttonText: "제출하기",
-                                          fontSize: screenWidth * 0.02,
-                                          borderRadius: 10,
-                                          onPressed:
-                                              () => {
-                                                setState(() {
-                                                  checkAnswer();
-                                                  showSubmitPopup = true;
-                                                }),
-                                                submitController.forward(),
-                                              },
-                                        ),
-                                        const SizedBox(width: 20),
-                                        ButtonWidget(
-                                          height: screenHeight * 0.035,
-                                          width: screenWidth * 0.18,
-                                          buttonText: isEnd ? "학습종료" : "다음문제",
-                                          fontSize: screenWidth * 0.02,
-                                          borderRadius: 10,
-                                          onPressed:
-                                              isEnd
-                                                  ? () => showResult()
-                                                  : () => onNextPressed(),
-                                        ),
-                                      ],
-
-                                      if (isSubmitted && isCorrect == true)
-                                        ButtonWidget(
-                                          height: screenHeight * 0.035,
-                                          width: screenWidth * 0.18,
-                                          buttonText: isEnd ? "학습종료" : "다음문제",
-                                          fontSize: screenWidth * 0.02,
-                                          borderRadius: 10,
-                                          onPressed:
-                                              isEnd
-                                                  ? () => showResult()
-                                                  : () => onNextPressed(),
-                                        ),
-                                    ],
-                                  ),
+                                  ],
                                 ),
                               ),
                             ],
+                          ),
+                          SizedBox(height: screenHeight * 0.02),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(3, (index) {
+                              return Padding(
+                                padding: EdgeInsets.only(top: screenHeight * 0.02),
+                                child: Container(
+                                  width: screenWidth * 0.9,
+                                  height: screenHeight * 0.2,
+                                  padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.055),
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(12),
+                                      boxShadow: [
+                                        BoxShadow(
+                                            color: Colors.black38,
+                                            offset: const Offset(0, 4),
+                                            blurRadius: 4.0
+                                        )
+                                      ]
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                          width: screenWidth * 0.25,
+                                          height: screenHeight * 0.25,
+                                          child: Image.asset('assets/images/number/$object/${problemImages[index]}.png',)
+                                      ),
+                                      SizedBox(
+                                        width: screenWidth * 0.5,
+                                        height: screenHeight * 0.13,
+                                        child: Center(
+                                          child: ClickAndDragWidget(
+                                            filledCount: (selectedAnswers["answer"] != null && selectedAnswers["answer"]!.length > index + 1)
+                                                ? selectedAnswers["answer"]![index + 1]
+                                                : 0,
+                                            onChanged: (count) {
+                                              _processInputData(index, count);
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  if (showSubmitPopup)
-                    Positioned.fill(
-                      child: Stack(
-                        children: [
-                          Container(color: Colors.black54),
-                          Center(
-                            child: FadeTransition(
-                              opacity: submitAnimation,
-                              child: ScaleTransition(
-                                scale: submitAnimation,
-                                child: Material(
-                                  type: MaterialType.transparency,
-                                  child: SuccessfulPopup(
-                                    scaleAnimation:
-                                        const AlwaysStoppedAnimation(1.0),
-                                    isCorrect: isCorrect,
-                                    customMessage:
-                                        isCorrect ? "🎉 정답이에요!" : "틀렸어요...",
-                                    isEnd: isEnd,
-                                    closePopup: closeSubmit,
-                                    onClose:
-                                        isCorrect
-                                            ? () async => onNextPressed()
-                                            : null,
-                                    result: getResult(),
-                                    end: () async => onNextPressed(),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                  Spacer(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: screenHeight * 0.02),
+                        child: EnProgressBarWidget(current: current, total: total),
                       ),
-                    ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 30.0,
+                          vertical: screenHeight * 0.02,
+                        ),
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 300),
+                          transitionBuilder: (child, animation) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            );
+                          },
+                          child: Row(
+                            key: ValueKey<String>(
+                              '${isSubmitted}_$isCorrect',
+                            ),
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              if (!isSubmitted)
+                                ButtonWidget(
+                                  height: screenHeight * 0.035,
+                                  width: screenWidth * 0.18,
+                                  buttonText: "제출하기",
+                                  fontSize: screenWidth * 0.02,
+                                  borderRadius: 10,
+                                  onPressed:
+                                      (isSubmitted)
+                                          ? null
+                                          : () => {
+                                            submitController.forward(),
+                                            showSubmitPopup = true,
+                                            submitActivity(context),
+                                            checkAnswer(),
+                                          },
+                                ),
 
-                  if (isShowResult)
-                    Positioned.fill(
-                      child: Stack(
-                        children: [
-                          Container(color: Colors.black54),
-                          Center(
-                            child: FadeTransition(
-                              opacity: resultAnimation,
-                              child: ScaleTransition(
-                                scale: resultAnimation,
-                                child: Material(
-                                  type: MaterialType.transparency,
-                                  child: EnResultPopup(
-                                    scaleAnimation:
-                                        const AlwaysStoppedAnimation(1.0),
-                                    result: getResult(),
-                                    end: () async => end(),
-                                  ),
+                              if (isSubmitted && isCorrect == false) ...[
+                                ButtonWidget(
+                                  height: screenHeight * 0.035,
+                                  width: screenWidth * 0.18,
+                                  buttonText: "제출하기",
+                                  fontSize: screenWidth * 0.02,
+                                  borderRadius: 10,
+                                  onPressed:
+                                      () => {
+                                        setState(() {
+                                          checkAnswer();
+                                          showSubmitPopup = true;
+                                        }),
+                                        submitController.forward(),
+                                      },
                                 ),
-                              ),
-                            ),
+                                const SizedBox(width: 20),
+                                ButtonWidget(
+                                  height: screenHeight * 0.035,
+                                  width: screenWidth * 0.18,
+                                  buttonText: isEnd ? "학습종료" : "다음문제",
+                                  fontSize: screenWidth * 0.02,
+                                  borderRadius: 10,
+                                  onPressed:
+                                      isEnd
+                                          ? () => showResult()
+                                          : () => onNextPressed(),
+                                ),
+                              ],
+
+                              if (isSubmitted && isCorrect == true)
+                                ButtonWidget(
+                                  height: screenHeight * 0.035,
+                                  width: screenWidth * 0.18,
+                                  buttonText: isEnd ? "학습종료" : "다음문제",
+                                  fontSize: screenWidth * 0.02,
+                                  borderRadius: 10,
+                                  onPressed:
+                                      isEnd
+                                          ? () => showResult()
+                                          : () => onNextPressed(),
+                                ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
+                    ],
+                  ),
                 ],
               ),
+            ),
+          ),
+
+          if(isShowSample)
+            Positioned.fill(
+              child: Center(
+                child: GestureDetector(
+                  onTap: closeSample,
+                  child: FadeTransition(
+                    opacity: popupAnimation,
+                    child: Container(
+                      color: Colors.black54,
+                      child: ScaleTransition(
+                        scale: popupAnimation,
+                        child: SamplePopup(
+                          scaleAnimation: const AlwaysStoppedAnimation(1.0),
+                          onClose: closeSample,
+                          desc:
+                          "\u{1F4A1} 그림이 나타내는 수만큼 네모를 클릭하거나 드래그해 보세요.",
+                          image: "assets/images/level1_1_3_think_sample.png",
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+          if (showSubmitPopup)
+            Positioned.fill(
+              child: Stack(
+                children: [
+                  Container(color: Colors.black54),
+                  Center(
+                    child: FadeTransition(
+                      opacity: submitAnimation,
+                      child: ScaleTransition(
+                        scale: submitAnimation,
+                        child: Material(
+                          type: MaterialType.transparency,
+                          child: SuccessfulPopup(
+                            scaleAnimation:
+                                const AlwaysStoppedAnimation(1.0),
+                            isCorrect: isCorrect,
+                            customMessage:
+                                isCorrect ? "🎉 정답이에요!" : "틀렸어요...",
+                            isEnd: isEnd,
+                            closePopup: closeSubmit,
+                            onClose:
+                                isCorrect
+                                    ? () async => onNextPressed()
+                                    : null,
+                            result: getResult(),
+                            end: () async => onNextPressed(),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          if (isShowResult)
+            Positioned.fill(
+              child: Stack(
+                children: [
+                  Container(color: Colors.black54),
+                  Center(
+                    child: FadeTransition(
+                      opacity: resultAnimation,
+                      child: ScaleTransition(
+                        scale: resultAnimation,
+                        child: Material(
+                          type: MaterialType.transparency,
+                          child: EnResultPopup(
+                            scaleAnimation:
+                                const AlwaysStoppedAnimation(1.0),
+                            result: getResult(),
+                            end: () async => end(),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

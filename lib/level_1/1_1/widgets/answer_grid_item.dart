@@ -15,43 +15,40 @@ class AnswerGridItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isSelected = selectedAnswers.contains(candidate.key); // 키 기반 선택 확인
+    final isSelected = selectedAnswers.contains(candidate.key);
 
-    return GestureDetector(
-      onTap: () => onSelectionChanged(candidate.key),
-      child: Card(
-        elevation: 5,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-          side: BorderSide(
-            color: isSelected ? Colors.blue : Colors.transparent,
-            width: 3,
-          ),
-        ),
-        child: Container(
-          decoration: BoxDecoration(
-            color: isSelected ? Colors.blue : null,
-            borderRadius: BorderRadius.circular(5),
-          ),
-          alignment: Alignment.center,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: MediaQuery.of(context).size.width * 0.285,
-                height: MediaQuery.of(context).size.height * 0.185,
-                decoration: BoxDecoration(
-                  color: isSelected ? Colors.lightBlue[100] : Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Center(
-                  child: Image.asset('assets/images/number/${candidate.object}/${candidate.number}.png'),
-                ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double width = constraints.maxWidth * 0.9;
+        final double height = constraints.maxHeight * 0.9;
+
+        return ElevatedButton(
+          onPressed: () => onSelectionChanged(candidate.key),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            elevation: 4,
+            padding: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(
+                color: isSelected ? Colors.blue : Colors.transparent,
+                width: 10,
               ),
-            ],
+            ),
           ),
-        ),
-      ),
+          child: Container(
+            width: width,
+            height: height,
+            alignment: Alignment.center,
+            child: Image.asset(
+              'assets/images/number/${candidate.object}/${candidate.number}.png',
+              fit: BoxFit.contain,
+              width: width,
+              height: height,
+            ),
+          ),
+        );
+      },
     );
   }
 }

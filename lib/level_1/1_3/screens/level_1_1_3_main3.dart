@@ -19,9 +19,9 @@ import 'package:nansan_flutter/shared/widgets/new_header_widget.dart';
 import 'package:nansan_flutter/shared/widgets/new_question_text.dart';
 import 'package:nansan_flutter/shared/widgets/successful_popup.dart';
 import 'package:screenshot/screenshot.dart';
-
 import '../../../shared/provider/en_riverpod_provider.dart';
 import '../../../shared/widgets/en_result_popup.dart';
+import '../../../shared/widgets/sample_popup.dart';
 
 class LevelOneOneThreeMain3 extends ConsumerStatefulWidget {
   final String problemCode;
@@ -42,7 +42,7 @@ class _LevelOneOneThreeMain3State extends ConsumerState<LevelOneOneThreeMain3>
   int? elapsedSeconds;
   int current = 1;
   int total = 1;
-  late String nextProblemCode;
+  String nextProblemCode = 'enlv1s1c3jy4';
   String problemCode = 'enlv1s1c3jy3';
   bool isSubmitted = false;
   bool isCorrect = false;
@@ -50,13 +50,16 @@ class _LevelOneOneThreeMain3State extends ConsumerState<LevelOneOneThreeMain3>
   bool isEnd = true;
   bool isLoading = true;
   bool isShowResult = false;
+  bool isShowSample = false;
   Map<String, dynamic> problemData = {};
   Map<String, dynamic> answerData = {};
   List<String> selectedAnswers = ['0','0','0','0'];
   late AnimationController submitController;
   late AnimationController resultController;
+  late AnimationController popupController;
   late Animation<double> submitAnimation;
   late Animation<double> resultAnimation;
+  late Animation<double> popupAnimation;
 
   // 옵션
   List<String> problem1Option = ['0','0','0'];
@@ -75,12 +78,20 @@ class _LevelOneOneThreeMain3State extends ConsumerState<LevelOneOneThreeMain3>
       vsync: this,
       duration: const Duration(milliseconds: 400),
     );
+    popupController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
 
     submitAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: submitController, curve: Curves.elasticOut),
     );
     resultAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: resultController, curve: Curves.elasticOut),
+    );
+    popupAnimation = CurvedAnimation(
+      parent: popupController,
+      curve: Curves.elasticOut,
     );
 
     // 비동기 로직 실행 후 UI 업데이트
@@ -97,6 +108,7 @@ class _LevelOneOneThreeMain3State extends ConsumerState<LevelOneOneThreeMain3>
     _timerController.dispose();
     submitController.dispose();
     resultController.dispose();
+    popupController.dispose();
     isSubmitted = false;
     super.dispose();
   }
@@ -200,10 +212,6 @@ class _LevelOneOneThreeMain3State extends ConsumerState<LevelOneOneThreeMain3>
       final imageBytes = await screenshotController.capture() as Uint8List;
       if (!context.mounted) return;
 
-      final childProfileJson = await SecureStorageService.getChildProfile();
-      final childProfile = jsonDecode(childProfileJson!);
-      final childId = childProfile['id'];
-
       await ImageService.uploadImage(
         imageBytes: imageBytes,
         childId: childId,
@@ -267,6 +275,21 @@ class _LevelOneOneThreeMain3State extends ConsumerState<LevelOneOneThreeMain3>
     resultController.forward(from: 0);
   }
 
+  void showSample() {
+    setState(() {
+      isShowSample = true;
+    });
+    popupController.forward(from: 0.0);
+  }
+
+  void closeSample() {
+    popupController.reverse().then((_) {
+      setState(() {
+        isShowSample = false;
+      });
+    });
+  }
+
   void end() async {
     await EnProblemService.clearChapterProblem(childId, problemCode);
     Modular.to.pop();
@@ -308,80 +331,71 @@ class _LevelOneOneThreeMain3State extends ConsumerState<LevelOneOneThreeMain3>
                                     subTextSize: screenWidth * 0.018,
                                   ),
                                   SizedBox(height: screenHeight * 0.01),
-                                  NewQuestionTextWidget(
-                                    questionText:
-                                        '3. 그림의 수를 세고, 알맞은 숫자 이름을 클릭하세요.',
-                                    questionTextSize: screenWidth * 0.03,
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: NewQuestionTextWidget(
+                                          questionText: '3. 그림의 수를 세고, 알맞은 숫자 이름을 선택하세요.',
+                                          questionTextSize: screenWidth * 0.03,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        onPressed: showSample,
+                                        icon: Icon(
+                                          Icons.lightbulb,
+                                          size: 30,
+                                          color: Colors.yellow,
+                                          shadows: [
+                                            BoxShadow(
+                                              color: Colors.black.withAlpha(77),
+                                              blurRadius: 3,
+                                              offset: const Offset(1, 2),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                   SizedBox(height: screenWidth * 0.05),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      QuestionBoxString(
-                                        width: screenWidth,
-                                        height: screenHeight,
-                                        object: problemData['object'],
-                                        number: problemData['p1']['number'],
-                                        options: problem1Option,
-                                        questionId: 0,
-                                        onAnswerSelected: (questionId, selected) {
-                                          setState(() {
-                                            selectedAnswers[questionId] = selected;
-                                          });
-                                        },
-                                        selectedAnswer: selectedAnswers[0],
-                                      ),
-                                      SizedBox(width: screenHeight * 0.03),
-                                      QuestionBoxString(
-                                        width: screenWidth,
-                                        height: screenHeight,
-                                        object: problemData['object'],
-                                        number: problemData['p2']['number'],
-                                        options: problem2Option,
-                                        questionId: 1,
-                                        onAnswerSelected: (questionId, selected) {
-                                          setState(() {
-                                            selectedAnswers[questionId] = selected;
-                                          });
-                                        },
-                                        selectedAnswer: selectedAnswers[1],
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: screenHeight * 0.03),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      QuestionBoxString(
-                                        width: screenWidth,
-                                        height: screenHeight,
-                                        object: problemData['object'],
-                                        number: problemData['p3']['number'],
-                                        options: problem3Option,
-                                        questionId: 2,
-                                        onAnswerSelected: (questionId, selected) {
-                                          setState(() {
-                                            selectedAnswers[questionId] = selected;
-                                          });
-                                        },
-                                        selectedAnswer: selectedAnswers[2],
-                                      ),
-                                      SizedBox(width: screenHeight * 0.03),
-                                      QuestionBoxString(
-                                        width: screenWidth,
-                                        height: screenHeight,
-                                        object: problemData['object'],
-                                        number: problemData['p4']['number'],
-                                        options: problem4Option,
-                                        questionId: 3,
-                                        onAnswerSelected: (questionId, selected) {
-                                          setState(() {
-                                            selectedAnswers[questionId] = selected;
-                                          });
-                                        },
-                                        selectedAnswer: selectedAnswers[3],
-                                      ),
-                                    ],
+                                  Column(
+                                    children: List.generate(2, (row) {
+                                      return Padding(
+                                        padding: EdgeInsets.only(top: row == 0 ? screenHeight * 0.01 : screenHeight * 0.03),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: List.generate(2, (col) {
+                                            final index = row * 2 + col;
+                                            final itemKey = 'p${index + 1}';
+                                            final number = problemData[itemKey]['number'];
+                                            final options = index == 0
+                                                ? problem1Option
+                                                : index == 1
+                                                ? problem2Option
+                                                : index == 2
+                                                ? problem3Option
+                                                : problem4Option;
+
+                                            return Padding(
+                                              padding: EdgeInsets.only(left: col == 1 ? screenHeight * 0.03 : 0),
+                                              child: QuestionBoxString(
+                                                width: screenWidth,
+                                                height: screenHeight,
+                                                object: problemData['object'],
+                                                number: number,
+                                                options: options,
+                                                questionId: index,
+                                                selectedAnswer: selectedAnswers[index],
+                                                onAnswerSelected: (questionId, selected) {
+                                                  setState(() {
+                                                    selectedAnswers[questionId] = selected!;
+                                                  });
+                                                },
+                                              ),
+                                            );
+                                          }),
+                                        ),
+                                      );
+                                    }),
                                   ),
                                 ],
                               ),
@@ -481,6 +495,32 @@ class _LevelOneOneThreeMain3State extends ConsumerState<LevelOneOneThreeMain3>
                       ),
                     ),
                   ),
+
+                  if(isShowSample)
+                    Positioned.fill(
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: closeSample,
+                          child: FadeTransition(
+                            opacity: popupAnimation,
+                            child: Container(
+                              color: Colors.black54,
+                              child: ScaleTransition(
+                                scale: popupAnimation,
+                                child: SamplePopup(
+                                  scaleAnimation: const AlwaysStoppedAnimation(1.0),
+                                  onClose: closeSample,
+                                  desc:
+                                  "\u{1F4A1} 그림이 나타내는 수만큼 알맞은 숫자 이름을 선택해보세요.",
+                                  image: "assets/images/level1_1_3_main3_sample.png",
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
                   if (showSubmitPopup)
                     Positioned.fill(
                       child: Stack(
