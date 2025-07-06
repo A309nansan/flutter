@@ -152,7 +152,7 @@ class _LevelOneFourTwoMain1State extends ConsumerState<LevelOneFourTwoMain1> wit
           childId: childId,
         );
 
-        await ProblemApiService().submitAnswer(result);
+        await ProblemApiService().submitAnswer(jsonEncode(result));
 
         ref.read(problemProgressProvider.notifier).record(
           controller.problemCode,
