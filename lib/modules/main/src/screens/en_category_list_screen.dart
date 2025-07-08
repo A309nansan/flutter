@@ -79,97 +79,95 @@ class _EnCategoryListScreenState extends State<EnCategoryListScreen> with Ticker
           ? EnListSplashScreen()
           : DefaultTabController(
         length: 3,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                width: screenWidth * 0.90,
-                height: screenHeight * 0.1,
-                padding: const EdgeInsets.only(bottom: 20),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "수 인식",
-                    style: TextStyle(
-                      fontFamily: "SingleDay",
-                      fontSize: screenWidth * 0.065,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF9C6A17),
-                    ),
-                  ),
-                ),
-              ),
-              Align(
+        child: Column(
+          children: [
+            Container(
+              width: screenWidth * 0.90,
+              height: screenHeight * 0.1,
+              padding: const EdgeInsets.only(bottom: 20),
+              child: Align(
                 alignment: Alignment.centerLeft,
-                child: SizedBox(
-                  width: screenWidth * 0.8,
-                  child: TabBar(
-                    controller: _tabController,
-                    labelColor: Color(0xFF9C6A17),
-                    unselectedLabelColor: Colors.grey,
-                    indicatorColor: Color(0xFF9C6A17),
-                    indicatorWeight: 6,
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    splashBorderRadius: BorderRadius.circular(20),
-                      labelStyle: TextStyle(
-                        fontFamily: "SingleDay",
-                        fontSize: screenHeight * 0.026,
-                        fontWeight: FontWeight.bold
-                      ),
-                      labelPadding: const EdgeInsets.symmetric(vertical: 10),
-                      padding: const EdgeInsets.symmetric(horizontal: 30),
-                      unselectedLabelStyle: TextStyle(
-                          fontFamily: "SingleDay",
-                          fontSize: screenHeight * 0.023,
-                          fontWeight: FontWeight.bold
-                      ),
-                      dividerColor: Colors.transparent,
-                    tabs: List.generate(3, (index) {
-                      final isSelected = selectedTabIndex == index;
-                      final level = index + 1;
-
-                      return Tab(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              index < 2 ? 'Level $level' : '함께해요',
-                            ),
-                            if (index < 2)
-                              Row(
-                                children: List.generate(level, (i) => Padding(
-                                  padding: const EdgeInsets.only(left: 3),
-                                  child: Icon(
-                                    Icons.star,
-                                    size: screenWidth * 0.032,
-                                    color: isSelected ? Colors.amber : Colors.grey[300],
-                                    shadows: isSelected
-                                        ? [const Shadow(color: Colors.black26, blurRadius: 2)]
-                                        : [],
-                                  ),
-                                )),
-                              ),
-                          ],
-                        ),
-                      );
-                    }),
+                child: Text(
+                  "수 인식",
+                  style: TextStyle(
+                    fontFamily: "SingleDay",
+                    fontSize: screenWidth * 0.065,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF9C6A17),
                   ),
                 ),
               ),
-              SizedBox(
-                height: screenHeight * 0.8,
-                child: TabBarView(
+            ),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: SizedBox(
+                width: screenWidth * 0.8,
+                child: TabBar(
                   controller: _tabController,
-                  children: [
-                    _buildTabContent(0),
-                    _buildTabContent(1),
-                    _buildTabContent(2),
-                  ],
+                  labelColor: Color(0xFF9C6A17),
+                  unselectedLabelColor: Colors.grey,
+                  indicatorColor: Color(0xFF9C6A17),
+                  indicatorWeight: 6,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  splashBorderRadius: BorderRadius.circular(20),
+                  labelStyle: TextStyle(
+                      fontFamily: "SingleDay",
+                      fontSize: screenHeight * 0.026,
+                      fontWeight: FontWeight.bold
+                  ),
+                  labelPadding: const EdgeInsets.symmetric(vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  unselectedLabelStyle: TextStyle(
+                      fontFamily: "SingleDay",
+                      fontSize: screenHeight * 0.023,
+                      fontWeight: FontWeight.bold
+                  ),
+                  dividerColor: Colors.transparent,
+                  tabs: List.generate(3, (index) {
+                    final isSelected = selectedTabIndex == index;
+                    final level = index + 1;
+
+                    return Tab(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            index < 2 ? 'Level $level' : '함께해요',
+                          ),
+                          if (index < 2)
+                            Row(
+                              children: List.generate(level, (i) => Padding(
+                                padding: const EdgeInsets.only(left: 3),
+                                child: Icon(
+                                  Icons.star,
+                                  size: screenWidth * 0.032,
+                                  color: isSelected ? Colors.amber : Colors.grey[300],
+                                  shadows: isSelected
+                                      ? [const Shadow(color: Colors.black26, blurRadius: 2)]
+                                      : [],
+                                ),
+                              )),
+                            ),
+                        ],
+                      ),
+                    );
+                  }),
                 ),
               ),
-              const SizedBox(height: 40),
-            ],
-          ),
+            ),
+            Expanded(
+              // height: screenHeight * 0.8,
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildTabContent(0),
+                  _buildTabContent(1),
+                  _buildTabContent(2),
+                ],
+              ),
+            ),
+            const SizedBox(height: 40),
+          ],
         ),
       ),
     );
@@ -205,8 +203,10 @@ class _EnCategoryListScreenState extends State<EnCategoryListScreen> with Ticker
       );
     }
 
-    return Column(
-      children: _buildLevelGroup(chunk, chunkLevel, routeBuilder),
+    return SingleChildScrollView(
+      child: Column(
+        children: _buildLevelGroup(chunk, chunkLevel, routeBuilder),
+      ),
     );
   }
 
